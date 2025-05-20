@@ -39,45 +39,21 @@ const SectionsSnapCSS = (props: Props) => {
   useGSAP(() => {
     ScrollTrigger.defaults({
       markers: true,
-      start: "top top",
-      end: "bottom bottom",
       toggleActions: "restart pause resume reverse",
       scroller: container.current,
       onUpdate: (self) => {
-        // Calculate which section we're currently in
-        const totalSections = sections.length;
-        const currentProgress = self.progress;
-        const currentSectionIndex = Math.floor(currentProgress * totalSections);
-
-        // Update all progress bars
-        sections.forEach((section, index) => {
-          const progressEl = document.getElementById(`progress-${section.id}`);
-          if (!progressEl) return;
-
-          if (index < currentSectionIndex) {
-            // Previous sections are complete
-            gsap.to(progressEl, {
-              width: "100%",
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          } else if (index === currentSectionIndex) {
-            // Current section progress
-            const sectionProgress = (currentProgress * totalSections) % 1;
-            gsap.to(progressEl, {
-              width: `${Math.round(sectionProgress * 100)}%`,
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          } else {
-            // Future sections are empty
-            gsap.to(progressEl, {
-              width: "0%",
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          }
-        });
+        // const progress = self.progress;
+        // const el = self.trigger;
+        // const progressData = el?.getAttribute("data-progress");
+        // const progressEl = progressData
+        //   ? document.getElementById(progressData)
+        //   : null;
+        // if (progressEl) {
+        //   gsap.to(progressEl, {
+        //     width: `${Math.round(progress * 100)}%`,
+        //     ease: "none",
+        //   });
+        // }
       },
     });
 
@@ -105,6 +81,17 @@ const SectionsSnapCSS = (props: Props) => {
       yoyo: true,
       ease: "power2",
     });
+
+    gsap.to(".progress", {
+      scrollTrigger: {
+        trigger: ".section",
+        start: "top top",
+        end: "+=300%",
+        scrub: 1,
+      },
+      width: "100%",
+      ease: "none",
+    });
   }, {});
 
   return (
@@ -118,7 +105,7 @@ const SectionsSnapCSS = (props: Props) => {
             >
               <span
                 id={`progress-${entry.id}`}
-                className={`absolute top-0 left-0 w-none h-full bg-pink-500`}
+                className={`absolute progress top-0 left-0 w-none h-full bg-pink-500`}
               ></span>
             </Box>
           );
