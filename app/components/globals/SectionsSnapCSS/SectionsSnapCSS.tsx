@@ -1,5 +1,5 @@
 "use client";
-import Section from "../../Section/Section";
+
 import Box from "../../ui/Box/Box";
 import { useRef } from "react";
 import gsap from "gsap";
@@ -32,8 +32,7 @@ const sections = [
   },
 ];
 
-type Props = {};
-const SectionsSnapCSS = (props: Props) => {
+const SectionsSnapCSS = () => {
   const container = useRef<HTMLElement>(null);
 
   useGSAP(() => {
@@ -41,20 +40,7 @@ const SectionsSnapCSS = (props: Props) => {
       markers: true,
       toggleActions: "restart pause resume reverse",
       scroller: container.current,
-      onUpdate: (self) => {
-        // const progress = self.progress;
-        // const el = self.trigger;
-        // const progressData = el?.getAttribute("data-progress");
-        // const progressEl = progressData
-        //   ? document.getElementById(progressData)
-        //   : null;
-        // if (progressEl) {
-        //   gsap.to(progressEl, {
-        //     width: `${Math.round(progress * 100)}%`,
-        //     ease: "none",
-        //   });
-        // }
-      },
+      onUpdate: () => {},
     });
 
     gsap.to(".section-about p", {
@@ -82,15 +68,22 @@ const SectionsSnapCSS = (props: Props) => {
       ease: "power2",
     });
 
-    gsap.to(".progress", {
-      scrollTrigger: {
-        trigger: ".section",
-        start: "top top",
-        end: "+=300%",
-        scrub: 1,
-      },
-      width: "100%",
-      ease: "none",
+    sections.forEach((section) => {
+      gsap.to(`#progress-${section.id}`, {
+        scrollTrigger: {
+          trigger: `.section-${section.id}`,
+          start: "top center",
+          end: "center center",
+          scroller: container.current,
+          scrub: 1, // Smooth scrubbing
+          onUpdate: (self) => {
+            // Optional: if you want to log progress
+            console.log(`${section.id} progress:`, self.progress);
+          },
+        },
+        width: "100%",
+        ease: "none",
+      });
     });
   }, {});
 
@@ -105,7 +98,7 @@ const SectionsSnapCSS = (props: Props) => {
             >
               <span
                 id={`progress-${entry.id}`}
-                className={`absolute progress top-0 left-0 w-none h-full bg-pink-500`}
+                className={`absolute progress top-0 left-0 w-0 h-full bg-pink-500`}
               ></span>
             </Box>
           );
