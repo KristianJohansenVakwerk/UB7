@@ -11,22 +11,18 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const sections = [
   {
-    id: "intro",
     title: "intro",
     color: "bg-red-500",
   },
   {
-    id: "portfolio",
     title: "portfolio",
     color: "bg-blue-500",
   },
   {
-    id: "about",
     title: "about",
     color: "bg-yellow-500",
   },
   {
-    id: "contact",
     title: "contact",
     color: "bg-green-500",
   },
@@ -73,7 +69,7 @@ const Sections = (props: Props) => {
         return (
           <Box
             key={index}
-            className={`section h-screen  flex items-center justify-center ${entry.color} section-${entry.id}`}
+            className={`section h-screen  flex items-center justify-center ${entry.color}`}
           >
             {entry.title}
           </Box>

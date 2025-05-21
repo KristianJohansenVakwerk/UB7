@@ -1,10 +1,11 @@
 "use client";
 
 import Box from "../../ui/Box/Box";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import Section from "../Section/Section";
 
 // Register plugins
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -18,7 +19,7 @@ const sections = [
   {
     title: "portfolio",
     id: "portfolio",
-    color: "bg-white",
+    color: "",
   },
   {
     title: "about",
@@ -34,6 +35,7 @@ const sections = [
 
 const SectionsSnapCSS = () => {
   const container = useRef<HTMLElement>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   useGSAP(() => {
     ScrollTrigger.defaults({
@@ -43,23 +45,21 @@ const SectionsSnapCSS = () => {
       onUpdate: () => {},
     });
 
-    gsap.to(".section-about p", {
-      scrollTrigger: ".section-about",
+    gsap.to(".section-container-about p", {
+      scrollTrigger: ".section-container-about",
       duration: 0.5,
       delay: 0.5,
       repeat: 0,
       rotation: 360,
     });
 
-    gsap.to(".section-portfolio", {
-      scrollTrigger: ".section-portfolio",
-      duration: 1,
-      backgroundColor: "#FFA500",
+    gsap.to(".section-container-portfolio", {
+      scrollTrigger: ".section-container-portfolio",
       ease: "none",
     });
 
-    gsap.to(".section-contact p", {
-      scrollTrigger: ".section-contact",
+    gsap.to(".section-container-contact p", {
+      scrollTrigger: ".section-container-contact",
       scale: 10,
       duration: 1,
       repeat: 0,
@@ -71,14 +71,34 @@ const SectionsSnapCSS = () => {
     sections.forEach((section) => {
       gsap.to(`#progress-${section.id}`, {
         scrollTrigger: {
-          trigger: `.section-${section.id}`,
+          trigger: `.section-container-${section.id}`,
           start: "top center",
           end: "center center",
           scroller: container.current,
           scrub: 1, // Smooth scrubbing
           onUpdate: (self) => {
-            // Optional: if you want to log progress
-            console.log(`${section.id} progress:`, self.progress);
+            // Update active section based on which section is most visible
+            const progress = self.progress;
+            if (progress > 0.5) {
+              setActiveSection(section.id);
+            } else if (progress < 0.5 && self.direction === -1) {
+              // When scrolling up, set the previous section as active
+              const currentIndex = sections.findIndex(
+                (s) => s.id === section.id
+              );
+              if (currentIndex > 0) {
+                setActiveSection(sections[currentIndex - 1].id);
+              }
+            }
+          },
+          onLeaveBack: () => {
+            console.log("enter back", section.id);
+          },
+          onSnapComplete: () => {
+            console.log("snap complete", section.id);
+          },
+          onToggle: () => {
+            console.log("toggle", section.id);
           },
         },
         width: "100%",
@@ -89,7 +109,7 @@ const SectionsSnapCSS = () => {
 
   return (
     <>
-      <Box className="fixed top-2 left-2 right-2 h-[5px] z-10  flex flex-row gap-10 items-start justify-start">
+      <Box className="fixed top-3 left-3 right-3 h-[4px] z-10  flex flex-row gap-2 items-start justify-start">
         {sections.slice(1, sections.length).map((entry, index) => {
           return (
             <Box
@@ -113,11 +133,11 @@ const SectionsSnapCSS = () => {
           return (
             <Box
               key={index}
-              className={`section h-screen w-full   flex items-center justify-center ${entry.color} section-${entry.id}`}
+              className={`section-container h-screen w-full ${entry.color} section-container-${entry.id}`}
               style={{ scrollSnapAlign: "start" }}
               data-progress={`progress-${entry.id}`}
             >
-              <p>{entry.title}</p>
+              <Section entry={entry} activeSection={activeSection} />
             </Box>
           );
         })}
