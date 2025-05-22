@@ -8,18 +8,32 @@ import SectionPortfolio from "./SectionPortfolio";
 type Props = {
   entry: any;
   activeSection: string | null;
+  parent: any;
 };
 
 const Section = (props: Props) => {
-  const { entry, activeSection } = props;
+  const { entry, activeSection, parent } = props;
 
   switch (entry.id) {
     case "intro":
       return <SectionIntro entry={entry} />;
-    case "about":
-      return <SectionAbout entry={entry} />;
     case "portfolio":
-      return <SectionPortfolio entry={entry} activeSection={activeSection} />;
+      return (
+        <SectionPortfolio
+          entry={entry}
+          scroller={parent}
+          active={activeSection === "portfolio"}
+        />
+      );
+    case "about":
+      return (
+        <SectionAbout
+          entry={entry}
+          scroller={parent}
+          active={activeSection === "about"}
+        />
+      );
+
     case "contact":
       return <SectionContact entry={entry} />;
   }

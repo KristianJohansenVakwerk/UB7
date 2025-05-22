@@ -39,34 +39,34 @@ const SectionsSnapCSS = () => {
 
   useGSAP(() => {
     ScrollTrigger.defaults({
-      markers: true,
+      markers: false,
       toggleActions: "restart pause resume reverse",
       scroller: container.current,
       onUpdate: () => {},
     });
 
-    gsap.to(".section-container-about p", {
-      scrollTrigger: ".section-container-about",
-      duration: 0.5,
-      delay: 0.5,
-      repeat: 0,
-      rotation: 360,
-    });
+    // gsap.to(".section-container-about p", {
+    //   scrollTrigger: ".section-container-about",
+    //   duration: 0.5,
+    //   delay: 0.5,
+    //   repeat: 0,
+    //   rotation: 360,
+    // });
 
-    gsap.to(".section-container-portfolio", {
-      scrollTrigger: ".section-container-portfolio",
-      ease: "none",
-    });
+    // gsap.to(".section-container-portfolio", {
+    //   scrollTrigger: ".section-container-portfolio",
+    //   ease: "none",
+    // });
 
-    gsap.to(".section-container-contact p", {
-      scrollTrigger: ".section-container-contact",
-      scale: 10,
-      duration: 1,
-      repeat: 0,
-      delay: 0.5,
-      yoyo: true,
-      ease: "power2",
-    });
+    // gsap.to(".section-container-contact p", {
+    //   scrollTrigger: ".section-container-contact",
+    //   scale: 10,
+    //   duration: 1,
+    //   repeat: 0,
+    //   delay: 0.5,
+    //   yoyo: true,
+    //   ease: "power2",
+    // });
 
     sections.forEach((section) => {
       gsap.to(`#progress-${section.id}`, {
@@ -90,15 +90,6 @@ const SectionsSnapCSS = () => {
                 setActiveSection(sections[currentIndex - 1].id);
               }
             }
-          },
-          onLeaveBack: () => {
-            console.log("enter back", section.id);
-          },
-          onSnapComplete: () => {
-            console.log("snap complete", section.id);
-          },
-          onToggle: () => {
-            console.log("toggle", section.id);
           },
         },
         width: "100%",
@@ -133,11 +124,15 @@ const SectionsSnapCSS = () => {
           return (
             <Box
               key={index}
-              className={`section-container h-screen w-full ${entry.color} section-container-${entry.id}`}
+              className={`section-container h-screen w-full section-container-${entry.id}`}
               style={{ scrollSnapAlign: "start" }}
               data-progress={`progress-${entry.id}`}
             >
-              <Section entry={entry} activeSection={activeSection} />
+              <Section
+                entry={entry}
+                activeSection={activeSection}
+                parent={container.current}
+              />
             </Box>
           );
         })}
