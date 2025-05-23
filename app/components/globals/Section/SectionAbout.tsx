@@ -18,53 +18,32 @@ type Props = {
 const text = `About us ad minim veniam, quis \n nostrud exercitation ullamco \n laboris nisi ut novarbus.`;
 const SectionAbout = (props: Props) => {
   const { entry, scroller, active } = props;
-  const container = useRef<HTMLDivElement>(null);
-  useAboutAnimations(scroller, text, container, active);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  useAboutAnimations(scroller, text, sectionRef, active);
 
-  const { contextSafe } = useGSAP(
-    () => {
-      ScrollTrigger.create({
-        trigger: container.current,
-        scroller: scroller,
-        start: "top center",
-        end: "+=200%",
-        markers: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          console.log(progress);
-          if (progress >= 0.25) {
-            gsap.to(".section-animation-about__reel", {
-              opacity: 0,
-              duration: 0.5,
-              y: -20,
-              ease: "power4.inOut",
-            });
-
-            gsap.to(".section-animation-about__slider", {
-              opacity: 1,
-              duration: 0.5,
-              delay: 0.5,
-              y: 0,
-              ease: "power4.inOut",
-            });
-          }
-
-          if (progress >= 1) {
-            gsap.to(
-              [".split-text-container", ".section-animation-about__slider"],
-              {
-                opacity: 0,
-                duration: 0.5,
-                y: -20,
-                ease: "power4.inOut",
-              }
-            );
-          }
+  const { contextSafe } = useGSAP(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          scroller, // <- IMPORTANT
+          start: "top top",
+          end: "+=100%",
+          pin: true,
+          pinSpacing: true,
+          scrub: 0.1,
+          markers: true,
         },
       });
-    },
-    { scope: container, dependencies: [scroller, active] }
-  );
+
+      // tl.to(sectionRef.current, {
+      //   yPercent: -100,
+      //   duration: 1,
+      // });
+    }, sectionRef);
+
+    return () => ctx.revert(); // cleanup
+  }, [scroller]);
   const handleClick = contextSafe(() => {
     const viewportWidth = window.innerWidth;
     const scaleFactor = viewportWidth < 768 ? 1.2 : 1.1; // Larger scale on mobile
@@ -78,22 +57,22 @@ const SectionAbout = (props: Props) => {
   return (
     <>
       <Box
-        ref={container}
-        className="section section-animation-about w-full h-full flex flex-col items-start justify-between px-3 py-7"
+        ref={sectionRef}
+        className="section section-animation-about w-full h-full flex flex-col items-start justify-between px-3 py-7 relative"
       >
-        <div className="fixed top-7 z-10 split-text-container">
+        <div className=" z-10 split-text-container">
           <SplitText text={text} className={"text-4xl"} />
         </div>
         <div></div>
 
         <div
-          className="fixed bottom-7 opacity-0 section-animation-about__reel"
+          className="absolute bottom-7 left-3  section-animation-about__reel"
           onClick={handleClick}
         >
           <img src="/reel.jpg" width={"693"} height={"376"} />
         </div>
 
-        <div className="fixed bottom-7 opacity-0 section-animation-about__slider">
+        <div className="absolute bottom-7 left-3 w-full bg-red-500 h-[376] translate-x-[100%] section-animation-about__slider">
           Slider goes here
         </div>
       </Box>

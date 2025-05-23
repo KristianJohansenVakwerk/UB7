@@ -5,18 +5,14 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import Section from "../Section/Section";
 import React from "react";
 
 // Register plugins
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const sections = [
-  {
-    title: "intro",
-    id: "intro",
-    color: "bg-red-500",
-  },
   {
     title: "portfolio",
     id: "portfolio",
@@ -35,74 +31,154 @@ const sections = [
 ];
 
 const SectionsSnapCSS = () => {
-  const container = useRef<HTMLElement>(null);
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const container = useRef<any>(null);
+  const [activeSection, setActiveSection] = useState<string>(sections[0].id);
 
-  useGSAP(() => {
-    ScrollTrigger.defaults({
-      markers: false,
-      toggleActions: "restart pause resume reverse",
-      scroller: container.current,
-      onUpdate: () => {},
-    });
-
-    // gsap.to(".section-container-about p", {
-    //   scrollTrigger: ".section-container-about",
-    //   duration: 0.5,
-    //   delay: 0.5,
-    //   repeat: 0,
-    //   rotation: 360,
-    // });
-
-    // gsap.to(".section-container-portfolio", {
-    //   scrollTrigger: ".section-container-portfolio",
-    //   ease: "none",
-    // });
-
-    // gsap.to(".section-container-contact p", {
-    //   scrollTrigger: ".section-container-contact",
-    //   scale: 10,
-    //   duration: 1,
-    //   repeat: 0,
-    //   delay: 0.5,
-    //   yoyo: true,
-    //   ease: "power2",
-    // });
-
-    sections.forEach((section) => {
-      gsap.to(`#progress-${section.id}`, {
+  useGSAP(
+    () => {
+      let sectionsContainers = gsap.utils.toArray(".section-container");
+      let scrollDirection = 1;
+      const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: `.section-container-${section.id}`,
-          start: "top center",
-          end: "center center",
-          scroller: container.current,
-          scrub: 1, // Smooth scrubbing
-          onUpdate: (self) => {
-            // Update active section based on which section is most visible
-            const progress = self.progress;
-            if (progress > 0.5) {
-              setActiveSection(section.id);
-            } else if (progress < 0.5 && self.direction === -1) {
-              // When scrolling up, set the previous section as active
-              const currentIndex = sections.findIndex(
-                (s) => s.id === section.id
-              );
-              if (currentIndex > 0) {
-                setActiveSection(sections[currentIndex - 1].id);
+          trigger: container.current,
+          toggleActions: "restart none reverse none",
+          start: "top top",
+          end: `+=400%`,
+          scrub: 0.05,
+          markers: true,
+          pin: false,
+          pinSpacing: false,
+          anticipatePin: 1,
+          snap: {
+            snapTo: (value, snapTarget) => {
+              const sectionCount = 4;
+              const sectionSize = 1 / sectionCount;
+              const currentIndex = Math.floor(value / sectionSize);
+              const positionInSection = value - currentIndex * sectionSize;
+              const section = sections[currentIndex];
+              console.log("section id", section.id);
+
+              if (scrollDirection === 1 && positionInSection > 0.05) {
+                console.log("next section");
+                // if (section.id === "about") {
+                //   return value;
+                // }
+
+                return (currentIndex + 1) * sectionSize;
+              } else if (scrollDirection === -1 && positionInSection < 0.3) {
+                console.log("previous section");
+                return currentIndex * sectionSize;
+                // return currentIndex * sectionSize;
+              } else {
+                console.log("current section");
+                return currentIndex * sectionSize;
               }
-            }
+            },
+            delay: 0.01,
+            duration: { min: 0.2, max: 0.3 },
+            ease: "power2.inOut",
+          },
+          onUpdate: (self) => {
+            scrollDirection = self.direction;
+            // Calculate which section is most visible
+
+            const progress = self.progress;
+
+            const sectionIndex = Math.round(
+              progress * (sectionsContainers.length - 1)
+            );
+            setActiveSection(sections[sectionIndex].id);
+          },
+          onEnter: (self) => {
+            console.log("enter", self);
+          },
+          onEnterBack: (self) => {
+            console.log("enter back", self);
           },
         },
-        width: "100%",
-        ease: "none",
       });
-    });
-  }, {});
+
+      sectionsContainers.forEach((sectionContainer: any, index: number) => {
+        tl.addLabel(`section-${index}`).to(sectionContainer, {
+          ease: "none",
+        });
+
+        // If this is the about section, create a nested ScrollTrigger
+        // if (sections[index]?.id === "about") {
+        //   const tl = gsap.timeline({
+        //     scrollTrigger: {
+        //       trigger: sectionContainer,
+        //       start: "top top",
+        //       end: "+=100%", // This makes it take up 2x the normal scroll space
+        //       pin: true,
+        //       pinSpacing: true,
+        //       toggleActions: "none none none none",
+        //       // scrub: 0.1,
+        //       markers: true, // Helpful for debugging
+        //       anticipatePin: 1, // Helps prevent jittering
+        //       onUpdate: (self) => {
+        //         if (self.progress === 1 && self.direction === 1) {
+        //           gsap.to(".section-animation-about__reel", {
+        //             xPercent: -200,
+        //             duration: 1,
+        //             ease: "none",
+        //           });
+
+        //           gsap.to(".section-animation-about__slider", {
+        //             x: 0,
+        //             duration: 1,
+        //             ease: "none",
+        //           });
+        //         } else if (self.progress === 0 && self.direction === -1) {
+        //           gsap.to(".section-animation-about__reel", {
+        //             xPercent: 0,
+        //             ease: "none",
+        //           });
+        //           gsap.to(".section-animation-about__slider", {
+        //             x: "100%",
+        //             duration: 1,
+        //             ease: "none",
+        //           });
+        //         }
+        //       },
+        //     },
+        //   });
+
+        // // Set initial positions
+        // tl.set(".section-animation-about__reel", {
+        //   xPercent: 0,
+        // });
+
+        // tl.set(".section-animation-about__slider", {
+        //   x: "100%",
+        // });
+
+        // // Add the animations with duration instead of position
+        // tl.to(".section-animation-about__reel", {
+        //   xPercent: -200,
+        //   duration: 1,
+        //   ease: "power2.inOut",
+        // });
+
+        // tl.to(
+        //   ".section-animation-about__slider",
+        //   {
+        //     x: 0,
+        //     duration: 1,
+        //     ease: "power2.inOut",
+        //   },
+        //   "<"
+        // ); // The "<" makes this animation start at the same time as the previous one
+        // }
+      });
+    },
+    { scope: container, dependencies: [sections] }
+  );
 
   return (
     <>
-      {/* <Box className="fixed top-3 left-3 right-3 h-[4px] z-10  flex flex-row gap-2 items-start justify-start">
-        {sections.slice(1, sections.length).map((entry, index) => {
+      <Box className="fixed top-3 left-3 right-3 h-[4px] z-10  flex flex-row gap-2 items-start justify-start">
+        {sections.map((entry, index) => {
           return (
             <Box
               key={index}
@@ -115,18 +191,18 @@ const SectionsSnapCSS = () => {
             </Box>
           );
         })}
-      </Box> */}
+      </Box>
       <Box
         ref={container}
-        className={`max-h-[100vh] overflow-y-scroll`}
-        style={{ overscrollBehavior: "none", scrollSnapType: "y mandatory" }}
+        className="overflow-hidden"
+        // style={{ overscrollBehavior: "none", scrollSnapType: "y mandatory" }}
       >
         {sections.map((entry, index) => {
           return (
             <React.Fragment key={index}>
               <Box
-                className={`section-container h-screen w-full section-container-${entry.id}`}
-                style={{ scrollSnapAlign: "start" }}
+                className={`section-container h-screen w-full section-container-${entry.id} border border-red-500`}
+                // style={{ scrollSnapAlign: "start" }}
                 data-progress={`progress-${entry.id}`}
               >
                 <Section
@@ -135,13 +211,6 @@ const SectionsSnapCSS = () => {
                   parent={container.current}
                 />
               </Box>
-
-              {entry.id === "about" && (
-                <div
-                  className={`h-screen w-full spacer`}
-                  style={{ scrollSnapAlign: "start" }}
-                ></div>
-              )}
             </React.Fragment>
           );
         })}
