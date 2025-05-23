@@ -1,11 +1,12 @@
 "use client";
 
 import Box from "../../ui/Box/Box";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import Section from "../Section/Section";
+import React from "react";
 
 // Register plugins
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -100,7 +101,7 @@ const SectionsSnapCSS = () => {
 
   return (
     <>
-      <Box className="fixed top-3 left-3 right-3 h-[4px] z-10  flex flex-row gap-2 items-start justify-start">
+      {/* <Box className="fixed top-3 left-3 right-3 h-[4px] z-10  flex flex-row gap-2 items-start justify-start">
         {sections.slice(1, sections.length).map((entry, index) => {
           return (
             <Box
@@ -114,7 +115,7 @@ const SectionsSnapCSS = () => {
             </Box>
           );
         })}
-      </Box>
+      </Box> */}
       <Box
         ref={container}
         className={`max-h-[100vh] overflow-y-scroll`}
@@ -122,18 +123,26 @@ const SectionsSnapCSS = () => {
       >
         {sections.map((entry, index) => {
           return (
-            <Box
-              key={index}
-              className={`section-container h-screen w-full section-container-${entry.id}`}
-              style={{ scrollSnapAlign: "start" }}
-              data-progress={`progress-${entry.id}`}
-            >
-              <Section
-                entry={entry}
-                activeSection={activeSection}
-                parent={container.current}
-              />
-            </Box>
+            <React.Fragment key={index}>
+              <Box
+                className={`section-container h-screen w-full section-container-${entry.id}`}
+                style={{ scrollSnapAlign: "start" }}
+                data-progress={`progress-${entry.id}`}
+              >
+                <Section
+                  entry={entry}
+                  activeSection={activeSection}
+                  parent={container.current}
+                />
+              </Box>
+
+              {entry.id === "about" && (
+                <div
+                  className={`h-screen w-full spacer`}
+                  style={{ scrollSnapAlign: "start" }}
+                ></div>
+              )}
+            </React.Fragment>
           );
         })}
       </Box>
