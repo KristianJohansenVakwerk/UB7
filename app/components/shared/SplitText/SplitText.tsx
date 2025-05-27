@@ -13,9 +13,9 @@ const SplitText = ({ text, className }: Props) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   return (
-    <Box ref={containerRef} className={className}>
+    <Box ref={containerRef} className={`${className} text-lg lg:text-lg/1.02`}>
       {text.split("\n").map((line, index) => (
-        <div key={index} className={`line line-${index} text-lg md:text-6xl`}>
+        <div key={index} className={`line line-${index} `}>
           {line}
         </div>
       ))}
