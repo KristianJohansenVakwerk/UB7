@@ -43,7 +43,7 @@ const SectionsSnapCSS = () => {
           trigger: container.current,
           toggleActions: "restart none reverse none",
           start: "top top",
-          end: `+=400%`,
+          end: `+=200%`,
           scrub: 1,
           markers: false,
           pin: false,
@@ -85,6 +85,8 @@ const SectionsSnapCSS = () => {
             // Calculate which section is most visible
 
             const progress = self.progress;
+
+            console.log("progress", progress);
 
             const sectionIndex = Math.round(
               progress * (sectionsContainers.length - 1)
@@ -145,9 +147,6 @@ const SectionsSnapCSS = () => {
                   parent={container.current}
                 />
               </Box>
-              {entry.id === "about" && (
-                <div className="section-container-about h-screen w-full" />
-              )}
             </React.Fragment>
           );
         })}

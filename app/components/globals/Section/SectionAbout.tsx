@@ -25,6 +25,9 @@ const SectionAbout = (props: Props) => {
   const secondAnimationRef = useRef<HTMLDivElement>(null);
   useAboutAnimations(scroller, text, sectionRef, active);
 
+  let once = false;
+  let once2 = false;
+
   const { contextSafe } = useGSAP(() => {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({
@@ -32,43 +35,74 @@ const SectionAbout = (props: Props) => {
           trigger: sectionRef.current,
           scroller, // <- IMPORTANT
           start: "top top",
-          end: "+=100%",
-          pin: true,
+          end: "+=20%",
+          pin: false,
+
           pinSpacing: false,
           pinnedContainer: scroller,
-          markers: false,
+          markers: true,
           scrub: 0.1,
-          onUpdate: (self) => {
-            const progress = self.progress;
+          // onUpdate: (self) => {
+          //   const progress = self.progress;
 
-            if (progress === 0) {
-              gsap.to(secondAnimationRef.current, {
-                x: 0,
-                ease: "power4.inOut",
-              });
+          //   // Use a flag to track if animations have been triggered
+          //   if (progress === 0 && !once) {
+          //     once = true;
+          //     gsap.to(secondAnimationRef.current, {
+          //       x: 0,
+          //       ease: "power4.inOut",
+          //     });
 
-              gsap.to(".team-member-item", {
-                opacity: 0,
-                stagger: 0.2,
-                duration: 0.5,
-                ease: "power2.inOut",
-              });
-            }
+          //     gsap.to(".team-member-item", {
+          //       opacity: 0,
+          //       stagger: 0.2,
+          //       duration: 0.5,
+          //       ease: "power2.inOut",
+          //     });
+          //   }
 
-            if (progress === 1) {
-              gsap.to(secondAnimationRef.current, {
-                x: "-100vw",
-                ease: "power4.inOut",
-              });
+          //   if (progress >= 0.1 && !once2) {
+          //     once2 = true;
+          //     gsap.to(secondAnimationRef.current, {
+          //       x: "-100vw",
+          //       ease: "power4.inOut",
+          //     });
 
-              gsap.to(".team-member-item", {
-                opacity: 1,
-                stagger: 0.2,
-                duration: 0.5,
-                delay: 0.2,
-                ease: "power2.inOut",
-              });
-            }
+          //     gsap.to(".team-member-item", {
+          //       opacity: 1,
+          //       stagger: 0.2,
+          //       duration: 0.5,
+          //       delay: 0.2,
+          //       ease: "power2.inOut",
+          //     });
+          //   }
+          // },
+          onEnter: () => {
+            gsap.to(secondAnimationRef.current, {
+              x: "-100vw",
+              ease: "power4.inOut",
+            });
+
+            gsap.to(".team-member-item", {
+              opacity: 1,
+              stagger: 0.2,
+              duration: 0.5,
+              delay: 0.2,
+              ease: "power2.inOut",
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(secondAnimationRef.current, {
+              x: 0,
+              ease: "power4.inOut",
+            });
+
+            gsap.to(".team-member-item", {
+              opacity: 0,
+              stagger: 0.2,
+              duration: 0.5,
+              ease: "power2.inOut",
+            });
           },
         },
       });
