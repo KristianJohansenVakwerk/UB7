@@ -107,7 +107,7 @@ const SectionAbout = (props: Props) => {
             onClick={handleClick}
           >
             <img
-              src="/reel.jpg"
+              src="/Reel.jpg"
               width={"693"}
               height={"376"}
               className="w-auto h-full"
