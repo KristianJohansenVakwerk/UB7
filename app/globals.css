@@ -1,17 +1,40 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "RM Neue";
+  src: url("/fonts/RM_neue/rmneue-regular.woff") format("woff"),
+    url("/fonts/RM_neue/rmneue-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "GT America Mono";
+  src: url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff")
+      format("woff"),
+    url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff2")
+      format("woff2");
+}
 :root {
   --background: #e5e5e5;
   --foreground: #3f3f3f;
+
   --font-size: 10px;
   --spacing: 1rem;
+  --font-rm-neue: "RM Neue";
+  --font-gt-america-mono: "GT America Mono";
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background-light-grey: var(--background);
+  --color-light-grey: #676767;
+  --font-sans: var(--font-rm-neue);
+  --font-mono: var(--font-gt-america-mono);
+  --text-sm: 1rem;
+  --text-base: 1.25rem;
+  --text-base--line-height: 1.2;
+  --text-lg: 5.125rem;
+  --text-lg--line-height: 0.95;
 }
 /* 
 @media (prefers-color-scheme: dark) {
@@ -21,10 +44,11 @@
   }
 } */
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }
 
 .gradient-background {

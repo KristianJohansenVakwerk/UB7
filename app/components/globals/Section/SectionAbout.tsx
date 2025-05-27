@@ -6,6 +6,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import Slider from "../../shared/Slider/Slider";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -18,57 +19,101 @@ type Props = {
 const text = `About us ad minim veniam, quis \n nostrud exercitation ullamco \n laboris nisi ut novarbus.`;
 const SectionAbout = (props: Props) => {
   const { entry, scroller, active } = props;
-  const container = useRef<HTMLDivElement>(null);
-  useAboutAnimations(scroller, text, container, active);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const reelContainerRef = useRef<HTMLDivElement>(null);
+  const sliderContainerRef = useRef<HTMLDivElement>(null);
+  const secondAnimationRef = useRef<HTMLDivElement>(null);
+  useAboutAnimations(scroller, text, sectionRef, active);
 
-  const { contextSafe } = useGSAP(
-    () => {
-      ScrollTrigger.create({
-        trigger: container.current,
-        scroller: scroller,
-        start: "top center",
-        end: "+=200%",
-        markers: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          console.log(progress);
-          if (progress >= 0.25) {
-            gsap.to(".section-animation-about__reel", {
-              opacity: 0,
-              duration: 0.5,
-              y: -20,
+  let once = false;
+  let once2 = false;
+
+  const { contextSafe } = useGSAP(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          scroller, // <- IMPORTANT
+          start: "top top",
+          end: "+=20%",
+          pin: false,
+
+          pinSpacing: false,
+          pinnedContainer: scroller,
+          markers: true,
+          scrub: 0.1,
+          // onUpdate: (self) => {
+          //   const progress = self.progress;
+
+          //   // Use a flag to track if animations have been triggered
+          //   if (progress === 0 && !once) {
+          //     once = true;
+          //     gsap.to(secondAnimationRef.current, {
+          //       x: 0,
+          //       ease: "power4.inOut",
+          //     });
+
+          //     gsap.to(".team-member-item", {
+          //       opacity: 0,
+          //       stagger: 0.2,
+          //       duration: 0.5,
+          //       ease: "power2.inOut",
+          //     });
+          //   }
+
+          //   if (progress >= 0.1 && !once2) {
+          //     once2 = true;
+          //     gsap.to(secondAnimationRef.current, {
+          //       x: "-100vw",
+          //       ease: "power4.inOut",
+          //     });
+
+          //     gsap.to(".team-member-item", {
+          //       opacity: 1,
+          //       stagger: 0.2,
+          //       duration: 0.5,
+          //       delay: 0.2,
+          //       ease: "power2.inOut",
+          //     });
+          //   }
+          // },
+          onEnter: () => {
+            gsap.to(secondAnimationRef.current, {
+              x: "-100vw",
               ease: "power4.inOut",
             });
 
-            gsap.to(".section-animation-about__slider", {
+            gsap.to(".team-member-item", {
               opacity: 1,
+              stagger: 0.2,
               duration: 0.5,
-              delay: 0.5,
-              y: 0,
+              delay: 0.2,
+              ease: "power2.inOut",
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(secondAnimationRef.current, {
+              x: 0,
               ease: "power4.inOut",
             });
-          }
 
-          if (progress >= 1) {
-            gsap.to(
-              [".split-text-container", ".section-animation-about__slider"],
-              {
-                opacity: 0,
-                duration: 0.5,
-                y: -20,
-                ease: "power4.inOut",
-              }
-            );
-          }
+            gsap.to(".team-member-item", {
+              opacity: 0,
+              stagger: 0.2,
+              duration: 0.5,
+              ease: "power2.inOut",
+            });
+          },
         },
       });
-    },
-    { scope: container, dependencies: [scroller, active] }
-  );
+    }, sectionRef);
+
+    return () => ctx.revert(); // cleanup
+  }, [scroller]);
   const handleClick = contextSafe(() => {
     const viewportWidth = window.innerWidth;
     const scaleFactor = viewportWidth < 768 ? 1.2 : 1.1; // Larger scale on mobile
-
+    console.log("clicks");
     gsap.to(".section-animation-about__reel", {
       scale: scaleFactor,
       ease: "power4.inOut",
@@ -78,24 +123,38 @@ const SectionAbout = (props: Props) => {
   return (
     <>
       <Box
-        ref={container}
-        className="section section-animation-about w-full h-full flex flex-col items-start justify-between px-3 py-7"
+        ref={sectionRef}
+        className="section section-animation-about w-full h-full flex flex-col items-start justify-between px-3 py-7 relative"
       >
-        <div className="fixed top-7 z-10 split-text-container">
+        <div className=" z-10 split-text-container">
           <SplitText text={text} className={"text-4xl"} />
         </div>
         <div></div>
 
-        <div
-          className="fixed bottom-7 opacity-0 section-animation-about__reel"
-          onClick={handleClick}
+        <Box
+          ref={secondAnimationRef}
+          className="absolute bottom-7 left-3 flex flex-row items-end justify-start flex-nowrap w-[200vw] h-auto"
         >
-          <img src="/reel.jpg" width={"693"} height={"376"} />
-        </div>
+          <div
+            ref={reelContainerRef}
+            className="relative h-full w-[100vw] section-animation-about__reel"
+            onClick={handleClick}
+          >
+            <img
+              src="/Reel.jpg"
+              width={"693"}
+              height={"376"}
+              className="w-auto h-full"
+            />
+          </div>
 
-        <div className="fixed bottom-7 opacity-0 section-animation-about__slider">
-          Slider goes here
-        </div>
+          <div
+            ref={sliderContainerRef}
+            className="relative w-[100vw] min-h-[376px] h-auto"
+          >
+            <Slider />
+          </div>
+        </Box>
       </Box>
     </>
   );

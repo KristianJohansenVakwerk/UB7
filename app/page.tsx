@@ -1,3 +1,4 @@
+import SectionIntro from "./components/globals/Section/SectionIntro";
 import Sections from "./components/globals/Sections/Sections";
 import SectionsSnapCSS from "./components/globals/SectionsSnapCSS/SectionsSnapCSS";
 import Box from "./components/ui/Box/Box";
