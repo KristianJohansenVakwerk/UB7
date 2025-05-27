@@ -16,7 +16,7 @@ const Section = (props: Props) => {
 
   switch (entry.id) {
     case "intro":
-      return <SectionIntro entry={entry} />;
+      return <SectionIntro />;
     case "portfolio":
       return (
         <SectionPortfolio
@@ -35,7 +35,9 @@ const Section = (props: Props) => {
       );
 
     case "contact":
-      return <SectionContact entry={entry} />;
+      return (
+        <SectionContact entry={entry} active={activeSection === "contact"} />
+      );
   }
 };
 
