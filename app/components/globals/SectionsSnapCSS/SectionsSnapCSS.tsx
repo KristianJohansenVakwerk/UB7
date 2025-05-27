@@ -44,11 +44,12 @@ const SectionsSnapCSS = () => {
           toggleActions: "restart none reverse none",
           start: "top top",
           end: `+=400%`,
-          scrub: 0.05,
+          scrub: 1,
           markers: false,
           pin: false,
           pinSpacing: false,
           anticipatePin: 1,
+          fastScrollEnd: true,
           snap: {
             snapTo: [0, 0.25, 0.5, 0.75, 1],
             // snapTo: (value, snapTarget) => {
