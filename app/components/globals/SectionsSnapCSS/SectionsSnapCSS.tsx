@@ -50,36 +50,36 @@ const SectionsSnapCSS = () => {
           pinSpacing: false,
           anticipatePin: 1,
           fastScrollEnd: true,
-          snap: {
-            snapTo: [0, 0.25, 0.5, 0.75, 1],
-            // snapTo: (value, snapTarget) => {
-            //   const sectionCount = 4;
-            //   const sectionSize = 1 / sectionCount;
-            //   const currentIndex = Math.floor(value / sectionSize);
-            //   const positionInSection = value - currentIndex * sectionSize;
-            //   const section = sections[currentIndex];
-            //   console.log("section id", section.id);
+          // snap: {
+          // snapTo: [0, 0.25, 0.5, 0.75, 1],
+          // snapTo: (value, snapTarget) => {
+          //   const sectionCount = 4;
+          //   const sectionSize = 1 / sectionCount;
+          //   const currentIndex = Math.floor(value / sectionSize);
+          //   const positionInSection = value - currentIndex * sectionSize;
+          //   const section = sections[currentIndex];
+          //   console.log("section id", section.id);
 
-            //   if (scrollDirection === 1 && positionInSection > 0.05) {
-            //     console.log("next section");
-            //     // if (section.id === "about") {
-            //     //   return value;
-            //     // }
+          //   if (scrollDirection === 1 && positionInSection > 0.05) {
+          //     console.log("next section");
+          //     // if (section.id === "about") {
+          //     //   return value;
+          //     // }
 
-            //     return (currentIndex + 1) * sectionSize;
-            //   } else if (scrollDirection === -1 && positionInSection < 0.3) {
-            //     console.log("previous section");
-            //     return currentIndex * sectionSize;
-            //     // return currentIndex * sectionSize;
-            //   } else {
-            //     console.log("current section");
-            //     return currentIndex * sectionSize;
-            //   }
-            // },
-            delay: 0.01,
-            duration: { min: 0.2, max: 0.3 },
-            ease: "power2.inOut",
-          },
+          //     return (currentIndex + 1) * sectionSize;
+          //   } else if (scrollDirection === -1 && positionInSection < 0.3) {
+          //     console.log("previous section");
+          //     return currentIndex * sectionSize;
+          //     // return currentIndex * sectionSize;
+          //   } else {
+          //     console.log("current section");
+          //     return currentIndex * sectionSize;
+          //   }
+          // },
+          //   delay: 0.01,
+          //   duration: { min: 0.2, max: 0.3 },
+          //   ease: "power2.inOut",
+          // },
           onUpdate: (self) => {
             scrollDirection = self.direction;
             // Calculate which section is most visible
