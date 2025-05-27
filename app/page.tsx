@@ -1,6 +1,7 @@
 import SectionIntro from "./components/globals/Section/SectionIntro";
 import Sections from "./components/globals/Sections/Sections";
 import SectionsSnapCSS from "./components/globals/SectionsSnapCSS/SectionsSnapCSS";
+import SmoothScroll from "./components/globals/SmoothScroll/SmoothScroll";
 import Box from "./components/ui/Box/Box";
 
 export default function Home() {
@@ -33,7 +34,9 @@ export default function Home() {
 
       {/* <Sections /> */}
 
-      <SectionsSnapCSS />
+      {/* <SectionsSnapCSS /> */}
+
+      <SmoothScroll />
     </>
   );
 }
