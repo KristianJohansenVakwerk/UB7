@@ -1,5 +1,5 @@
 "use client";
-import {  useRef } from "react";
+import { useRef } from "react";
 import SplitText from "../../shared/SplitText/SplitText";
 import Box from "../../ui/Box/Box";
 

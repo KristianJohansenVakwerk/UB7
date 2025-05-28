@@ -7,15 +7,14 @@ import Box from "../../ui/Box/Box";
 type Props = {
   text: string;
   className?: string;
+  ref?: React.RefObject<HTMLDivElement | null>;
 };
 
-const SplitText = ({ text, className }: Props) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
+const SplitText = ({ text, className, ref }: Props) => {
   return (
-    <Box ref={containerRef} className={className}>
+    <Box ref={ref} className={`text-sm lg:text-lg`}>
       {text.split("\n").map((line, index) => (
-        <div key={index} className={`line line-${index} text-lg md:text-6xl`}>
+        <div key={index} className={`line line-${index} `}>
           {line}
         </div>
       ))}
