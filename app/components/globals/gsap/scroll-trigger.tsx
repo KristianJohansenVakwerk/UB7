@@ -7,10 +7,11 @@ import { useEffect, useLayoutEffect } from "react";
 
 export function ScrollTriggerConfig() {
   useLayoutEffect(() => {
+    console.log("ScrollTriggerConfig");
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.clearScrollMemory("manual");
     ScrollTrigger.defaults({
-      markers: process.env.NODE_ENV === "development",
+      markers: true,
     });
   }, []);
 

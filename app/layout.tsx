@@ -16,7 +16,7 @@ export default function RootLayout({
       <body>
         {children}
         {/* GSAP */}
-        <GSAP />
+        <GSAP scrollTrigger={true} />
       </body>
     </html>
   );
