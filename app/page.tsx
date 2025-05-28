@@ -37,7 +37,7 @@ export default function Home() {
 
       {/* <SectionsSnapCSS /> */}
 
-      <Wrapper lenis={{ allowNestedScroll: true }}>
+      <Wrapper lenis={{}}>
         <SmoothScroll />
       </Wrapper>
     </>

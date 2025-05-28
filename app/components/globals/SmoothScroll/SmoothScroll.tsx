@@ -46,9 +46,7 @@ const SmoothScroll = () => {
       },
     });
   }, []);
-  useEffect(() => {
-    console.log("activeSection", activeSection);
-  }, [activeSection]);
+
   return (
     <div>
       <div>
@@ -69,7 +67,26 @@ const SmoothScroll = () => {
               />
 
               {section.id === "portfolio" ? (
-                <Sectors />
+                <Sectors
+                  data={[
+                    {
+                      title: "Football",
+                      entries: [],
+                    },
+                    {
+                      title: "Sport",
+                      entries: [],
+                    },
+                    {
+                      title: "Entertainment",
+                      entries: [],
+                    },
+                    {
+                      title: "Philanthropy",
+                      entries: [],
+                    },
+                  ]}
+                />
               ) : section.id === "about" ? (
                 <AboutSection />
               ) : section.id === "contact" ? (
@@ -129,7 +146,8 @@ const SectionTitle = ({
   );
 };
 
-const Sectors = () => {
+const Sectors = (props: any) => {
+  const { data } = props;
   useGSAP(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -159,7 +177,7 @@ const Sectors = () => {
     });
 
     tl.to(
-      ".sector-item-number",
+      ".sector-item-content",
       {
         opacity: 1,
         stagger: 0.2,
@@ -174,18 +192,35 @@ const Sectors = () => {
         "sticky top-[55%] flex flex-row items-center justify-start gap-0 w-full "
       )}
     >
-      {Array(4)
-        .fill(null)
-        .map((_, index) => {
-          return (
-            <div
-              key={index}
-              className="sector-item  rounded-full border-2 border-white opacity-100 w-[53px] h-[53px] flex items-center justify-center"
-            >
-              <div className="sector-item-number opacity-0">{index}</div>
+      {data.map((sector: any, index: number) => {
+        return (
+          <div
+            key={index}
+            className="sector-item  rounded-full border-2 border-white opacity-100 w-[53px] h-[53px] flex flex-row items-center justify-start"
+          >
+            <div className="sector-item-content opacity-0 w-full flex flex-row items-start justify-between px-2">
+              <div>{sector.title}</div>
+
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="currentColor"
+              >
+                <path
+                  d="M12 5V19M5 12H19"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
-          );
-        })}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -199,8 +234,8 @@ const AboutSection = () => {
         trigger: container.current,
         scroller: "body",
         start: "top center",
-        end: "+=50%",
-        markers: { startColor: "red", endColor: "blue", indent: 200 },
+        end: "+=80%",
+        markers: true,
         toggleActions: "play none reverse reverse",
         scrub: true,
         onUpdate: (self) => {
@@ -217,7 +252,7 @@ const AboutSection = () => {
     });
 
     tl.to(container.current, {
-      x: "-200vw",
+      x: "-220vw",
       force3D: true,
       willChange: "transform",
     });
