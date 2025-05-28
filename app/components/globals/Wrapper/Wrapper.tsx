@@ -2,22 +2,21 @@
 
 import cn from "clsx";
 import type { LenisOptions } from "lenis";
-import { usePathname } from "next/navigation";
-import { type ComponentProps, useEffect } from "react";
 
-import { Lenis } from "../lenis";
+import { Lenis } from "../Lenis/Lenis";
 
-interface WrapperProps extends React.HTMLAttributes<HTMLDivElement> {
-  theme?: Theme;
+interface WrapperProps {
+  children: React.ReactNode;
+  className?: string;
   lenis?: boolean | LenisOptions;
-  webgl?: boolean | Omit<ComponentProps<typeof Canvas>, "children">;
+  onProgress?: (progress: number) => void;
 }
 
 export function Wrapper({
   children,
   className,
   lenis = true,
-
+  onProgress,
   ...props
 }: WrapperProps) {
   return (
@@ -25,7 +24,13 @@ export function Wrapper({
       <main className={cn("relative flex flex-col grow", className)} {...props}>
         {children}
       </main>
-      {lenis && <Lenis root options={typeof lenis === "object" ? lenis : {}} />}
+      {lenis && (
+        <Lenis
+          root
+          options={typeof lenis === "object" ? lenis : {}}
+          onProgress={onProgress}
+        />
+      )}
     </>
   );
 }
