@@ -50,7 +50,7 @@ const Slider = () => {
         return (
           <Box
             key={index}
-            className="flex-1 bg-white rounded-2xl  h-full min-w-[768px] team-member-item opacity-0"
+            className="flex-1 bg-white rounded-2xl  h-full min-w-[768px] team-member-item opacity-100"
           >
             <Box className="px-3 py-2 flex flex-col gap-1">
               <Box className="text-light-grey text-base/none">{m.name}</Box>

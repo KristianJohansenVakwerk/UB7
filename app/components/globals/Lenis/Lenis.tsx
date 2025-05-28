@@ -1,7 +1,7 @@
 "use client";
 
 import type { LenisOptions } from "lenis";
-import "lenis/dist/lenis.css";
+// import "lenis/dist/lenis.css";
 import type { LenisRef, LenisProps as ReactLenisProps } from "lenis/react";
 import { ReactLenis, useLenis } from "lenis/react";
 import { useEffect, useLayoutEffect, useRef } from "react";
@@ -28,7 +28,7 @@ export function Lenis({ root, options, onProgress }: LenisProps) {
       root={root}
       options={{
         ...options,
-        lerp: options?.lerp ?? 0.125,
+        lerp: options?.lerp ?? 0.1,
         autoRaf: false,
         anchors: true,
       }}

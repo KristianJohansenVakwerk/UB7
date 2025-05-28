@@ -95,8 +95,8 @@ body {
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  overflow: hidden; /* Prevent default browser scroll behavior */
+  /* font-family: Arial, sans-serif; */
+  overflow: hidden;
 }
 
 nav {
