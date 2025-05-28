@@ -31,6 +31,11 @@ export function Lenis({ root, options, onProgress }: LenisProps) {
         lerp: options?.lerp ?? 0.1,
         autoRaf: false,
         anchors: true,
+        smoothWheel: true,
+        touchMultiplier: 2, // Adjust touch sensitivity
+        infinite: false,
+        orientation: "vertical",
+        gestureOrientation: "vertical",
       }}
     />
   );
