@@ -9,7 +9,7 @@ import Box from "../../ui/Box/Box";
 import Slider from "../../shared/Slider/Slider";
 /* Plugins */
 gsap.registerPlugin(useGSAP, ScrollTrigger);
-const sections = [
+const sectionsData = [
   {
     title: "portfolio",
     text: `Redefining capital with flair, \n precision, and purpose. \n Operating across four \n strategic sectors.`,
@@ -33,31 +33,55 @@ const sections = [
 const SmoothScroll = () => {
   const [activeSection, setActiveSection] = useState<number>(0);
   useGSAP(() => {
+    const sections = gsap.utils.toArray(".section");
+
     const tl = gsap.timeline({
       scrollTrigger: {
         start: "top top",
         end: "bottom bottom",
         markers: false,
-        onUpdate: (self) => {
-          const progress = self.progress;
-
-          setActiveSection(Math.floor(progress * 2));
-        },
       },
+    });
+
+    // Define different start/end points for each section
+    const sectionTriggers = [
+      { start: "top center", end: "bottom center" }, // Portfolio section
+      { start: "top top", end: "top top" },
+      { start: "top 70%", end: "bottom 30%" }, // Contact section
+    ];
+
+    sections.forEach((section: any, index: number) => {
+      ScrollTrigger.create({
+        trigger: section,
+        start: sectionTriggers[index].start,
+        end: sectionTriggers[index].end,
+        markers: true,
+
+        onEnter: () => {
+          console.log("onenter", index);
+          setActiveSection(index);
+        },
+        onEnterBack: () => {
+          console.log("onenterback", index);
+          setActiveSection(index);
+        },
+      });
     });
   }, []);
 
   return (
     <div>
       <div>
-        {sections.map((section, index) => {
+        {sectionsData.map((section: any, index: number) => {
           return (
             <div
               key={index}
               className={clsx(
-                "flex flex-col items-start justify-start w-screen h-screen  p-3",
-                `section-${index + 1}`
-                // section.id === "portfolio" ? "h-[150vh]" : "h-screen"
+                "section flex flex-col items-start justify-start w-screen  p-3",
+                ` section-${index + 1}`,
+                section.id === "portfolio" && "h-[120vh]",
+                section.id === "about" && "h-[150vh]",
+                section.id === "contact" && "h-screen"
               )}
             >
               <SectionTitle
@@ -153,8 +177,8 @@ const Sectors = (props: any) => {
       scrollTrigger: {
         scroller: "body",
         start: "top top",
-        end: "+=20%",
-        markers: true,
+        end: "+=80%",
+        markers: { startColor: "blue", endColor: "black", indent: 350 },
         toggleActions: "play none reverse reverse",
         scrub: true,
         onUpdate: (self) => {
@@ -172,8 +196,8 @@ const Sectors = (props: any) => {
 
     tl.to(".sector-item", {
       width: "25%",
+      backgroundColor: "white",
       stagger: 0.2,
-      duration: 0.5,
     });
 
     tl.to(
@@ -184,6 +208,15 @@ const Sectors = (props: any) => {
         delay: 2,
       },
       "<"
+    );
+
+    tl.to(
+      ".sector-item",
+      {
+        opacity: 0,
+        stagger: 0.2,
+      },
+      "+=1.0"
     );
   }, []);
   return (
@@ -233,11 +266,11 @@ const AboutSection = () => {
       scrollTrigger: {
         trigger: container.current,
         scroller: "body",
-        start: "top center",
-        end: "+=80%",
-        markers: true,
+        start: "top top",
+        end: "+=100%",
+        markers: { startColor: "green", endColor: "grey", indent: 500 },
         toggleActions: "play none reverse reverse",
-        scrub: true,
+        scrub: false,
         onUpdate: (self) => {
           const progress = self.progress;
           console.log("sector progress", progress);
@@ -251,14 +284,20 @@ const AboutSection = () => {
       },
     });
 
-    tl.to(container.current, {
-      x: "-220vw",
-      force3D: true,
-      willChange: "transform",
-    });
+    tl.fromTo(container.current, { opacity: 0 }, { opacity: 1 });
+
+    tl.to(
+      container.current,
+      {
+        x: "-100vw",
+        force3D: true,
+        willChange: "transform",
+      },
+      "+=0.8"
+    );
   }, []);
   return (
-    <div className="sticky top-[calc(50%+100px)] flex flex-row gap-0 w-full">
+    <div className="sticky top-[calc(100%-456px)] flex flex-row gap-0 w-full">
       <Box
         ref={container}
         className="relative flex flex-row items-end justify-start flex-nowrap w-[200vw] h-auto"

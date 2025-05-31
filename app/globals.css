@@ -96,7 +96,7 @@ body {
 body {
   margin: 0;
   /* font-family: Arial, sans-serif; */
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 nav {
@@ -124,20 +124,7 @@ nav button:hover {
   background-color: #555;
 }
 
-.section {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(45deg, #6b5b95, #feb236);
-  color: white;
-  text-align: center;
-  font-size: 1.5rem;
-}
 
-.section:nth-child(even) {
-  background: linear-gradient(45deg, #88d8b0, #f7cac9);
-}
 
 /* Lenis Scrollbar Styles */
 .lenis-scrollbar {

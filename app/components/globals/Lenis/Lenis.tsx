@@ -28,7 +28,7 @@ export function Lenis({ root, options, onProgress }: LenisProps) {
       root={root}
       options={{
         ...options,
-        lerp: options?.lerp ?? 0.1,
+        lerp: options?.lerp ?? 0.07,
         autoRaf: false,
         anchors: true,
         smoothWheel: true,
