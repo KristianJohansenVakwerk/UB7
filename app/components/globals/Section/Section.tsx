@@ -3,7 +3,7 @@ import Box from "../../ui/Box/Box";
 import SectionAbout from "./SectionAbout";
 import SectionContact from "./SectionContact";
 import SectionIntro from "./SectionIntro";
-import SectionPortfolio from "./SectionPortfolio";
+import SectionPortfolio from "./SectionPortfolio/SectionPortfolio";
 
 type Props = {
   entry: any;

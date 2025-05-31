@@ -7,6 +7,7 @@ import clsx from "clsx";
 import SplitText from "../../shared/SplitText/SplitText";
 import Box from "../../ui/Box/Box";
 import Slider from "../../shared/Slider/Slider";
+import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
 /* Plugins */
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const sectionsData = [
@@ -55,7 +56,7 @@ const SmoothScroll = () => {
         trigger: section,
         start: sectionTriggers[index].start,
         end: sectionTriggers[index].end,
-        markers: true,
+        markers: false,
 
         onEnter: () => {
           console.log("onenter", index);
@@ -91,23 +92,43 @@ const SmoothScroll = () => {
               />
 
               {section.id === "portfolio" ? (
-                <Sectors
+                <SectionPortfolio
                   data={[
                     {
                       title: "Football",
-                      entries: [],
+                      entries: [
+                        { title: "Manchester City Football Club" },
+                        { title: "Peak Performance Technologies" },
+                        { title: "Everyday Steps" },
+                      ],
+                      media: "/test-media/sectors/sector_1.jpg",
                     },
                     {
                       title: "Sport",
-                      entries: [],
+                      entries: [
+                        { title: "NextGen Esports League" },
+                        { title: "Peak Performance Technologies" },
+                        { title: "Everyday Steps" },
+                      ],
+                      media: "/test-media/sectors/sector_2.jpg",
                     },
                     {
                       title: "Entertainment",
-                      entries: [],
+                      entries: [
+                        { title: "NextGen Esports League" },
+                        { title: "Peak Performance Technologies" },
+                        { title: "Everyday Steps" },
+                      ],
+                      media: "/test-media/sectors/sector_3.jpg",
                     },
                     {
                       title: "Philanthropy",
-                      entries: [],
+                      entries: [
+                        { title: "NextGen Esports League" },
+                        { title: "Peak Performance Technologies" },
+                        { title: "Everyday Steps" },
+                      ],
+                      media: "/test-media/sectors/sector_4.jpg",
                     },
                   ]}
                 />
@@ -170,94 +191,6 @@ const SectionTitle = ({
   );
 };
 
-const Sectors = (props: any) => {
-  const { data } = props;
-  useGSAP(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        scroller: "body",
-        start: "top top",
-        end: "+=80%",
-        markers: { startColor: "blue", endColor: "black", indent: 350 },
-        toggleActions: "play none reverse reverse",
-        scrub: true,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          console.log("sector progress", progress);
-        },
-        // snap: {
-        //   // snapTo: [0, 1],
-        //   duration: 0.2,
-        //   delay: 0.01,
-        //   ease: "power2.inOut",
-        // },
-      },
-    });
-
-    tl.to(".sector-item", {
-      width: "25%",
-      backgroundColor: "white",
-      stagger: 0.2,
-    });
-
-    tl.to(
-      ".sector-item-content",
-      {
-        opacity: 1,
-        stagger: 0.2,
-        delay: 2,
-      },
-      "<"
-    );
-
-    tl.to(
-      ".sector-item",
-      {
-        opacity: 0,
-        stagger: 0.2,
-      },
-      "+=1.0"
-    );
-  }, []);
-  return (
-    <div
-      className={clsx(
-        "sticky top-[55%] flex flex-row items-center justify-start gap-0 w-full "
-      )}
-    >
-      {data.map((sector: any, index: number) => {
-        return (
-          <div
-            key={index}
-            className="sector-item  rounded-full border-2 border-white opacity-100 w-[53px] h-[53px] flex flex-row items-center justify-start"
-          >
-            <div className="sector-item-content opacity-0 w-full flex flex-row items-start justify-between px-2">
-              <div>{sector.title}</div>
-
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="currentColor"
-              >
-                <path
-                  d="M12 5V19M5 12H19"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
 const AboutSection = () => {
   const container = useRef<HTMLDivElement>(null);
 
@@ -268,7 +201,8 @@ const AboutSection = () => {
         scroller: "body",
         start: "top top",
         end: "+=100%",
-        markers: { startColor: "green", endColor: "grey", indent: 500 },
+        // markers: { startColor: "green", endColor: "grey", indent: 500 },
+        markers: false,
         toggleActions: "play none reverse reverse",
         scrub: false,
         onUpdate: (self) => {
@@ -297,7 +231,8 @@ const AboutSection = () => {
     );
   }, []);
   return (
-    <div className="sticky top-[calc(100%-456px)] flex flex-row gap-0 w-full">
+    <div className="sticky top-[calc(100%-456px)] flex flex-row gap-0 w-full overflow-hidden">
+      ``{" "}
       <Box
         ref={container}
         className="relative flex flex-row items-end justify-start flex-nowrap w-[200vw] h-auto"
