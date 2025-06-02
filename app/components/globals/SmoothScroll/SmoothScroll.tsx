@@ -8,6 +8,7 @@ import SplitText from "../../shared/SplitText/SplitText";
 import Box from "../../ui/Box/Box";
 import Slider from "../../shared/Slider/Slider";
 import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
+import SectionAbout from "../Section/SectionAbout";
 /* Plugins */
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const sectionsData = [
@@ -47,7 +48,7 @@ const SmoothScroll = () => {
     // Define different start/end points for each section
     const sectionTriggers = [
       { start: "top center", end: "bottom center" }, // Portfolio section
-      { start: "top top", end: "top top" },
+      { start: "top top", end: "top top" }, // About section
       { start: "top 70%", end: "bottom 30%" }, // Contact section
     ];
 
@@ -57,13 +58,10 @@ const SmoothScroll = () => {
         start: sectionTriggers[index].start,
         end: sectionTriggers[index].end,
         markers: false,
-
         onEnter: () => {
-          console.log("onenter", index);
           setActiveSection(index);
         },
         onEnterBack: () => {
-          console.log("onenterback", index);
           setActiveSection(index);
         },
       });
@@ -78,10 +76,10 @@ const SmoothScroll = () => {
             <div
               key={index}
               className={clsx(
-                "section flex flex-col items-start justify-start w-screen  p-3",
+                "section flex flex-col items-start justify-start w-screen  p-3 ",
                 ` section-${index + 1}`,
                 section.id === "portfolio" && "h-[120vh]",
-                section.id === "about" && "h-[150vh]",
+                section.id === "about" && "h-[200vh]",
                 section.id === "contact" && "h-screen"
               )}
             >
@@ -100,6 +98,8 @@ const SmoothScroll = () => {
                         { title: "Manchester City Football Club" },
                         { title: "Peak Performance Technologies" },
                         { title: "Everyday Steps" },
+                        { title: "Manchester City Football Club" },
+                        { title: "Manchester City Football Club" },
                       ],
                       media: "/test-media/sectors/sector_1.jpg",
                     },
@@ -133,7 +133,7 @@ const SmoothScroll = () => {
                   ]}
                 />
               ) : section.id === "about" ? (
-                <AboutSection />
+                <SectionAbout />
               ) : section.id === "contact" ? (
                 <div>{section.title}</div>
               ) : (
@@ -187,69 +187,6 @@ const SectionTitle = ({
       )}
     >
       <SplitText text={title} ref={linesContainerRef} />
-    </div>
-  );
-};
-
-const AboutSection = () => {
-  const container = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container.current,
-        scroller: "body",
-        start: "top top",
-        end: "+=100%",
-        // markers: { startColor: "green", endColor: "grey", indent: 500 },
-        markers: false,
-        toggleActions: "play none reverse reverse",
-        scrub: false,
-        onUpdate: (self) => {
-          const progress = self.progress;
-          console.log("sector progress", progress);
-        },
-        // snap: {
-        //   // snapTo: [0, 1],
-        //   duration: 0.2,
-        //   delay: 0.01,
-        //   ease: "power2.inOut",
-        // },
-      },
-    });
-
-    tl.fromTo(container.current, { opacity: 0 }, { opacity: 1 });
-
-    tl.to(
-      container.current,
-      {
-        x: "-100vw",
-        force3D: true,
-        willChange: "transform",
-      },
-      "+=0.8"
-    );
-  }, []);
-  return (
-    <div className="sticky top-[calc(100%-456px)] flex flex-row gap-0 w-full overflow-hidden">
-      ``{" "}
-      <Box
-        ref={container}
-        className="relative flex flex-row items-end justify-start flex-nowrap w-[200vw] h-auto"
-      >
-        <div className="relative h-full w-[100vw]">
-          <img
-            src="/Reel.jpg"
-            width={"693"}
-            height={"376"}
-            className="w-auto h-full"
-          />
-        </div>
-
-        <div className="relative w-[100vw] min-h-[376px] h-auto">
-          <Slider />
-        </div>
-      </Box>
     </div>
   );
 };

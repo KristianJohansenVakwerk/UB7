@@ -27,11 +27,12 @@ const Section = (props: Props) => {
       );
     case "about":
       return (
-        <SectionAbout
-          entry={entry}
-          scroller={parent}
-          active={activeSection === "about"}
-        />
+        // <SectionAbout
+        //   entry={entry}
+        //   scroller={parent}
+        //   active={activeSection === "about"}
+        // />
+        <></>
       );
 
     case "contact":
