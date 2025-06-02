@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import SectionPortfolioBackground from "./SectionPortfolioBackground";
@@ -9,12 +9,13 @@ import React from "react";
 const SectionPortfolio = (props: any) => {
   const { data } = props;
   const [activeSector, setActiveSector] = useState<number | null>(null);
-  const [activateBackground, setActivateBackground] = useState<boolean>(false);
+  const [lastClicked, setLastClicked] = useState<
+    { id: number; clicked: boolean }[]
+  >(data.map((item: any, index: number) => ({ id: index, clicked: false })));
+  const [showUI, setShowUI] = useState<boolean>(false);
   const sectorRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useGSAP((context, contextSafe) => {
-    const sectors = gsap.utils.toArray(".sector-item");
-
     const tl = gsap.timeline({
       onReverseComplete: () => {
         console.log("onReverseComplete");
@@ -35,9 +36,9 @@ const SectionPortfolio = (props: any) => {
           const progress = self.progress;
 
           if (progress > 0.57 && progress < 0.8) {
-            setActivateBackground(true);
+            setShowUI(true);
           } else {
-            setActivateBackground(false);
+            setShowUI(false);
           }
         },
         // snap: {
@@ -86,32 +87,96 @@ const SectionPortfolio = (props: any) => {
     );
   }, []);
 
+  // useGSAP(
+  //   (context, contextSafe) => {
+  //     const sectors = gsap.utils.toArray(".sector-item");
+  //     if (!contextSafe) return;
+
+  //     const hanleClick = contextSafe((index: number) => {
+  //       if (!showUI) return;
+
+  //       const sector = sectors[index] as HTMLElement;
+  //       const content = sector?.querySelector(".sector-item-content");
+  //       console.log(lastClicked[index].clicked);
+  //       if (content) {
+
+  //       }
+
+  //       setLastClicked((prev) => {
+  //         const newState = [...prev];
+  //         newState[index].clicked = !newState[index].clicked;
+  //         return newState;
+  //       });
+  //     });
+
+  //     sectorRefs.current.forEach((ref, index) => {
+  //       ref?.addEventListener("click", () => hanleClick(index));
+  //     });
+
+  //     return () => {
+  //       sectorRefs.current.forEach((ref, index) => {
+  //         ref?.removeEventListener("click", () => hanleClick(index));
+  //       });
+  //     };
+  //   },
+  //   [showUI, lastClicked]
+  // );
+
   const handleClick = useCallback(
     (index: number) => {
-      if (!activateBackground) return;
+      if (!showUI) return;
 
-      const sector = sectorRefs.current[index];
-      console.log(sector);
+      const sectors = gsap.utils.toArray(".sector-item");
+      const sector = sectors[index] as HTMLElement;
       const content = sector?.querySelector(".sector-item-content");
-      console.log(content);
       if (content) {
-        gsap.to(content, {
-          height: "250px",
-          duration: 0.5,
-          ease: "power2.inOut",
-          onComplete: () => {
-            gsap.to(content.querySelectorAll(".sector-item-content-entry"), {
-              opacity: 1,
-              duration: 0.3,
-              stagger: 0.3,
-              ease: "power2.inOut",
-            });
-          },
+        console.log("on click", lastClicked[index].clicked);
+
+        if (!lastClicked[index].clicked) {
+          gsap.to(content, {
+            height: "250px",
+            duration: 0.5,
+            ease: "power2.inOut",
+            onComplete: () => {
+              gsap.to(content.querySelectorAll(".sector-item-content-entry"), {
+                opacity: 1,
+                duration: 0.3,
+                stagger: 0.3,
+                ease: "power2.inOut",
+              });
+            },
+          });
+        } else {
+          gsap.to(content.querySelectorAll(".sector-item-content-entry"), {
+            opacity: 0,
+            duration: 0.3,
+            stagger: 0.3,
+            ease: "power2.inOut",
+            onComplete: () => {
+              gsap.to(content, {
+                height: "0px",
+                duration: 0.5,
+                ease: "power2.inOut",
+              });
+            },
+          });
+        }
+
+        setLastClicked((prev) => {
+          const newState = [...prev];
+
+          newState[index].clicked = newState[index].clicked ? false : true;
+          return newState;
         });
       }
     },
-    [activateBackground]
+    [lastClicked, showUI]
   );
+
+  useEffect(() => {
+    console.log(lastClicked);
+  }, [lastClicked]);
+
   return (
     <>
       <div
@@ -128,16 +193,14 @@ const SectionPortfolio = (props: any) => {
                 ref={(el) => {
                   sectorRefs.current[index] = el;
                 }}
+                onMouseEnter={() => setActiveSector(index)}
+                onMouseLeave={() => setActiveSector(null)}
               >
                 <div
                   className="absolute top-0 left-0 sector-item-trigger w-[53px] h-[53px]  rounded-full border-2 border-[rgba(255,0,255,0.7)] z-10"
-                  onMouseEnter={() => setActiveSector(index)}
-                  onMouseLeave={() => setActiveSector(null)}
+                  onClick={() => handleClick(index)}
                 >
-                  <div
-                    className="sector-item-trigger-content opacity-0 w-full h-full  flex flex-row items-center justify-between px-2"
-                    onClick={() => handleClick(index)}
-                  >
+                  <div className="sector-item-trigger-content opacity-0 w-full h-full  flex flex-row items-center justify-between px-2">
                     <div>{sector.title}</div>
 
                     <svg
@@ -181,7 +244,7 @@ const SectionPortfolio = (props: any) => {
       <SectionPortfolioBackground
         activeSector={activeSector}
         data={data}
-        active={activateBackground}
+        active={showUI}
       />
     </>
   );
