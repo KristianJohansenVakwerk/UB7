@@ -1,6 +1,6 @@
 "use client";
 import Box from "../../ui/Box/Box";
-import SectionAbout from "./SectionAbout";
+import SectionAbout from "./SectionAbout/SectionAbout";
 import SectionContact from "./SectionContact";
 import SectionIntro from "./SectionIntro";
 import SectionPortfolio from "./SectionPortfolio/SectionPortfolio";

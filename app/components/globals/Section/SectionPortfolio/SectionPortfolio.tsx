@@ -21,10 +21,12 @@ const SectionPortfolio = (props: any) => {
         });
       },
       scrollTrigger: {
+        trigger: ".section-portfolio",
         scroller: "body",
         start: "top top",
         end: "+=80%",
         toggleActions: "play none reverse reverse",
+        markers: false,
         scrub: true,
 
         onUpdate: (self) => {
@@ -192,7 +194,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "sticky top-[55%] flex flex-row items-center justify-start gap-0 w-full z-10",
+          "sticky top-[55%] flex flex-row items-center justify-start gap-0 w-full z-10 px-3",
           !ready && "opacity-0"
         )}
       >

@@ -8,7 +8,8 @@ import SplitText from "../../shared/SplitText/SplitText";
 import Box from "../../ui/Box/Box";
 import Slider from "../../shared/Slider/Slider";
 import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
-import SectionAbout from "../Section/SectionAbout";
+import SectionAbout from "../Section/SectionAbout/SectionAbout";
+import SectionTitle from "../Section/SectionTitle";
 /* Plugins */
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const sectionsData = [
@@ -33,7 +34,7 @@ const sectionsData = [
 ];
 
 const SmoothScroll = () => {
-  const [activeSection, setActiveSection] = useState<number>(0);
+  const [activeSection, setActiveSection] = useState<number | null>(null);
   useGSAP(() => {
     const sections = gsap.utils.toArray(".section");
 
@@ -47,7 +48,7 @@ const SmoothScroll = () => {
 
     // Define different start/end points for each section
     const sectionTriggers = [
-      { start: "top center", end: "bottom center" }, // Portfolio section
+      { start: "top top", end: "bottom center" }, // Portfolio section
       { start: "top top", end: "top top" }, // About section
       { start: "top 70%", end: "bottom 30%" }, // Contact section
     ];
@@ -57,7 +58,8 @@ const SmoothScroll = () => {
         trigger: section,
         start: sectionTriggers[index].start,
         end: sectionTriggers[index].end,
-        markers: false,
+        markers: index === 1 ? true : false,
+        id: `section-${index}`,
         onEnter: () => {
           setActiveSection(index);
         },
@@ -76,18 +78,15 @@ const SmoothScroll = () => {
             <div
               key={index}
               className={clsx(
-                "section flex flex-col items-start justify-start w-screen  p-3 ",
+                "section flex flex-col items-start justify-start w-screen ",
                 ` section-${index + 1}`,
+                `section-${section.id}`,
                 section.id === "portfolio" && "h-[120vh]",
-                section.id === "about" && "h-[200vh]",
+                section.id === "about" && "h-[200vh] px-0",
                 section.id === "contact" && "h-screen"
               )}
             >
-              <SectionTitle
-                title={section.text}
-                activeIndex={activeSection}
-                index={index}
-              />
+              <SectionTitle title={section.text} id={section.id} />
 
               {section.id === "portfolio" ? (
                 <SectionPortfolio
@@ -148,45 +147,3 @@ const SmoothScroll = () => {
 };
 
 export default SmoothScroll;
-
-const SectionTitle = ({
-  title,
-  activeIndex,
-  index,
-}: {
-  title: string;
-  activeIndex: number;
-  index: number;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const linesContainerRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline();
-
-      tl.set(ref.current, { opacity: 0, duration: 0.2, ease: "power2.inOut" });
-
-      if (activeIndex === index) {
-        tl.to(ref.current, {
-          opacity: 1,
-          duration: 0.2,
-          ease: "power2.inOut",
-        });
-      }
-    },
-    { scope: ref, dependencies: [activeIndex] }
-  );
-
-  return (
-    <div
-      ref={ref}
-      className={clsx(
-        "section-title sticky top-3 mb-6 z-10",
-        activeIndex === index ? "opacity-100" : "opacity-0"
-      )}
-    >
-      <SplitText text={title} ref={linesContainerRef} />
-    </div>
-  );
-};

@@ -1,9 +1,4 @@
-import SectionIntro from "./components/globals/Section/SectionIntro";
-import Sections from "./components/globals/Sections/Sections";
-import SectionsSnapCSS from "./components/globals/SectionsSnapCSS/SectionsSnapCSS";
-import SmoothScroll from "./components/globals/SmoothScroll/SmoothScroll";
-import { Wrapper } from "./components/globals/Wrapper/Wrapper";
-import Box from "./components/ui/Box/Box";
+import Slider from "../components/shared/Slider/Slider";
 
 export default function Home() {
   return (
@@ -36,11 +31,11 @@ export default function Home() {
       {/* <Sections /> */}
 
       {/* <SectionsSnapCSS /> */}
-
-      <Wrapper lenis={{}}>
-        <SectionIntro />
-        <SmoothScroll />
-      </Wrapper>
+      <div className="w-full h-screen  flex items-center justify-start">
+        <div>
+          <Slider active={true} />
+        </div>
+      </div>
     </>
   );
 }

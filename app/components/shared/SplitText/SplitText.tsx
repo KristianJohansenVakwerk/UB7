@@ -12,7 +12,7 @@ type Props = {
 
 const SplitText = ({ text, className, ref }: Props) => {
   return (
-    <Box ref={ref} className={`text-sm lg:text-[3vw] leading-none`}>
+    <Box ref={ref} className={`text-sm lg:text-[3.5vw] leading-none`}>
       {text.split("\n").map((line, index) => (
         <div key={index} className={`line line-${index} `}>
           {line}
