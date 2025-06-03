@@ -99,14 +99,14 @@ const SectionPortfolio = (props: any) => {
         .to(sector, {
           height: sectorHeight,
           duration: 0.3,
-          ease: "power4.easeOut",
+          ease: "power3.inOut",
         })
         .to(sector.querySelectorAll(".sector-item-content-entry"), {
           opacity: 1,
           y: 0,
           duration: 0.2,
           stagger: 0.2,
-          ease: "power4.inOut",
+          ease: "power3.inOut",
         });
     });
 
@@ -122,36 +122,71 @@ const SectionPortfolio = (props: any) => {
     });
   }, [showUI]);
 
-  const playAccordion = useCallback(
-    async (index: number) => {
-      if (activeIndexRef.current === index || !showUI) return;
-      await Promise.all(
-        accordionAnis.current.map((tl: any, i: number) => {
-          return new Promise((resolve) => {
-            if (!tl || tl.reversed() || tl.progress() === 0)
-              return resolve(false);
-
-            tl.reverse().eventCallback("onReverseComplete", resolve);
-          });
-        })
-      );
-
-      await Promise.all(
-        iconAnis.current.map((tl: any, i: number) => {
-          return new Promise((resolve) => {
-            if (!tl || tl.reversed() || tl.progress() === 0)
-              return resolve(false);
-
-            tl.reverse().eventCallback("onReverseComplete", resolve);
-          });
-        })
-      );
-      iconAnis.current[index].play();
-      accordionAnis.current[index].play();
-      activeIndexRef.current = index;
+  const handleMouseEnter = useCallback(
+    (index: number) => {
+      if (!showUI) return;
+      setActiveSector(index);
+      playAccordion(index);
     },
     [showUI]
   );
+
+  const handleMouseLeave = useCallback(() => {
+    if (!showUI) return;
+    setActiveSector(null);
+    resetAccordion();
+  }, [showUI]);
+
+  const resetAccordion = useCallback(() => {
+    accordionAnis.current.forEach((tl: any) => {
+      tl.reverse();
+    });
+    iconAnis.current.forEach((tl: any) => {
+      tl.reverse();
+    });
+
+    activeIndexRef.current = null;
+  }, []);
+
+  const playAccordion = useCallback(async (index: number) => {
+    if (activeIndexRef.current === index) return;
+
+    if (activeIndexRef.current !== null) {
+      const currentAccordion = accordionAnis.current[activeIndexRef.current];
+      const currentIcon = iconAnis.current[activeIndexRef.current];
+
+      await Promise.all([
+        new Promise((resolve) => {
+          if (
+            currentAccordion &&
+            !currentAccordion.reversed() &&
+            currentAccordion.progress() > 0
+          ) {
+            currentAccordion
+              .reverse()
+              .eventCallback("onReverseComplete", resolve);
+          } else {
+            resolve(false);
+          }
+        }),
+        new Promise((resolve) => {
+          if (
+            currentIcon &&
+            !currentIcon.reversed() &&
+            currentIcon.progress() > 0
+          ) {
+            currentIcon.reverse().eventCallback("onReverseComplete", resolve);
+          } else {
+            resolve(false);
+          }
+        }),
+      ]);
+    }
+
+    iconAnis.current[index].play();
+    accordionAnis.current[index].play();
+    activeIndexRef.current = index;
+  }, []);
 
   return (
     <>
@@ -166,8 +201,8 @@ const SectionPortfolio = (props: any) => {
             <div
               key={index}
               className="sector-item relative  w-[53px]"
-              onMouseEnter={() => setActiveSector(index)}
-              onMouseLeave={() => setActiveSector(null)}
+              onMouseEnter={() => handleMouseEnter(index)}
+              onMouseLeave={() => handleMouseLeave()}
             >
               <div
                 className="absolute top-0 left-0 sector-item-trigger w-[53px] h-[53px]  rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
