@@ -49,37 +49,26 @@ export const teamMembers: TeamMember[] = [
   },
 ];
 
-const Slider = ({ active }: { active: boolean }) => {
+const Slider = () => {
   useGSAP(() => {
     const containers = gsap.utils.toArray(".team-member");
     const names = gsap.utils.toArray(".team-member-name");
     const images = gsap.utils.toArray(".team-member-image");
     const texts = gsap.utils.toArray(".team-member-text");
     const socials = gsap.utils.toArray(".team-member-social");
-    const sliderWrapper = document.querySelector(
-      ".slider-wrapper"
-    ) as HTMLElement;
+
     const sliderContainer = document.querySelector(
       ".slider-container"
     ) as HTMLElement;
 
     const tl = gsap.timeline({
-      paused: true,
-      onComplete: () => {
-        console.log("complete");
-        gsap.to(sliderWrapper, {
-          x: "-500px",
-          duration: 0.5,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sliderWrapper,
-            start: "top top",
-            end: "bottom top",
-            scrub: true,
-            markers: true,
-            horizontal: true,
-          },
-        });
+      scrollTrigger: {
+        trigger: sliderContainer,
+        start: "top top",
+        end: "bottom bottom",
+        scrub: true,
+        markers: true,
+        id: "slider-tl",
       },
     });
 
@@ -139,12 +128,6 @@ const Slider = ({ active }: { active: boolean }) => {
       );
     });
 
-    if (active) {
-      tl.play();
-    } else {
-      tl.reverse();
-    }
-
     // Calculate total width of all team members
     const totalWidth = containers.reduce((acc: number, container: any) => {
       return acc + container.offsetWidth + 8; // Add gap width (2 * 4px)
@@ -188,7 +171,7 @@ const Slider = ({ active }: { active: boolean }) => {
     //     });
     //   },
     // });
-  }, [active]);
+  }, []);
 
   return (
     <Box className="slider-container w-[calc(100vw-30px)] h-full flex flex-row items-start justify-start overflow-hidden">

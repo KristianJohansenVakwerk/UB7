@@ -33,7 +33,7 @@ export default function Home() {
       {/* <SectionsSnapCSS /> */}
       <div className="w-full h-screen  flex items-center justify-start">
         <div>
-          <Slider active={true} />
+          <Slider />
         </div>
       </div>
     </>

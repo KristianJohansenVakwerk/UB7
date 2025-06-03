@@ -111,7 +111,7 @@ const SectionAbout = () => {
           ref={sliderContainerRef}
           className="relative flex-1 w-[100vw] h-full opacity-0"
         >
-          <Slider active={sliderActive} />
+          <Slider />
         </div>
       </Box>
     </div>
