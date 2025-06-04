@@ -14,318 +14,283 @@ const SectionAbout = () => {
   const animationRef = useRef<any>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sliderContainerRef = useRef<HTMLDivElement>(null);
+  const [currentProgress, setCurrentProgress] = useState<string>("0");
+  const currentPositionRef = useRef(0);
+  const visibleSlidesRef = useRef<number>(1);
+  const newXPercentRef = useRef(0);
 
   useGSAP(() => {
-    // Parent ScrollTrigger for pinning
-    // const parentTrigger = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: container.current,
-    //     start: "top +=20%",
-    //     end: "+=70%", // This should be enough to cover both animations
-    //     pin: true,
-    //     pinSpacing: false,
-    //     anticipatePin: 1,
-    //     markers: { indent: 500 },
-    //     id: "section-about-parent",
-    //   },
-    // });
+    const slides = gsap.utils.toArray(".team-member");
+    const wrapper = document.querySelector(".slider-wrapper") as HTMLElement;
 
-    animationRef.current = gsap.timeline({
-      paused: true,
+    const calcOffset = () => {
+      const gap = 32; // 32px gap between slides
+      const totalGaps = slides.length; // Number of gaps is one less than number of slides
+      const totalGapWidth = totalGaps * gap;
+
+      const offset =
+        slides.reduce((acc: number, slide: any) => {
+          return acc + slide.offsetWidth;
+        }, 0) - totalGapWidth;
+
+      const sliderWidth = sliderContainerRef.current?.offsetWidth || 0;
+      const rightEdge = 30; // 30px from right edge
+
+      // Calculate the total width we want to scroll
+      const totalScrollWidth = offset - 48 * 2 - sliderWidth;
+
+      // Convert to percentage
+      return (totalScrollWidth / sliderWidth) * 100;
+    };
+
+    const scrollTween = gsap.to(".slider-wrapper", {
+      ease: "none",
       scrollTrigger: {
-        trigger: container.current,
-        start: "bottom-=296px bottom-=376px",
-        end: "+=100%",
-        markers: { indent: 500 },
-        scrub: 0.01,
-        toggleActions: "play none reverse reverse",
-        id: "section-about",
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
+        trigger: sliderContainerRef.current,
+        scrub: 0.1,
+        start: "bottom bottom-=50%",
+        end: "+=1000",
+        id: "slider-scroll",
+        markers: false,
       },
     });
 
-    // 2. Toggle-based animation (plays once on enter/enterBack)
-    const showWrapper = gsap.to(wrapperRef.current, {
-      opacity: 1,
-      duration: 0.1,
-      paused: true, // important: manual control
-    });
+    // Create a timeline for the fade-in sequence
+    // const fadeTimeline = gsap.timeline({
+    //   scrollTrigger: {
+    //     trigger: sliderContainerRef.current,
+    //     toggleActions: "play none reverse reverse",
+    //     scrub: true,
+    //     start: "bottom bottom-=50%",
+    //     end: "+=1000",
+    //     id: "fade-sequence",
+    //     markers: true,
+    //     onUpdate: (self) => {
+    //       const progress = self.progress;
+    //     },
 
-    const hideImage = gsap.to(imageContainerRef.current, {
-      opacity: 0,
-      duration: 0.1,
-      paused: true, // important: manual control
-    });
-
-    ScrollTrigger.create({
-      trigger: container.current,
-      start: "bottom-=296px bottom-=376px",
-      end: "+=200", // 200px scroll range
-      markers: true,
-      id: "show-wrapper",
-      onEnter: () => showWrapper.play(),
-      onLeaveBack: () => showWrapper.reverse(),
-      // Optional: reset on leave forward if needed
-      // onLeave: () => toggleTween.reverse(),
-    });
-
-    ScrollTrigger.create({
-      trigger: container.current,
-      start: "top center",
-      end: "+=200",
-      markers: true,
-      id: "hide-image",
-      onEnter: () => hideImage.play(),
-      onLeaveBack: () => hideImage.reverse(),
-      // Optional: reset on leave forward if needed
-      // onLeave: () => toggleTween.reverse(),
-    });
-
-    // animationRef.current.to(wrapperRef.current, {
-    //   opacity: 1,
-    //   duration: 0.3,
-    //   ease: "power2.inOut",
+    //     onLeaveBack: () => {
+    //       // When scrolling up, animate back to start
+    //       // gsap.to(".slider-wrapper", {
+    //       //   xPercent: 0,
+    //       //   duration: 0.5,
+    //       //   ease: "power2.inOut",
+    //       // });
+    //     },
+    //   },
     // });
 
-    // animationRef.current.to(imageContainerRef.current, {
-    //   opacity: 0,
-    //   duration: 0.3,
-    //   ease: "power2.inOut",
-    // });
+    slides.forEach((slide: any, index: number) => {
+      const start = `bottom bottom-=${50 + index * 10}%`;
 
-    // animationRef.current.to(
-    //   sliderContainerRef.current,
-    //   {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: slide,
+          start,
+          end: "+=50",
+          id: `slide-animation-${index}`,
+          markers: { indent: 300 * index },
+          toggleActions: "play none reverse reverse",
+          onEnterBack: () => {
+            visibleSlidesRef.current = 0;
+            gsap.to(".slider-wrapper", {
+              xPercent: 0,
+              duration: 0.3,
+              ease: "power2.inOut",
+            });
+          },
+        },
+      });
+
+      tl.to(slide, {
+        opacity: 1,
+        duration: 0.3,
+        ease: "power2.inOut",
+        onComplete: () => {
+          console.log("complete", visibleSlidesRef.current);
+          const slideWidth = slide.offsetWidth;
+          const gap = 32;
+
+          const p = (slideWidth / window.innerWidth) * 100;
+
+          // const viewportWidth = window.innerWidth;
+
+          const visibleSlides = Array.from(slides).filter((slide: any) => {
+            const opacity = window.getComputedStyle(slide).opacity;
+            return parseFloat(opacity) > 0;
+          });
+
+          const visibleWidth =
+            visibleSlides.reduce((acc: number, slide: any) => {
+              return acc + slide.offsetWidth;
+            }, 0) +
+            (visibleSlides.length - 1) * 32; // Add gaps between visible slides
+
+          // const offset = visibleWidth - viewportWidth;
+
+          // // Get the current xPercent value from the slider wrapper
+
+          // const p = (offset / viewportWidth) * 100;
+          // const newXPercent = Math.abs(currentPositionRef.current) - p;
+
+          // console.table({
+          //   o: offset,
+          //   visibleWidth: visibleWidth,
+          //   p: p,
+          //   currentPositionRef: currentPositionRef.current,
+          //   newXPercent,
+          // });
+
+          console.log(visibleSlidesRef.current % 3);
+          const slidesPerView = 3;
+          if (visibleSlidesRef.current % slidesPerView === 0) {
+            const page = Math.floor(visibleSlidesRef.current / slidesPerView);
+            // Start the xPercent animation
+            gsap.to(".slider-wrapper", {
+              x: -window.innerWidth * page,
+              duration: 0.3,
+              delay: 0.2,
+              ease: "power2.inOut",
+            });
+          }
+          visibleSlidesRef.current = visibleSlidesRef.current + 1;
+        },
+      });
+    });
+
+    // // Add each slide to the timeline
+    // slides.forEach((slide: any, index: number) => {
+    //   fadeTimeline.to(slide, {
     //     opacity: 1,
     //     duration: 0.3,
     //     ease: "power2.inOut",
-    //   },
-    //   ">"
-    // );
-    // // animationRef.current.to(container.current, {
-    //   onEnter: () => {
-    //     gsap.to(wrapperRef.current, {
-    //       opacity: 1,
-    //       ease: "power2.inOut",
-    //     });
-    //   },
-    // });
-
-    // animationRef.current.to(container.current, {
-    //   onEnter: () => {
-    //     gsap.to(sliderContainerRef.current, {
-    //       opacity: 1,
-    //       ease: "power2.inOut",
-    //     });
-    //   },
-    // });
-
-    // First animation (image to slider transition)
-    // animationRef.current = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: container.current,
-    //     start: "0%", // Relative to parent
-    //     end: "15%", // Relative to parent
-    //     markers: { indent: 500 },
-    //     scrub: 0.01,
-    //     toggleActions: "play none reverse reverse",
-    //     id: "section-about",
-    //     onEnter: () => {
-    //       gsap.to(container.current, {
-    //         opacity: 1,
-    //         duration: 0.4,
-    //         ease: "power2.inOut",
+    //     onComplete: () => {
+    //       // Calculate width of visible slides (those with opacity > 0)
+    //       const visibleSlides = Array.from(slides).filter((slide: any) => {
+    //         const opacity = window.getComputedStyle(slide).opacity;
+    //         return parseFloat(opacity) > 0;
     //       });
+
+    //       const visibleWidth =
+    //         visibleSlides.reduce((acc: number, slide: any) => {
+    //           return acc + slide.offsetWidth;
+    //         }, 0) +
+    //         (visibleSlides.length - 1) * 32; // Add gaps between visible slides
+
+    //       if (visibleWidth > viewportWidth) {
+    //         // Start the xPercent animation
+    //         gsap.to(".slider-wrapper", {
+    //           xPercent: -calcOffset(),
+    //           duration: 0.5,
+    //           ease: "power2.inOut",
+    //         });
+    //       }
     //     },
-    //     // ... rest of the callbacks stay the same
-    //   },
+    //   });
     // });
 
-    // // Second animation (slider)
-    // const sliderWrapper = sliderContainerRef.current?.querySelector(
-    //   ".slider-wrapper"
-    // ) as HTMLElement;
-    // const teamMembers = gsap.utils.toArray(".team-member");
-
-    // const totalWidth = teamMembers.reduce((acc: number, member: any) => {
-    //   return acc + member.offsetWidth + 30;
-    // }, 0);
-
-    // const sliderTimeline = gsap.timeline({
-    //   scrollTrigger: {
-    //     trigger: container.current,
-    //     start: "15%", // Start after first animation
-    //     end: "100%", // Use full parent duration
-    //     scrub: 0.01,
-    //     markers: { indent: 600 },
-    //     id: "slider-scroll",
-    //   },
-    // });
-
-    // sliderTimeline.to(sliderWrapper, {
-    //   x: () => -(totalWidth - (sliderContainerRef.current?.offsetWidth || 0)),
+    // // Create the scroll tween for the xPercent animation
+    // const scrollTween = gsap.to(".slider-wrapper", {
+    //   // xPercent: () => -calcOffset(),
     //   ease: "none",
+    //   scrollTrigger: {
+    //     trigger: sliderContainerRef.current,
+    //     pin: false,
+    //     pinSpacing: false,
+    //     scrub: 0.1,
+    //     start: "bottom bottom-=50%",
+    //     end: "+=1000",
+    //     id: "slider-scroll",
+    //     markers: false,
+    //   },
     // });
+
+    const hideImage = gsap.to(imageContainerRef.current, {
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.inOut",
+      paused: true, // important: manual control
+    });
+    const showSlider = gsap.to(sliderContainerRef.current, {
+      opacity: 1,
+      duration: 0.3,
+      delay: 0.2,
+      ease: "power2.inOut",
+      paused: true, // important: manual control
+    });
+
+    const hideSlider = gsap.to(sliderContainerRef.current, {
+      opacity: 0,
+      duration: 0.3,
+      ease: "power2.inOut",
+      paused: true, // important: manual control
+    });
+
+    // Main container pin
+    ScrollTrigger.create({
+      trigger: container.current,
+      start: "bottom bottom",
+      end: () => scrollTween.scrollTrigger?.end || "+=1000",
+      markers: false,
+      id: "pinned-container",
+      scrub: false,
+      toggleActions: "play none reverse reverse",
+      pin: true,
+      pinSpacing: true,
+      anticipatePin: 1,
+      // onUpdate: (self) => {
+      //   setCurrentProgress(self.progress.toFixed(2));
+      // },
+    });
+
+    // Transition to slider
+    ScrollTrigger.create({
+      trigger: wrapperRef.current,
+      start: "bottom bottom-=50%",
+      end: "+=300",
+      markers: false,
+      id: "hide-image",
+      onEnter: () => {
+        hideImage.play();
+        showSlider.play();
+      },
+      onLeaveBack: () => {
+        hideImage.reverse();
+        showSlider.reverse();
+      },
+    });
   }, []);
-
-  // useGSAP(() => {
-  //   const w = imageContainerRef.current?.clientWidth;
-
-  //   gsap.to(container.current, {
-  //     scrollTrigger: {
-  //       trigger: container.current,
-  //       start: "bottom bottom%",
-  //       end: "bottom bottom",
-  //       scrub: 0.01,
-  //       markers: true,
-  //       pin: true,
-  //       pinSpacing: false,
-  //       anticipatePin: 1,
-  //       id: "section-about-pin",
-  //       markers: { indent: 800 },
-  //     },
-  //   });
-
-  //   animationRef.current = gsap.timeline({
-  //     scrollTrigger: {
-  //       trigger: container.current,
-
-  //       start: "top +=20%", // ~80% scroll
-  //       end: "+=10%",
-  //       markers: { indent: 500 },
-  //       scrub: 0.01,
-  //       toggleActions: "play none reverse reverse",
-  //       id: "section-about",
-
-  //       onEnter: () => {
-  //         gsap.to(container.current, {
-  //           opacity: 1,
-  //           duration: 0.4,
-  //           ease: "power2.inOut",
-  //         });
-  //       },
-  //       onEnterBack: () => {
-  //         gsap.to(sliderContainerRef.current, {
-  //           opacity: 0,
-  //           duration: 0.5,
-  //           ease: "power3.inOut",
-  //           onComplete: () => {
-  //             setSliderActive(false);
-  //             gsap.to(imageContainerRef.current, {
-  //               x: 0,
-  //               opacity: 1,
-  //               delay: 0.2,
-  //               force3D: true,
-  //               willChange: "transform",
-  //               ease: "power2.inOut",
-  //               duration: 0.5,
-  //             });
-  //           },
-  //         });
-  //       },
-  //       onLeave: () => {
-  //         gsap.to(imageContainerRef.current, {
-  //           x: w ? -w - 200 : -100,
-  //           opacity: 0,
-  //           force3D: true,
-  //           willChange: "transform",
-  //           ease: "power2.inOut",
-  //           duration: 0.5,
-  //           onComplete: () => {
-  //             gsap.to(sliderContainerRef.current, {
-  //               opacity: 1,
-  //               duration: 0.5,
-  //               ease: "power3.inOut",
-  //               delay: 0.2,
-  //               onComplete: () => {
-  //                 setSliderActive(true);
-  //               },
-  //             });
-  //           },
-  //         });
-  //       },
-  //       onLeaveBack: () => {
-  //         gsap.to(container.current, {
-  //           opacity: 0,
-  //           duration: 0.5,
-  //           ease: "power3.inOut",
-  //         });
-  //       },
-  //     },
-  //   });
-  // }, []);
-
-  // Add this after your existing useGSAP hook
-  // useGSAP(() => {
-  //   const sliderWrapper = sliderContainerRef.current?.querySelector(
-  //     ".slider-wrapper"
-  //   ) as HTMLElement;
-  //   const teamMembers = gsap.utils.toArray(".team-member");
-
-  //   // Calculate total width of all team members
-  //   const totalWidth = teamMembers.reduce((acc: number, member: any) => {
-  //     return acc + member.offsetWidth + 30; // Add 30px per child
-  //   }, 0);
-
-  //   // Create a new timeline for the slider animation
-  //   const sliderTimeline = gsap.timeline({
-  //     scrollTrigger: {
-  //       trigger: container.current,
-  //       start: "+=30% +=10%", // Start after the image-to-slider transition
-  //       end: "+=30%", // End further down the page
-  //       // end: () => `+=${totalWidth}`, // Scroll distance equals the total width of all slides
-  //       scrub: 0.01,
-  //       markers: true, // Remove this in production
-
-  //       id: "slider-scroll",
-  //       onEnter: () => {
-  //         // Optional: Add any enter animations
-  //       },
-  //       onLeave: () => {
-  //         // Optional: Add any leave animations
-  //       },
-  //     },
-  //   });
-
-  //   // Animate the slider wrapper
-  //   sliderTimeline.to(sliderWrapper, {
-  //     x: () => -(totalWidth - (sliderContainerRef.current?.offsetWidth || 0)),
-  //     ease: "none",
-  //   });
-  // }, []);
 
   return (
     <div
       ref={container}
-      className={clsx(
-        "flex flex-row gap-0 w-full h-full overflow-hidden pl-3 bg-red-500"
-      )}
+      className={clsx("flex flex-row gap-0 w-full h-full overflow-hidden ")}
     >
-      <Box
-        ref={wrapperRef}
-        className="wrapper relative flex flex-row items-end justify-start flex-nowrap w-[100vw] h-[376px] opacity-0 pr-3"
-      >
-        <div
-          ref={imageContainerRef}
-          className="absolute bottom-0 left-0 h-full opacity-100"
+      <div className="w-screen h-screen flex items-end justify-start pb-8">
+        <Box
+          ref={wrapperRef}
+          className="wrapper relative flex flex-row items-end justify-start flex-nowrap w-[100vw] h-screen opacity-100"
         >
-          <img
-            src="/Reel.jpg"
-            width={"693"}
-            height={"376"}
-            className="w-auto h-full"
-          />
-        </div>
+          <div
+            ref={imageContainerRef}
+            className="absolute bottom-0 left-0 h-full flex items-end justify-start opacity-100 pl-3"
+          >
+            <img
+              src="/Reel.jpg"
+              width={"693"}
+              height={"376"}
+              className="w-auto h-full max-h-[376px]"
+            />
+          </div>
 
-        <div
-          ref={sliderContainerRef}
-          className="relative flex-1 w-[100vw] h-full opacity-0"
-        >
-          <Slider />
-        </div>
-      </Box>
+          <div
+            ref={sliderContainerRef}
+            className="absolute bottom-0 left-0 w-full h-screen opacity-0"
+          >
+            <Slider />
+          </div>
+        </Box>
+      </div>
     </div>
   );
 };

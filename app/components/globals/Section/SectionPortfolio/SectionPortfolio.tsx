@@ -9,7 +9,7 @@ import React from "react";
 const SectionPortfolio = (props: any) => {
   const { data } = props;
   const [activeSector, setActiveSector] = useState<number | null>(null);
-  const [ready, setReady] = useState<boolean>(false);
+  const [ready, setReady] = useState<boolean>(true);
   const [showUI, setShowUI] = useState<boolean>(false);
 
   useGSAP((context, contextSafe) => {
@@ -78,11 +78,11 @@ const SectionPortfolio = (props: any) => {
     );
   }, []);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setReady(true);
-    }, 100);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     setReady(true);
+  //   }, 100);
+  // }, []);
 
   const accordionAnis = useRef<any>(null);
   const iconAnis = useRef<any>(null);

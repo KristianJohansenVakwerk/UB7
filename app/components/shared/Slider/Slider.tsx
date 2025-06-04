@@ -18,7 +18,7 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    name: "Thiago Silva Pontes",
+    name: "Thiago Silva Pontes 1",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_1.jpg",
     socials: [
@@ -28,7 +28,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vinicius Junior",
+    name: "Vinicius Junior 2",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_2.jpg",
     socials: [
@@ -38,7 +38,37 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vini Jr.",
+    name: "Vini Jr.3",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_3.jpg",
+    socials: [
+      { platform: "Website", url: "https://vinijr.com" },
+      { platform: "Instagram", url: "https://instagram.com/vinijr" },
+      { platform: "Youtube", url: "https://youtube.com/vinijr" },
+    ],
+  },
+  {
+    name: "Thiago Silva Pontes 4",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_1.jpg",
+    socials: [
+      { platform: "Website", url: "https://thiagosilva.com" },
+      { platform: "Instagram", url: "https://instagram.com/thiagosilva" },
+      { platform: "Youtube", url: "https://youtube.com/thiagosilva" },
+    ],
+  },
+  {
+    name: "Vinicius Junior 5",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_2.jpg",
+    socials: [
+      { platform: "Website", url: "https://viniciusjr.com" },
+      { platform: "Instagram", url: "https://instagram.com/viniciusjr" },
+      { platform: "Youtube", url: "https://youtube.com/viniciusjr" },
+    ],
+  },
+  {
+    name: "Vini Jr. 6",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_3.jpg",
     socials: [
@@ -174,13 +204,13 @@ const Slider = () => {
   // }, []);
 
   return (
-    <Box className="slider-container w-[calc(100vw-30px)] h-full flex flex-row items-start justify-start overflow-hidden">
-      <div className="slider-wrapper flex flex-row flex-nowrap items-start justify-start gap-2 h-full">
+    <Box className="slider-container w-full h-screen flex flex-col items-start justify-end overflow-hidden  px-3 ">
+      <div className="slider-wrapper flex flex-row flex-nowrap items-start justify-start gap-2 h-[auto] -mx-3">
         {teamMembers.map((m, index) => {
           return (
             <Box
               key={index}
-              className="team-member flex-1  bg-white rounded-2xl h-full min-w-[768px] opacity-100"
+              className="team-member bg-white rounded-2xl h-full w-[33.333vw] shrink-0  opacity-0"
             >
               <Box className="px-3 py-2 flex flex-col gap-1">
                 <Box className="team-member-name text-light-grey text-base/none opacity-100">

@@ -78,7 +78,7 @@ const SmoothScroll = () => {
             <div
               key={index}
               className={clsx(
-                "section flex flex-col items-start justify-start w-screen  border-2 border-red-500",
+                "section flex flex-col items-start justify-start w-screen",
                 ` section-${index + 1}`,
                 `section-${section.id}`,
                 section.id === "portfolio" && "h-[120vh]",
