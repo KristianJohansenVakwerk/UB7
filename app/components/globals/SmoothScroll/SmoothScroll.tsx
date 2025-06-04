@@ -58,7 +58,7 @@ const SmoothScroll = () => {
         trigger: section,
         start: sectionTriggers[index].start,
         end: sectionTriggers[index].end,
-        markers: index === 1 ? true : false,
+        // markers: index === 1 ? true : false,
         id: `section-${index}`,
         onEnter: () => {
           setActiveSection(index);
@@ -78,11 +78,11 @@ const SmoothScroll = () => {
             <div
               key={index}
               className={clsx(
-                "section flex flex-col items-start justify-start w-screen ",
+                "section flex flex-col items-start justify-start w-screen  border-2 border-red-500",
                 ` section-${index + 1}`,
                 `section-${section.id}`,
                 section.id === "portfolio" && "h-[120vh]",
-                section.id === "about" && "h-[200vh] px-0",
+                section.id === "about" && "h-auto px-0",
                 section.id === "contact" && "h-screen"
               )}
             >

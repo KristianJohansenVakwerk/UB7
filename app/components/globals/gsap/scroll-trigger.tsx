@@ -10,7 +10,7 @@ export function ScrollTriggerConfig() {
     gsap.registerPlugin(ScrollTrigger);
     ScrollTrigger.clearScrollMemory("manual");
     ScrollTrigger.defaults({
-      markers: true,
+      markers: false,
     });
   }, []);
 
