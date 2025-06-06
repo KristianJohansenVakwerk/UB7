@@ -52,7 +52,7 @@ const Sections = (props: Props) => {
           delay: 0,
           ease: "power1.inOut",
         },
-        markers: true,
+        markers: false,
         onUpdate: (self) => {},
       },
     });

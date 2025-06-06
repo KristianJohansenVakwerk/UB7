@@ -1,0 +1,32 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
+
+type Props = {
+  data: any;
+  activeSector: number | null;
+  active: boolean;
+};
+const SectionPortfolioBackground = (props: Props) => {
+  const { data, activeSector, active } = props;
+
+  return (
+    <div className="fixed top-0 left-0 w-screen h-screen object-cover object-center  overflow-hidden z-0 pointer-events-none">
+      {data.map((entry: any, index: number) => {
+        return (
+          <img
+            key={index}
+            src={entry.media}
+            alt="background"
+            className={clsx(
+              "ani-image absolute top-0 left-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-800 ease-in-out",
+              activeSector === index && active && "opacity-100"
+            )}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
+export default SectionPortfolioBackground;
