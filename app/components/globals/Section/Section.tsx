@@ -1,7 +1,7 @@
 "use client";
 import Box from "../../ui/Box/Box";
 import SectionAbout from "./SectionAbout/SectionAbout";
-import SectionContact from "./SectionContact";
+import SectionContact from "./SectionContact/SectionContact";
 import SectionIntro from "./SectionIntro";
 import SectionPortfolio from "./SectionPortfolio/SectionPortfolio";
 
@@ -36,9 +36,7 @@ const Section = (props: Props) => {
       );
 
     case "contact":
-      return (
-        <SectionContact entry={entry} active={activeSection === "contact"} />
-      );
+      return <SectionContact />;
   }
 };
 

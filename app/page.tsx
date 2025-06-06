@@ -4,6 +4,8 @@ import SectionsSnapCSS from "./components/globals/SectionsSnapCSS/SectionsSnapCS
 import SmoothScroll from "./components/globals/SmoothScroll/SmoothScroll";
 import { Wrapper } from "./components/globals/Wrapper/Wrapper";
 import Box from "./components/ui/Box/Box";
+import Menu from "./components/globals/Menu/Menu";
+import Progress from "./components/globals/Progress/Progress";
 
 export default function Home() {
   return (
@@ -38,8 +40,18 @@ export default function Home() {
       {/* <SectionsSnapCSS /> */}
 
       <Wrapper lenis={{}}>
+        <Progress />
         <SectionIntro />
         <SmoothScroll />
+
+        <Menu
+          data={[
+            { title: "UB7", id: "intro" },
+            { title: "Portfolio", id: "portfolio" },
+            { title: "About", id: "about" },
+            { title: "Contact", id: "contact" },
+          ]}
+        />
       </Wrapper>
     </>
   );

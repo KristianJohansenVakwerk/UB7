@@ -39,6 +39,7 @@ const SectionIntro = () => {
 
   return (
     <Box
+      id="intro"
       ref={ref}
       className="intro w-screen h-screen relative gradient-background b"
     >

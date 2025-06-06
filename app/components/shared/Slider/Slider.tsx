@@ -3,6 +3,10 @@ import Box from "../../ui/Box/Box";
 import clsx from "clsx";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, FreeMode } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/free-mode";
 
 gsap.registerPlugin(useGSAP);
 
@@ -79,7 +83,58 @@ export const teamMembers: TeamMember[] = [
   },
 ];
 
-const Slider = () => {
+type SwiperSettings = {
+  spaceBetween?: number;
+  slidesPerView?: number;
+  slidesOffsetBefore?: number;
+  slidesOffsetAfter?: number;
+  loop?: boolean;
+  freeMode?: {
+    enabled?: boolean;
+    momentum?: boolean;
+    momentumRatio?: number;
+    momentumVelocityRatio?: number;
+  };
+  autoplay?: {
+    delay?: number;
+    disableOnInteraction?: boolean;
+    pauseOnMouseEnter?: boolean;
+  };
+  speed?: number;
+};
+
+type Props = {
+  type?: "media" | "team";
+  data?: any;
+  settings?: SwiperSettings;
+};
+
+const Slider = (props: Props) => {
+  const { type = "team", data, settings } = props;
+
+  const defaultSettings: SwiperSettings = {
+    spaceBetween: 50,
+    slidesPerView: 2.3,
+    slidesOffsetBefore: 30,
+    slidesOffsetAfter: 30,
+    loop: false,
+    freeMode: {
+      enabled: true,
+      momentum: true,
+      momentumRatio: 0.8,
+      momentumVelocityRatio: 0.8,
+    },
+  };
+
+  const swiperSettings = {
+    ...defaultSettings,
+    ...settings,
+    modules: [FreeMode],
+    className: "w-full",
+    onSlideChange: () => {},
+    onSwiper: (swiper: any) => {},
+  };
+
   // useGSAP(() => {
   //   const containers = gsap.utils.toArray(".team-member");
   //   const names = gsap.utils.toArray(".team-member-name");
@@ -204,53 +259,56 @@ const Slider = () => {
   // }, []);
 
   return (
-    <Box className="slider-container w-full h-screen flex flex-col items-start justify-end overflow-hidden  px-3 ">
-      <div className="slider-wrapper flex flex-row flex-nowrap items-start justify-start gap-2 h-[auto] -mx-3">
-        {teamMembers.map((m, index) => {
-          return (
-            <Box
-              key={index}
-              className="team-member bg-white rounded-2xl h-full w-[33.333vw] shrink-0  opacity-0"
-            >
-              <Box className="px-3 py-2 flex flex-col gap-1">
-                <Box className="team-member-name text-light-grey text-base/none opacity-100">
-                  {m.name}
-                </Box>
-                <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
-                  <Box className="team-member-image flex-1 h-full opacity-100">
-                    <img
-                      src={m.image}
-                      width={"267"}
-                      height={"312"}
-                      className="w-auto h-full max-h-[312px]"
-                    />
+    <Swiper {...swiperSettings}>
+      {type === "team"
+        ? teamMembers.map((m, index) => (
+            <SwiperSlide key={index} className="w-[30vw]">
+              <Box className="team-member bg-white rounded-2xl h-full w-full opacity-100">
+                <Box className="px-3 py-2 flex flex-col gap-1 h-full">
+                  <Box className="team-member-name text-light-grey text-base/none opacity-100">
+                    {m.name}
                   </Box>
-                  <Box className="flex-2  text-light-grey flex flex-col justify-between">
-                    <Box className="team-member-text text-base opacity-100">
-                      {m.text}
+                  <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
+                    <Box className="team-member-image h-full opacity-100 flex items-center justify-center ">
+                      <img
+                        src={m.image}
+                        width={267}
+                        height={312}
+                        className="w-full h-full object-cover aspect-266/311"
+                      />
                     </Box>
-                    <Box className="flex flex-row items-center justify-start gap-1">
-                      {m.socials.map((s, index) => {
-                        return (
+                    <Box className="flex-2 text-light-grey flex flex-col justify-between">
+                      <Box className="team-member-text text-base opacity-100">
+                        {m.text}
+                      </Box>
+                      <Box className="flex flex-row items-center justify-start gap-1">
+                        {m.socials.map((s, index) => (
                           <Box
                             key={index}
-                            className="font-mono text-sm text-light-grey bg-(--background) rounded-xl px-1 py-0.5"
+                            className="font-mono text-sm text-light-grey bg-gray-100 rounded-xl px-2 py-0.5"
                           >
                             <span className="team-member-social opacity-100">
                               {s.platform}
                             </span>
                           </Box>
-                        );
-                      })}
+                        ))}
+                      </Box>
                     </Box>
                   </Box>
                 </Box>
               </Box>
-            </Box>
-          );
-        })}
-      </div>
-    </Box>
+            </SwiperSlide>
+          ))
+        : data?.map((item: any, index: number) => (
+            <SwiperSlide key={index}>
+              <img
+                src={item.url}
+                alt={"item.alt"}
+                className="w-full h-full object-cover aspect-361/301"
+              />
+            </SwiperSlide>
+          ))}
+    </Swiper>
   );
 };
 

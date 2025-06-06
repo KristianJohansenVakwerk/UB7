@@ -19,7 +19,7 @@ const SectionPortfolioBackground = (props: Props) => {
             src={entry.media}
             alt="background"
             className={clsx(
-              "ani-image absolute top-0 left-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-800 ease-in-out",
+              "ani-image absolute top-0 left-0 w-full h-full object-cover object-center opacity-0 transition-opacity duration-500 ease-in-out",
               activeSector === index && active && "opacity-100"
             )}
           />

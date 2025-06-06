@@ -1,50 +1,92 @@
-"use cleint";
+"use client";
 
 import React, { useRef } from "react";
 import { useGSAP } from "@gsap/react";
+import { SplitText } from "gsap/SplitText";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import clsx from "clsx";
+import { globalSectionTriggers } from "@/app/utils/gsapUtils";
+import { useStore } from "@/store/store";
+// Register the SplitText plugin
+gsap.registerPlugin(SplitText);
 
-import SplitText from "../../shared/SplitText/SplitText";
 const SectionTitle = ({ title, id }: { title: string; id: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   const linesContainerRef = useRef<HTMLDivElement>(null);
-
+  const textRef = useRef<HTMLDivElement>(null);
+  const { hoverSector } = useStore();
   useGSAP(
     () => {
+      // Find the matching section trigger for this title
+      const sectionTrigger = globalSectionTriggers.find(
+        (trigger) => trigger.id === id
+      );
+
+      if (!sectionTrigger || !textRef.current) return;
+
+      // Create the split text
+      const splitText = new SplitText(textRef.current, {
+        type: "lines",
+        linesClass: "split-line",
+        preserveSpaces: true,
+        preserveNewlines: true,
+      });
+
+      console.log(splitText.lines);
+
       const tl = gsap.timeline({
         paused: true,
         scrollTrigger: {
           id: `title-${id}`,
           trigger: ref.current,
-          start: "top top",
-          end: "+=20%",
+          start: sectionTrigger.start,
+          end: sectionTrigger.end,
           markers: false,
           scrub: false,
           toggleActions: "play none reverse reverse",
         },
       });
 
-      tl.to(ref.current, {
+      gsap.set(splitText.lines, {
+        y: 30,
+        opacity: 0,
+      });
+
+      tl.to(splitText.lines, {
+        y: 0,
         opacity: 1,
         duration: 0.2,
-        ease: "power2.inOut",
+        stagger: 0.05,
+        ease: "power2.out",
       });
+
+      // Cleanup function
+      return () => {
+        splitText.revert();
+      };
     },
-    { scope: ref, dependencies: [] }
+    { scope: ref, dependencies: [id, title] }
   );
 
   return (
-    <div
-      ref={ref}
-      className={clsx(
-        "section-title sticky top-3 mb-6 z-10 opacity-0 px-3"
-        // activeIndex === index ? "opacity-100" : "opacity-0"
-      )}
-    >
-      <SplitText text={title} ref={linesContainerRef} />
-    </div>
+    <>
+      <div
+        ref={ref}
+        className={clsx(
+          "section-title sticky top-6 mb-6 z-10 px-3 transition-all duration-800 ease-in-out",
+          hoverSector && "mix-blend-color-dodge"
+        )}
+      >
+        <div ref={textRef} className="text-sm lg:text-[3.5vw] leading-none">
+          {title.split("<br>").map((line, index) => (
+            <span className={clsx("text-dark-grey ")} key={index}>
+              {line}
+              {index < title.split("<br>").length - 1 && <br />}
+            </span>
+          ))}
+        </div>
+      </div>
+    </>
   );
 };
 

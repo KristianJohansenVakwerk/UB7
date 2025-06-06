@@ -16,10 +16,11 @@
 :root {
   --background: #e5e5e5;
   --foreground: #3f3f3f;
-
+  --dark-grey: #3f3f3f;
   --font-size: 10px;
   --spacing: 1rem;
   --font-rm-neue: "RM Neue";
+
   --font-gt-america-mono: "GT America Mono";
 }
 
@@ -28,13 +29,20 @@
   --color-foreground: var(--foreground);
   --background-light-grey: var(--background);
   --color-light-grey: #676767;
+  --color-dark-grey: var(--dark-grey);
   --font-sans: var(--font-rm-neue);
   --font-mono: var(--font-gt-america-mono);
+  --text-xs: 0.938rem;
+  --text-heading: 2.5rem;
   --text-sm: 1rem;
   --text-base: 1.25rem;
   --text-base--line-height: 1.2;
+  --text-md: 3.625rem;
+  --text-md--line-height: 1.02;
   --text-lg: 5.125rem;
   --text-lg--line-height: 1.02;
+  --radius-menu: 35px;
+  --radius-progress-bar: 20px;
 }
 /* 
 @media (prefers-color-scheme: dark) {
@@ -49,6 +57,9 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .gradient-background {
@@ -124,8 +135,6 @@ nav button:hover {
   background-color: #555;
 }
 
-
-
 /* Lenis Scrollbar Styles */
 .lenis-scrollbar {
   position: fixed;
@@ -148,4 +157,12 @@ nav button:hover {
 
 .lenis-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+  @apply font-sans text-heading;
+}
+
+p {
+  @apply font-sans text-base;
 }

@@ -5,13 +5,18 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import SectionPortfolioBackground from "./SectionPortfolioBackground";
 import React from "react";
+import { useStore } from "@/store/store";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import Sectors from "../../Sectors/Sectors";
 
 const SectionPortfolio = (props: any) => {
   const { data } = props;
   const [activeSector, setActiveSector] = useState<number | null>(null);
   const [ready, setReady] = useState<boolean>(true);
   const [showUI, setShowUI] = useState<boolean>(false);
-
+  const { setHoverSector } = useStore();
+  const router = useRouter();
   useGSAP((context, contextSafe) => {
     const tl = gsap.timeline({
       onReverseComplete: () => {
@@ -25,25 +30,42 @@ const SectionPortfolio = (props: any) => {
         scroller: "body",
         start: "top top",
         end: "+=80%",
-        toggleActions: "play none reverse reverse",
+        toggleActions: "play none none reverse",
         markers: false,
         scrub: true,
 
         onUpdate: (self) => {
           const progress = self.progress;
-
           if (progress > 0.5 && progress < 0.85) {
             setShowUI(true);
           } else {
             setShowUI(false);
           }
         },
+        // onEnter: () => {
+        //   setShowUI(true);
+        // },
+        // onLeave: () => {
+        //   setShowUI(false);
+        //   gsap.to(".sector-item", {
+        //     opacity: 0,
+        //     stagger: 0.2,
+        //   });
+        // },
+        // onEnterBack: () => {
+        //   setShowUI(true);
+        //   gsap.to(".sector-item", {
+        //     opacity: 1,
+        //     stagger: 0.2,
+        //   });
+        // },
       },
     });
 
     tl.to(".sector-item", {
       width: "25%",
       stagger: 0.2,
+      duration: 0.4,
     });
 
     tl.to(
@@ -54,6 +76,7 @@ const SectionPortfolio = (props: any) => {
         backgroundColor: "rgba(255,255,255,0.5)",
         borderColor: "transparent",
         stagger: 0.2,
+        duration: 0.4,
       },
       "<"
     );
@@ -63,7 +86,8 @@ const SectionPortfolio = (props: any) => {
       {
         opacity: 1,
         stagger: 0.2,
-        delay: 2,
+        delay: 0.5,
+        duration: 0.4,
       },
       "<"
     );
@@ -129,6 +153,7 @@ const SectionPortfolio = (props: any) => {
       if (!showUI) return;
       setActiveSector(index);
       playAccordion(index);
+      setHoverSector(true);
     },
     [showUI]
   );
@@ -137,6 +162,7 @@ const SectionPortfolio = (props: any) => {
     if (!showUI) return;
     setActiveSector(null);
     resetAccordion();
+    setHoverSector(false);
   }, [showUI]);
 
   const resetAccordion = useCallback(() => {
@@ -189,6 +215,16 @@ const SectionPortfolio = (props: any) => {
     accordionAnis.current[index].play();
     activeIndexRef.current = index;
   }, []);
+  const goToSector = (slug: string) => {
+    // gsap.to(["#progress"], {
+    //   opacity: 0,
+    //   duration: 0.4,
+    //   ease: "power2.inOut",
+    //   onComplete: () => {
+    //     // router.push(`/${slug}`);
+    //   },
+    // });
+  };
 
   return (
     <>
@@ -248,9 +284,11 @@ const SectionPortfolio = (props: any) => {
                     return (
                       <div
                         key={index + ix}
-                        className="sector-item-content-entry opacity-0 translate-y-[-5px]"
+                        className="sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer"
                       >
-                        <div>{entry.title}</div>
+                        <div onClick={() => goToSector(entry.slug)}>
+                          {entry.title}
+                        </div>
                       </div>
                     );
                   })}
@@ -265,6 +303,8 @@ const SectionPortfolio = (props: any) => {
         data={data}
         active={showUI}
       />
+
+      <Sectors data={data} />
     </>
   );
 };
