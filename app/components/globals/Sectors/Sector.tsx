@@ -1,46 +1,43 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Slider from "../../shared/Slider/Slider";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+
 type Props = {
   data: any;
   index: number;
+  currentIndex: number | null;
 };
 const Sector = (props: Props) => {
-  const { data, index } = props;
+  const { data, index, currentIndex } = props;
+  const draggableRef = useRef<HTMLDivElement>(null);
 
-  console.log(data.title);
-
-  // Calculate the translation based on index
-  // Calculate the translation based on index
-  const getTranslation = () => {
-    if (index === 0) {
-      return "translateY(0) translateZ(0px)"; // First item centered
-    } else if (index === 1) {
-      return "translateY(-100px) scale(0.95)"; // Second item moved up
-    } else if (index === 2) {
-      return "translateY(-200px) scale(0.9)"; // Third item moved up more
-    } else {
-      return "translateY(-200px) scale(0.9)"; // Rest of the items below
-    }
-  };
-
-  const getZIndex = () => {
-    return 100 - index; // This will make earlier items appear on top
-  };
+  useGSAP(() => {
+    gsap.to(draggableRef.current, {
+      y: getTranslation(index, currentIndex || 0),
+      scale: getScale(index, currentIndex || 0),
+      duration: 0.8,
+      ease: "elastic",
+    });
+  }, [currentIndex]);
 
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center"
-      style={{ perspective: "1000px", zIndex: getZIndex() }}
+      className="sector-draggable-container absolute inset-0  flex items-center justify-center  "
+      style={{
+        perspective: "1000px",
+        zIndex: getZIndex(index),
+        pointerEvents: currentIndex === index ? "auto" : "none",
+      }}
     >
       <div
-        className="h-[80vh] w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        ref={draggableRef}
+        className="sector-draggable h-[80vh] w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pointer-events-auto "
         data-lenis-prevent
         style={{
           transformStyle: "preserve-3d",
-          transition: "transform 0.3s ease-out",
-          transform: getTranslation(),
           backfaceVisibility: "hidden",
           transformOrigin: "center center",
         }}
@@ -83,11 +80,15 @@ const Sector = (props: Props) => {
                   data.socials.map((s: any, index: number) => (
                     <div
                       key={index}
-                      className="font-mono text-xs text-light-grey bg-gray-100 rounded-xl px-1 py-0.5"
+                      className="clickable font-mono text-xs text-light-grey bg-gray-100 rounded-xl px-1 py-0.5"
                     >
-                      <span className="team-member-social opacity-100">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        className="team-member-social opacity-100"
+                      >
                         {s.platform}
-                      </span>
+                      </a>
                     </div>
                   ))}
               </div>
@@ -126,3 +127,31 @@ const Sector = (props: Props) => {
 };
 
 export default Sector;
+
+export const getScale = (index: number, currentIndex: number) => {
+  if (index === currentIndex) {
+    return 1; // First item centered
+  } else if (index === currentIndex + 1) {
+    return 0.95; // Second item moved up
+  } else if (index === currentIndex + 2) {
+    return 0.9; // Third item moved up more
+  } else {
+    return 0.9; // Rest of the items below
+  }
+};
+
+export const getTranslation = (index: number, currentIndex: number) => {
+  if (index === currentIndex) {
+    return "0"; // First item centered
+  } else if (index === currentIndex + 1) {
+    return "-3vh"; // Second item moved up
+  } else if (index === currentIndex + 2) {
+    return "-6vh"; // Third item moved up more
+  } else {
+    return "-6vh"; // Rest of the items below
+  }
+};
+
+const getZIndex = (index: number) => {
+  return 100 - index; // This will make earlier items appear on top
+};

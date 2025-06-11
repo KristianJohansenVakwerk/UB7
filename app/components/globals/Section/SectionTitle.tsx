@@ -14,7 +14,7 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
   const ref = useRef<HTMLDivElement>(null);
   const linesContainerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
-  const { hoverSector } = useStore();
+  const { hoverSector, sectorsActive } = useStore();
   useGSAP(
     () => {
       // Find the matching section trigger for this title
@@ -67,6 +67,16 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
     },
     { scope: ref, dependencies: [id, title] }
   );
+
+  useGSAP(() => {
+    if (sectorsActive) {
+      gsap.to(ref.current, {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.inOut",
+      });
+    }
+  }, [sectorsActive]);
 
   return (
     <>

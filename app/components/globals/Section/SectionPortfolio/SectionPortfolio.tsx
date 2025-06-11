@@ -12,11 +12,29 @@ import Sectors from "../../Sectors/Sectors";
 
 const SectionPortfolio = (props: any) => {
   const { data } = props;
-  const [activeSector, setActiveSector] = useState<number | null>(null);
+  const [activeSector, setActiveSector] = useState<string | null>(null);
+
+  const [entries, setEntries] = useState<any[]>(
+    data.flatMap((sector: any, sectorIndex: number) =>
+      sector.entries.map((entry: any) => ({
+        ...entry,
+        sectorIndex,
+        media: sector.media,
+      }))
+    )
+  );
+  const [entriesFrom, setEntriesFrom] = useState<number>(0);
+  const [entriesTo, setEntriesTo] = useState<number>(entries.length - 1);
+
   const [ready, setReady] = useState<boolean>(true);
-  const [showUI, setShowUI] = useState<boolean>(false);
-  const { setHoverSector } = useStore();
+  const [showUI, setShowUI] = useState<boolean>(true);
+  const [deactivateMouseEvents, setDeactivateMouseEvents] =
+    useState<boolean>(false);
+  const [showExpandedSectors, setShowExpandedSectors] =
+    useState<boolean>(false);
+  const { setHoverSector, setSectorsActive } = useStore();
   const router = useRouter();
+
   useGSAP((context, contextSafe) => {
     const tl = gsap.timeline({
       onReverseComplete: () => {
@@ -32,15 +50,15 @@ const SectionPortfolio = (props: any) => {
         end: "+=80%",
         toggleActions: "play none none reverse",
         markers: false,
-        scrub: true,
+        scrub: false,
 
         onUpdate: (self) => {
-          const progress = self.progress;
-          if (progress > 0.5 && progress < 0.85) {
-            setShowUI(true);
-          } else {
-            setShowUI(false);
-          }
+          // const progress = self.progress;
+          // if (progress > 0.5 && progress < 0.85) {
+          //   setShowUI(true);
+          // } else {
+          //   setShowUI(false);
+          // }
         },
         // onEnter: () => {
         //   setShowUI(true);
@@ -92,14 +110,14 @@ const SectionPortfolio = (props: any) => {
       "<"
     );
 
-    tl.to(
-      ".sector-item",
-      {
-        opacity: 0,
-        stagger: 0.2,
-      },
-      "+=1.0"
-    );
+    // tl.to(
+    //   ".sector-item",
+    //   {
+    //     opacity: 0,
+    //     stagger: 0.2,
+    //   },
+    //   "+=1.0"
+    // );
   }, []);
 
   // useEffect(() => {
@@ -116,7 +134,8 @@ const SectionPortfolio = (props: any) => {
     const sectors = gsap.utils.toArray(".sector-item-content");
 
     accordionAnis.current = sectors.map((sector: any, index: number) => {
-      const sectorHeight = sector.scrollHeight;
+      const sectorHeight = sector.clientHeight;
+      console.log("sectorHeight", sectorHeight);
 
       gsap.set(sector, { height: 0 });
 
@@ -149,25 +168,59 @@ const SectionPortfolio = (props: any) => {
   }, [showUI]);
 
   const handleMouseEnter = useCallback(
-    (index: number) => {
-      if (!showUI) return;
-      setActiveSector(index);
+    (index: number, sector: string) => {
+      if (!showUI || deactivateMouseEvents) return;
+
+      setActiveSector(sector);
       playAccordion(index);
       setHoverSector(true);
     },
-    [showUI]
+    [showUI, deactivateMouseEvents]
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (!showUI) return;
-    setActiveSector(null);
+    if (!showUI || deactivateMouseEvents) return;
+
+    setActiveSector("");
     resetAccordion();
     setHoverSector(false);
-  }, [showUI]);
+  }, [showUI, deactivateMouseEvents]);
 
-  const resetAccordion = useCallback(() => {
+  const showExpandedectors = (
+    slug: string,
+    sector: string,
+    entryIndex: number
+  ) => {
+    setEntries((prev) => entries.slice(entryIndex, prev.length - 1));
+
+    setEntriesFrom(entryIndex);
+
+    setActiveSector(sector);
+    setDeactivateMouseEvents(true);
+    resetAccordion(() => {
+      gsap.to(".sector-item", {
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setShowExpandedSectors(true);
+          setSectorsActive(true);
+        },
+      });
+    });
+  };
+
+  const handleUpdateSector = (sector: string) => {
+    setActiveSector(sector);
+  };
+
+  const resetAccordion = useCallback((cb?: () => void) => {
     accordionAnis.current.forEach((tl: any) => {
       tl.reverse();
+      tl.eventCallback("onReverseComplete", () => {
+        cb?.();
+      });
     });
     iconAnis.current.forEach((tl: any) => {
       tl.reverse();
@@ -215,16 +268,6 @@ const SectionPortfolio = (props: any) => {
     accordionAnis.current[index].play();
     activeIndexRef.current = index;
   }, []);
-  const goToSector = (slug: string) => {
-    // gsap.to(["#progress"], {
-    //   opacity: 0,
-    //   duration: 0.4,
-    //   ease: "power2.inOut",
-    //   onComplete: () => {
-    //     // router.push(`/${slug}`);
-    //   },
-    // });
-  };
 
   return (
     <>
@@ -235,17 +278,15 @@ const SectionPortfolio = (props: any) => {
         )}
       >
         {data.map((sector: any, index: number) => {
+          const realIndex = index * sector.entries.length;
           return (
             <div
               key={index}
-              className="sector-item relative  w-[53px]"
-              onMouseEnter={() => handleMouseEnter(index)}
+              className="sector-item relative w-[53px]"
+              onMouseEnter={() => handleMouseEnter(index, sector.title)}
               onMouseLeave={() => handleMouseLeave()}
             >
-              <div
-                className="absolute top-0 left-0 sector-item-trigger w-[53px] h-[53px]  rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
-                onClick={() => playAccordion(index)}
-              >
+              <div className="absolute top-0 left-0 sector-item-trigger w-[53px] h-[53px]  rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]">
                 <div className="sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer">
                   <div className={"font-mono text-sm"}>{sector.title}</div>
 
@@ -278,7 +319,7 @@ const SectionPortfolio = (props: any) => {
                 </div>
               </div>
 
-              <div className="absolute top-0 left-0 w-full sector-item-content bg-white rounded-[27px]  overflow-hidden z-0">
+              <div className="absolute top-0 left-0 w-full h-fit sector-item-content bg-white rounded-[27px]  overflow-hidden z-0">
                 <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
                   {sector.entries.map((entry: any, ix: number) => {
                     return (
@@ -286,7 +327,15 @@ const SectionPortfolio = (props: any) => {
                         key={index + ix}
                         className="sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer"
                       >
-                        <div onClick={() => goToSector(entry.slug)}>
+                        <div
+                          onClick={() =>
+                            showExpandedectors(
+                              entry.slug,
+                              entry.sector,
+                              realIndex + ix
+                            )
+                          }
+                        >
                           {entry.title}
                         </div>
                       </div>
@@ -304,7 +353,13 @@ const SectionPortfolio = (props: any) => {
         active={showUI}
       />
 
-      <Sectors data={data} />
+      <Sectors
+        entries={entries}
+        entriesFrom={entriesFrom}
+        entriesTo={entriesTo}
+        active={showUI && showExpandedSectors}
+        updateCurrentSector={handleUpdateSector}
+      />
     </>
   );
 };

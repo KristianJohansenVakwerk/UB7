@@ -7,12 +7,13 @@ import { useRef, useEffect } from "react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { globalSectionTriggers } from "@/app/utils/gsapUtils";
 import clsx from "clsx";
+import { useStore } from "@/store/store";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Progress = () => {
   const progressRef = useRef<HTMLDivElement>(null);
-
+  const { sectorsActive } = useStore();
   const sectionTriggers = [
     { start: "bottom top", end: "bottom top", id: "intro" },
     ...globalSectionTriggers,
@@ -43,7 +44,6 @@ const Progress = () => {
           });
         },
         onEnter: () => {
-          console.log("onEnter", section.id);
           // Optional: Add any additional effects when entering the section
           if (progressRef.current && section.id !== "intro") {
             gsap.to(progressRef.current, {
@@ -54,7 +54,6 @@ const Progress = () => {
           }
         },
         onEnterBack: () => {
-          console.log("onEnter back", section.id);
           // Optional: Reset the color when leaving the section
 
           if (progressRef.current && section.id === "intro") {
@@ -66,6 +65,16 @@ const Progress = () => {
       });
     });
   }, []);
+
+  useGSAP(() => {
+    if (sectorsActive) {
+      gsap.to(progressRef.current, {
+        opacity: 0,
+        duration: 0.2,
+        ease: "power2.inOut",
+      });
+    }
+  }, [sectorsActive]);
 
   return (
     <div
