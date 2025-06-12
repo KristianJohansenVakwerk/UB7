@@ -47,11 +47,13 @@ const SectionPortfolio = (props: any) => {
         trigger: ".section-portfolio",
         scroller: "body",
         start: "top top",
-        end: "+=80%",
+        end: `+=100%`,
         toggleActions: "play none none reverse",
         markers: false,
         scrub: false,
-
+        pin: true,
+        pinSpacing: true,
+        // anticipatePin: 1,
         onUpdate: (self) => {
           // const progress = self.progress;
           // if (progress > 0.5 && progress < 0.85) {
@@ -63,20 +65,20 @@ const SectionPortfolio = (props: any) => {
         // onEnter: () => {
         //   setShowUI(true);
         // },
-        // onLeave: () => {
-        //   setShowUI(false);
-        //   gsap.to(".sector-item", {
-        //     opacity: 0,
-        //     stagger: 0.2,
-        //   });
-        // },
-        // onEnterBack: () => {
-        //   setShowUI(true);
-        //   gsap.to(".sector-item", {
-        //     opacity: 1,
-        //     stagger: 0.2,
-        //   });
-        // },
+        onLeave: () => {
+          // setShowUI(false);
+          gsap.to(".sector-item", {
+            opacity: 0,
+            stagger: 0.2,
+          });
+        },
+        onEnterBack: () => {
+          // setShowUI(true);
+          gsap.to(".sector-item", {
+            opacity: 1,
+            stagger: 0.2,
+          });
+        },
       },
     });
 
@@ -191,10 +193,7 @@ const SectionPortfolio = (props: any) => {
     sector: string,
     entryIndex: number
   ) => {
-    setEntries((prev) => entries.slice(entryIndex, prev.length - 1));
-
     setEntriesFrom(entryIndex);
-
     setActiveSector(sector);
     setDeactivateMouseEvents(true);
     resetAccordion(() => {
@@ -273,7 +272,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "sticky top-[55%] flex flex-row items-center justify-start gap-0 w-full z-10 px-3",
+          " flex flex-row items-center justify-start gap-0 w-full z-10 px-3 h-screen",
           !ready && "opacity-0"
         )}
       >

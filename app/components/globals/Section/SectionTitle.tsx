@@ -83,7 +83,7 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
       <div
         ref={ref}
         className={clsx(
-          "section-title sticky top-6 mb-6 z-10 px-3 transition-all duration-800 ease-in-out",
+          "section-title absolute top-4 mb-6 z-10 px-3  ",
           hoverSector && "mix-blend-color-dodge"
         )}
       >
