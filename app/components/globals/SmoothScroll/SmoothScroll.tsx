@@ -78,7 +78,9 @@ const SmoothScroll = () => {
                 "relative section flex flex-col items-start justify-start w-screen",
                 ` section-${index + 1}`,
                 `section-${section.id}`,
-                section.id === "about" && "h-[auto] px-0"
+                section.id === "portfolio" && "h-[120vh]",
+                section.id === "about" && "h-[auto] px-0",
+                section.id === "contact" && "h-screen"
               )}
             >
               <SectionTitle title={section.text} id={section.id} />

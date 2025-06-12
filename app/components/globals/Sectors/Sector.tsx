@@ -9,18 +9,19 @@ type Props = {
   data: any;
   index: number;
   currentIndex: number | null;
+  active: boolean;
 };
 const Sector = (props: Props) => {
-  const { data, index, currentIndex } = props;
+  const { data, index, currentIndex, active } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.to(draggableRef.current, {
-      y: getTranslation(index, currentIndex || 0),
-      scale: getScale(index, currentIndex || 0),
-      duration: 0.8,
-      ease: "elastic",
-    });
+    // gsap.to(draggableRef.current, {
+    //   y: getTranslation(index, currentIndex || 0),
+    //   scale: getScale(index, currentIndex || 0),
+    //   duration: 0.8,
+    //   ease: "elastic",
+    // });
   }, [currentIndex]);
 
   return (
@@ -141,6 +142,7 @@ export const getScale = (index: number, currentIndex: number) => {
 };
 
 export const getTranslation = (index: number, currentIndex: number) => {
+  console.log("index", index, currentIndex);
   if (index === currentIndex) {
     return "0"; // First item centered
   } else if (index === currentIndex + 1) {

@@ -66,15 +66,21 @@ const Progress = () => {
     });
   }, []);
 
-  useGSAP(() => {
-    if (sectorsActive) {
-      gsap.to(progressRef.current, {
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.inOut",
-      });
-    }
-  }, [sectorsActive]);
+  // useGSAP(() => {
+  //   if (sectorsActive) {
+  //     gsap.to(progressRef.current, {
+  //       opacity: 0,
+  //       duration: 0.2,
+  //       ease: "power2.inOut",
+  //     });
+  //   } else {
+  //     gsap.to(progressRef.current, {
+  //       opacity: 1,
+  //       duration: 0.2,
+  //       ease: "power2.inOut",
+  //     });
+  //   }
+  // }, [sectorsActive]);
 
   return (
     <div

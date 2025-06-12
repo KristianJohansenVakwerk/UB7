@@ -75,12 +75,19 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
         duration: 0.2,
         ease: "power2.inOut",
       });
+    } else {
+      gsap.to(ref.current, {
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.inOut",
+      });
     }
   }, [sectorsActive]);
 
   return (
     <>
       <div
+        id={`section-title-${id}`}
         ref={ref}
         className={clsx(
           "section-title absolute top-4 mb-6 z-10 px-3  ",
