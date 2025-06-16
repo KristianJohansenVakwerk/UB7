@@ -58,7 +58,7 @@ const SectionPortfolio = (props: any) => {
         start: "top top",
         end: `+=100%`,
         toggleActions: "play none none reverse",
-        markers: true,
+        markers: false,
         scrub: false,
         pin: true,
         pinSpacing: true,
