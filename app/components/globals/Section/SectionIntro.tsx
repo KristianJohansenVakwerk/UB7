@@ -6,6 +6,7 @@ import Box from "../../ui/Box/Box";
 import { useRef } from "react";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 import { useLenis } from "lenis/react";
+import Intro3D from "../../shared/Intro3D/Intro3D";
 
 const SectionIntro = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -41,11 +42,12 @@ const SectionIntro = () => {
     <Box
       id="intro"
       ref={ref}
-      className="intro w-screen h-screen relative gradient-background b"
+      className="intro w-screen h-screen relative bg-red-500"
     >
-      <div className={"clip-path-container "}>
+      <Intro3D />
+      {/* <div className={"clip-path-container "}>
         <span className={"clip-path"}></span>
-      </div>
+      </div> */}
     </Box>
   );
 };

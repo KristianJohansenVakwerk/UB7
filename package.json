@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@react-three/fiber": "9.1",
     "@studio-freight/lenis": "^1.0.42",
     "clsx": "^2.1.1",
     "gsap": "^3.13.0",
@@ -19,6 +20,7 @@
     "react-dom": "^19.0.0",
     "swiper": "^11.2.8",
     "tempus": "^1.0.0-dev.11",
+    "three": "^0.174.0",
     "zustand": "^5.0.5"
   },
   "devDependencies": {
@@ -27,6 +29,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.177.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
