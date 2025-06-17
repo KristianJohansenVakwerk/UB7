@@ -9,7 +9,7 @@ import { useStore } from "@/store/store";
 import Sectors from "../../Sectors/Sectors";
 
 const SectionPortfolio = (props: any) => {
-  const { data } = props;
+  const { data, title } = props;
   const [activeSector, setActiveSector] = useState<string | null>(null);
 
   const [entries, setEntries] = useState<any[]>(
@@ -55,14 +55,15 @@ const SectionPortfolio = (props: any) => {
         });
       },
       scrollTrigger: {
+        id: "portfolio-trigger",
         trigger: ".section-portfolio",
         start: "top top",
-        end: `bottom center`,
+        end: `bottom top`,
         toggleActions: "play none none reverse",
-        markers: false,
+        markers: true,
         scrub: false,
         pin: true,
-        pinSpacing: false,
+        pinSpacing: true,
         anticipatePin: 1,
         onEnter: () => {
           console.log("onEnter");
@@ -294,8 +295,13 @@ const SectionPortfolio = (props: any) => {
 
   return (
     <>
-      <div className={clsx("gap-0 w-full z-10 px-3", !ready && "opacity-0")}>
-        <div className="h-[50vh] spacer"></div>
+      <div
+        className={clsx(
+          "gap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between",
+          !ready && "opacity-0"
+        )}
+      >
+        <div className={"text-title font-sans pt-7 "}>{title}</div>
 
         <div className="w-full relative flex flex-row items-center justify-start">
           {data.map((sector: any, index: number) => {
@@ -377,6 +383,8 @@ const SectionPortfolio = (props: any) => {
             );
           })}
         </div>
+
+        <div></div>
       </div>
 
       <SectionPortfolioBackground

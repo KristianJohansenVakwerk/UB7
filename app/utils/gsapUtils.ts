@@ -4,7 +4,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 export const globalSectionTriggers = [
-  { start: "top top", end: "bottom center", id: "portfolio" }, // Portfolio section
+  { start: "top top", end: "bottom bottom", id: "portfolio" }, // Portfolio section
   {
     start: "top center",
     end: () => {
@@ -24,16 +24,17 @@ export const globalSectionTriggers = [
   }, // About section
   {
     start: () => {
-      const nestedTrigger = ScrollTrigger.getById("nested-pin");
+      const nestedTrigger = ScrollTrigger.getById("slider-pinned");
       const spacer = nestedTrigger?.pin?.parentNode as any;
 
       if (spacer) {
         const spacerBottom = spacer.offsetTop + spacer.offsetHeight;
+
         return `+=${spacerBottom}px`;
       }
       return "top+=1000 top"; // fallback if needed
     },
-    end: "bottom bottom",
+    end: "+=100%",
     id: "contact",
   }, // Contact section
 ];

@@ -36,7 +36,7 @@ const Section = (props: Props) => {
       );
 
     case "contact":
-      return <SectionContact />;
+      return <SectionContact title={entry.title} />;
   }
 };
 

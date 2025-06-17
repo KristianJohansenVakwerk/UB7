@@ -493,3 +493,76 @@ export const portfolioData = [
     media: "/test-media/sectors/sector_4.jpg",
   },
 ];
+
+export interface TeamMember {
+  name: string;
+  text: string;
+  image: string;
+  socials: {
+    platform: string;
+    url: string;
+  }[];
+}
+
+export const teamMembers: TeamMember[] = [
+  {
+    name: "Thiago Silva Pontes 1",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_1.jpg",
+    socials: [
+      { platform: "Website", url: "https://thiagosilva.com" },
+      { platform: "Instagram", url: "https://instagram.com/thiagosilva" },
+      { platform: "Youtube", url: "https://youtube.com/thiagosilva" },
+    ],
+  },
+  {
+    name: "Vinicius Junior 2",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_2.jpg",
+    socials: [
+      { platform: "Website", url: "https://viniciusjr.com" },
+      { platform: "Instagram", url: "https://instagram.com/viniciusjr" },
+      { platform: "Youtube", url: "https://youtube.com/viniciusjr" },
+    ],
+  },
+  {
+    name: "Vini Jr.3",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_3.jpg",
+    socials: [
+      { platform: "Website", url: "https://vinijr.com" },
+      { platform: "Instagram", url: "https://instagram.com/vinijr" },
+      { platform: "Youtube", url: "https://youtube.com/vinijr" },
+    ],
+  },
+  {
+    name: "Thiago Silva Pontes 4",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_1.jpg",
+    socials: [
+      { platform: "Website", url: "https://thiagosilva.com" },
+      { platform: "Instagram", url: "https://instagram.com/thiagosilva" },
+      { platform: "Youtube", url: "https://youtube.com/thiagosilva" },
+    ],
+  },
+  {
+    name: "Vinicius Junior 5",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_2.jpg",
+    socials: [
+      { platform: "Website", url: "https://viniciusjr.com" },
+      { platform: "Instagram", url: "https://instagram.com/viniciusjr" },
+      { platform: "Youtube", url: "https://youtube.com/viniciusjr" },
+    ],
+  },
+  {
+    name: "Vini Jr. 6",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    image: "/test-media/m_3.jpg",
+    socials: [
+      { platform: "Website", url: "https://vinijr.com" },
+      { platform: "Instagram", url: "https://instagram.com/vinijr" },
+      { platform: "Youtube", url: "https://youtube.com/vinijr" },
+    ],
+  },
+];

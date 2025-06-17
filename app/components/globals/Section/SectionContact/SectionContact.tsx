@@ -8,7 +8,7 @@ import gsap from "gsap";
 // Register the plugins
 gsap.registerPlugin(SplitText, ScrollTrigger);
 
-type Props = {};
+type Props = { title: string };
 
 const info = [
   {
@@ -49,7 +49,7 @@ const info = [
 ];
 
 const SectionContact = (props: Props) => {
-  const {} = props;
+  const { title } = props;
   const container = useRef<HTMLDivElement>(null);
   const titleRefs = useRef<(HTMLDivElement | null)[]>([]);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -59,8 +59,8 @@ const SectionContact = (props: Props) => {
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container.current,
-          start: "top 30%",
-          end: "bottom 30%",
+          start: "top top",
+          end: "bottom bottom",
           markers: false,
           toggleActions: "play none none reverse",
         },
@@ -117,7 +117,7 @@ const SectionContact = (props: Props) => {
       ref={container}
       className="section w-full h-full flex flex-col gap-0 items-start justify-start px-3"
     >
-      <div className="w-full h-[50vh] spacer"></div>
+      <div className={"text-title font-sans pt-7  mb-5"}>{title}</div>
       <Box className="grid grid-cols-16 w-full">
         {info.map((item, index) => {
           return (

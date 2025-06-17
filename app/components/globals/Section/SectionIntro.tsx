@@ -37,11 +37,28 @@ const SectionIntro = () => {
     ref.current?.addEventListener("click", handleClick);
   }, [lenis]);
 
+  useGSAP(() => {
+    gsap.to(ref.current, {
+      scrollTrigger: {
+        id: "intro-new",
+        trigger: ref.current,
+        start: "top top",
+        end: "+=50%",
+        markers: false,
+        scrub: true,
+      },
+      autoAlpha: 0,
+      display: "none",
+      duration: 1,
+      ease: "power2.out",
+    });
+  });
+
   return (
     <Box
-      id="intro"
       ref={ref}
-      className="intro w-screen h-screen fixed top-0 left-0"
+      id="intro"
+      className="intro w-screen h-screen fixed top-0 left-0 opacity-100 "
     >
       {/* <Intro3D /> */}
 

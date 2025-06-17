@@ -40,7 +40,7 @@ export default function Home() {
       {/* <SectionsSnapCSS /> */}
 
       <Wrapper lenis={{}}>
-        <Progress />
+        {/* <Progress /> */}
         <SectionIntro />
         <SmoothScroll />
 

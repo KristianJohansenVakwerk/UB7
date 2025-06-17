@@ -18,28 +18,27 @@ import React from "react";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const SmoothScroll = () => {
-  const [activeSection, setActiveSection] = useState<number | null>(null);
-  useGSAP(() => {
-    const sections = gsap.utils.toArray(".section");
+  // const [activeSection, setActiveSection] = useState<number | null>(null);
+  // useGSAP(() => {
+  // const sections = gsap.utils.toArray(".section");
 
-    sections.forEach((section: any, index: number) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: globalSectionTriggers[index]?.start,
-        end: globalSectionTriggers[index]?.end,
-        markers: false,
-        id: `section-${index}`,
+  // sections.forEach((section: any, index: number) => {
+  //   ScrollTrigger.create({
+  //     trigger: section,
+  //     start: globalSectionTriggers[index]?.start,
+  //     end: globalSectionTriggers[index]?.end,
+  //     markers: false,
+  //     id: `section-${index}`,
 
-        onEnter: () => {
-          setActiveSection(index);
-        },
-        onEnterBack: () => {
-          setActiveSection(index);
-        },
-      });
-    });
-    ScrollTrigger.refresh();
-  }, []);
+  //     onEnter: () => {
+  //       setActiveSection(index);
+  //     },
+  //     onEnterBack: () => {
+  //       setActiveSection(index);
+  //     },
+  //   });
+  // });
+  // }, []);
 
   return (
     <div>
@@ -47,24 +46,24 @@ const SmoothScroll = () => {
       {sectionsData.map((section: any, index: number) => {
         return (
           <React.Fragment key={index}>
-            <SectionTitle title={section.text} id={section.id} />
+            {/* <SectionTitle title={section.text} id={section.id} /> */}
             <div
               id={section.id}
               className={clsx(
-                "relative section flex flex-col items-start justify-start w-screen bg-[#E5E5E5]",
+                "relative section flex flex-col items-start justify-start w-screen",
                 ` section-${index + 1}`,
                 `section-${section.id}`,
                 section.id === "portfolio" && "h-[100vh] ",
                 section.id === "about" && "h-[auto] px-0",
-                section.id === "contact" && "h-[100vh] bg-yellow-300"
+                section.id === "contact" && "h-screen"
               )}
             >
               {section.id === "portfolio" ? (
-                <SectionPortfolio data={portfolioData} />
+                <SectionPortfolio data={portfolioData} title={section.text} />
               ) : section.id === "about" ? (
-                <SectionAbout />
+                <SectionAbout title={section.text} />
               ) : section.id === "contact" ? (
-                <SectionContact />
+                <SectionContact title={section.text} />
               ) : (
                 <div>missing id</div>
               )}
