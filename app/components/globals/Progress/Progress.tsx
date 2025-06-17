@@ -34,7 +34,7 @@ const Progress = () => {
         trigger: targetElement,
         start: section.start,
         end: section.end,
-        markers: true,
+        markers: { indent: 200 * index + 1 },
         id: section.id,
         onUpdate: (self) => {
           gsap.to(progressBar, {
@@ -63,6 +63,8 @@ const Progress = () => {
           }
         },
       });
+
+      ScrollTrigger.refresh();
     });
   }, []);
 

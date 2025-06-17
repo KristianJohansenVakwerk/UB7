@@ -4,6 +4,7 @@ import cn from "clsx";
 import type { LenisOptions } from "lenis";
 
 import { Lenis } from "../Lenis/Lenis";
+import { useEffect, useState } from "react";
 
 interface WrapperProps {
   children: React.ReactNode;
@@ -19,9 +20,24 @@ export function Wrapper({
   onProgress,
   ...props
 }: WrapperProps) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setReady(true);
+    }, 500);
+  }, []);
+
   return (
     <>
-      <main className={cn("relative flex flex-col grow", className)} {...props}>
+      <main
+        className={cn(
+          "relative flex flex-col grow opacity-0",
+          className,
+          ready && "opacity-100"
+        )}
+        {...props}
+      >
         {children}
       </main>
       {lenis && (

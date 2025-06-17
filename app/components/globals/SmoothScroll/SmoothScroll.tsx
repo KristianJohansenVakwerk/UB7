@@ -38,10 +38,12 @@ const SmoothScroll = () => {
         },
       });
     });
+    ScrollTrigger.refresh();
   }, []);
 
   return (
     <div>
+      <div className="w-screen h-screen spacer"></div>
       {sectionsData.map((section: any, index: number) => {
         return (
           <React.Fragment key={index}>
@@ -49,12 +51,12 @@ const SmoothScroll = () => {
             <div
               id={section.id}
               className={clsx(
-                "relative section flex flex-col items-start justify-start w-screen",
+                "relative section flex flex-col items-start justify-start w-screen bg-[#E5E5E5]",
                 ` section-${index + 1}`,
                 `section-${section.id}`,
-                section.id === "portfolio" && "h-screen",
-                section.id === "about" && "h-[auto] px-0 ",
-                section.id === "contact" && "h-screen"
+                section.id === "portfolio" && "h-[100vh] ",
+                section.id === "about" && "h-[auto] px-0",
+                section.id === "contact" && "h-[100vh] bg-yellow-300"
               )}
             >
               {section.id === "portfolio" ? (

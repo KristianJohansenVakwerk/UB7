@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 import gsap from "gsap";
@@ -34,42 +34,77 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
       // const sections = document.querySelectorAll(".section");
       const section = document.querySelector(`#${id}`);
 
-      const tl = gsap.timeline({
+      gsap.timeline({
         paused: true,
         scrollTrigger: {
           id: `title-${id}`,
           trigger: section,
           start: sectionTrigger?.start,
           end: sectionTrigger?.end,
-          markers: { indent: 200 },
+          markers: { indent: 1000 },
           scrub: false,
           toggleActions: "play none reverse reverse",
-          onEnter: () => {},
+          onEnter: () => {
+            gsap.to(splitText.lines, {
+              y: 0,
+              opacity: 1,
+              duration: 0.2,
+              stagger: 0.05,
+              delay: 0.5,
+              willChange: "transform, opacity",
+              ease: "power2.out",
+            });
+          },
           onLeave: () => {
             gsap.to(splitText.lines, {
               y: -30,
               opacity: 0,
               duration: 0.2,
               stagger: 0.05,
+
+              willChange: "transform, opacity",
               ease: "power2.out",
             });
           },
-          onEnterBack: () => {},
+          onEnterBack: () => {
+            gsap.to(splitText.lines, {
+              y: 0,
+              opacity: 1,
+              duration: 0.2,
+              stagger: 0.05,
+              delay: 0.5,
+              willChange: "transform, opacity",
+              ease: "power2.out",
+            });
+          },
+          onLeaveBack: () => {
+            gsap.to(splitText.lines, {
+              y: -30,
+              opacity: 0,
+
+              willChange: "transform, opacity",
+              duration: 0.2,
+              stagger: 0.05,
+              ease: "power2.out",
+            });
+          },
         },
       });
 
       gsap.set(splitText.lines, {
         y: 30,
         opacity: 0,
+        willChange: "transform, opacity",
       });
 
-      tl.to(splitText.lines, {
-        y: 0,
-        opacity: 1,
-        duration: 0.2,
-        stagger: 0.05,
-        ease: "power2.out",
-      });
+      // tl.to(splitText.lines, {
+      //   y: 0,
+      //   opacity: 1,
+      //   duration: 0.2,
+      //   stagger: 0.05,
+      //   willChange: "transform, opacity",
+      //   ease: "power2.out",
+      // });
 
       // Cleanup function
       return () => {
@@ -79,22 +114,11 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
     { scope: ref, dependencies: [id, title] }
   );
 
-  // useGSAP(() => {
-  //   console.log(sectorsActive, "sectorsActive");
-  //   if (sectorsActive) {
-  //     gsap.to(ref.current, {
-  //       opacity: 0,
-  //       duration: 0.2,
-  //       ease: "power2.inOut",
-  //     });
-  //   } else {
-  //     gsap.to(ref.current, {
-  //       opacity: 1,
-  //       duration: 0.2,
-  //       ease: "power2.inOut",
-  //     });
-  //   }
-  // }, [sectorsActive]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     ref.current?.classList.add("opacity-100");
+  //   });
+  // }, []);
 
   return (
     <>
@@ -102,11 +126,11 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
         id={`section-title-${id}`}
         ref={ref}
         className={clsx(
-          "section-title fixed top-4 mb-6 z-10 px-3  ",
+          "section-title fixed top-4 mb-6 z-10 px-3",
           hoverSector && "mix-blend-color-dodge"
         )}
       >
-        <div ref={textRef} className="text-sm lg:text-[3.5vw] leading-none">
+        <div ref={textRef} className="text-sm lg:text-title ">
           {title.split("<br>").map((line, index) => (
             <span className={clsx("text-dark-grey ")} key={index}>
               {line}

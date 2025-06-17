@@ -20,10 +20,8 @@ const SectionIntro = () => {
         onComplete: () => {
           ScrollTrigger.refresh(true);
           ScrollTrigger.getAll().forEach((trigger) => {
-            console.log("trigger", trigger);
-
             if (trigger.animation) {
-              if (trigger.vars.id === "title-portfolio") {
+              if (trigger.vars.id === "portfolio") {
                 trigger.animation.play();
               } else {
                 const p = trigger.progress;
@@ -40,7 +38,11 @@ const SectionIntro = () => {
   }, [lenis]);
 
   return (
-    <Box id="intro" ref={ref} className="intro w-screen h-screen relative">
+    <Box
+      id="intro"
+      ref={ref}
+      className="intro w-screen h-screen fixed top-0 left-0"
+    >
       {/* <Intro3D /> */}
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none  flex flex-col items-center justify-end p-4 ">

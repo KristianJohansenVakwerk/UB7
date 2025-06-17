@@ -62,7 +62,7 @@ const SectionPortfolio = (props: any) => {
         markers: false,
         scrub: false,
         pin: true,
-        pinSpacing: true,
+        pinSpacing: false,
         anticipatePin: 1,
         onEnter: () => {
           console.log("onEnter");
