@@ -115,8 +115,9 @@ const SectionContact = (props: Props) => {
   return (
     <Box
       ref={container}
-      className="section w-full h-full flex flex-col gap-10 items-start justify-start px-3 py-7"
+      className="section w-full h-full flex flex-col gap-0 items-start justify-start px-3"
     >
+      <div className="w-full h-[50vh] spacer"></div>
       <Box className="grid grid-cols-16 w-full">
         {info.map((item, index) => {
           return (

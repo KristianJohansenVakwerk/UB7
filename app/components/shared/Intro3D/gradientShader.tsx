@@ -22,6 +22,7 @@ export const gradientMaterial = new THREE.ShaderMaterial({
     stop3: { value: 0.6394 },
     stop4: { value: 0.98 },
     mousePosition: { value: new THREE.Vector2(0, 0) },
+    time: { value: 0 },
   },
   vertexShader: `
       varying vec2 vUv;
@@ -40,6 +41,7 @@ export const gradientMaterial = new THREE.ShaderMaterial({
       uniform float stop3;
       uniform float stop4;
       uniform vec2 mousePosition;
+      uniform float time;
       varying vec2 vUv;
 
       float smoothStep(float edge0, float edge1, float x) {
@@ -66,10 +68,10 @@ export const gradientMaterial = new THREE.ShaderMaterial({
 
       void main() {
         // Apply mouse influence to the gradient
-        float t = vUv.y + mousePosition.x * 0.1;
+        float t = vUv.y + mousePosition.x * 0.1 + sin(time) * 0.1;
         
         // Sample and blur the gradient
-        float blurAmount = 0.02;
+        float blurAmount = 0.1;
         vec3 color = vec3(0.0);
         float samples = 5.0;
         

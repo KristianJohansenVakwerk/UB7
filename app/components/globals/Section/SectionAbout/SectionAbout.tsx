@@ -9,16 +9,16 @@ import clsx from "clsx";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const SectionAbout = () => {
   const container = useRef<HTMLDivElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const [sliderActive, setSliderActive] = useState(false);
-  const animationRef = useRef<any>(null);
+  // const wrapperRef = useRef<HTMLDivElement>(null);
+  // const [sliderActive, setSliderActive] = useState(false);
+  // const animationRef = useRef<any>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
   const sliderContainerRef = useRef<HTMLDivElement>(null);
   const sliderInnerContainerRef = useRef<HTMLDivElement>(null);
-  const [currentProgress, setCurrentProgress] = useState<string>("0");
-  const currentPositionRef = useRef(0);
-  const visibleSlidesRef = useRef<number>(1);
-  const newXPercentRef = useRef(0);
+  // const [currentProgress, setCurrentProgress] = useState<string>("0");
+  // const currentPositionRef = useRef(0);
+  // const visibleSlidesRef = useRef<number>(1);
+  // const newXPercentRef = useRef(0);
 
   useGSAP(() => {
     const slides = gsap.utils.toArray(".team-member");
@@ -34,7 +34,7 @@ const SectionAbout = () => {
         id: "image-scroll",
         markers: false,
         pin: true,
-        pinSpacing: false,
+        pinSpacing: true,
         anticipatePin: 1,
         onLeave: () => {
           gsap.to(imageContainerRef.current, {
@@ -63,8 +63,8 @@ const SectionAbout = () => {
         end: "1000px center",
         id: "slider-scroll",
 
-        pin: true,
-        pinSpacing: true,
+        pin: false,
+        pinSpacing: false,
         anticipatePin: 1,
         onEnter: () => {
           gsap.to(sliderInnerContainerRef.current, {
@@ -100,7 +100,8 @@ const SectionAbout = () => {
   }, []);
 
   return (
-    <div ref={container} className={clsx("relative w-full h-full pt-[50vh]")}>
+    <div ref={container} className={clsx("relative w-full h-full")}>
+      <div className="w-full h-[50vh] spacer bg-red-500"></div>
       <div
         ref={imageContainerRef}
         className="relative w-full justify-start pl-3 opacity-100"

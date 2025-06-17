@@ -34,7 +34,7 @@ const Progress = () => {
         trigger: targetElement,
         start: section.start,
         end: section.end,
-        markers: false,
+        markers: true,
         id: section.id,
         onUpdate: (self) => {
           gsap.to(progressBar, {
@@ -99,7 +99,7 @@ const Progress = () => {
           >
             <div
               id={`${section.id}-progress`}
-              className="h-full bg-white/80 rounded-progress-bar w-0"
+              className="h-full bg-blue-500 rounded-progress-bar w-0"
             />
           </div>
         );

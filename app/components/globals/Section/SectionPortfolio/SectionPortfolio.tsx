@@ -35,6 +35,8 @@ const SectionPortfolio = (props: any) => {
   useGSAP(() => {
     gsap.set(".sector-item", { width: "53px" });
 
+    console.log(document.querySelector(".section-portfolio")?.clientHeight);
+
     const tl = gsap.timeline({
       onComplete: () => {
         setShowUI(true);
@@ -54,9 +56,8 @@ const SectionPortfolio = (props: any) => {
       },
       scrollTrigger: {
         trigger: ".section-portfolio",
-        scroller: "body",
         start: "top top",
-        end: `+=100%`,
+        end: `bottom center`,
         toggleActions: "play none none reverse",
         markers: false,
         scrub: false,
@@ -167,7 +168,6 @@ const SectionPortfolio = (props: any) => {
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
-      console.log("deactivateMouseEvents", deactivateMouseEvents);
       if (deactivateMouseEvents) return;
 
       setActiveSector(sector);
@@ -294,90 +294,89 @@ const SectionPortfolio = (props: any) => {
 
   return (
     <>
-      <div
-        className={clsx(
-          " flex flex-row items-center justify-start gap-0 w-full z-10 px-3 h-screen",
-          !ready && "opacity-0"
-        )}
-      >
-        {data.map((sector: any, index: number) => {
-          const realIndex = index * sector.entries.length;
-          return (
-            <div
-              key={index}
-              className="sector-item relative w-[53px]"
-              onMouseEnter={() => handleMouseEnter(index, sector.title)}
-              onMouseLeave={() => handleMouseLeave()}
-            >
-              <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]">
-                <div
-                  className={clsx(
-                    "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer ",
-                    deactivateMouseEvents && "cursor-auto pointer-events-none"
-                  )}
-                >
-                  <div className={"font-mono text-sm"}>{sector.title}</div>
+      <div className={clsx("gap-0 w-full z-10 px-3", !ready && "opacity-0")}>
+        <div className="h-[50vh] spacer"></div>
 
-                  <svg
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+        <div className="w-full relative flex flex-row items-center justify-start">
+          {data.map((sector: any, index: number) => {
+            const realIndex = index * sector.entries.length;
+            return (
+              <div
+                key={index}
+                className="sector-item relative w-[53px]"
+                onMouseEnter={() => handleMouseEnter(index, sector.title)}
+                onMouseLeave={() => handleMouseLeave()}
+              >
+                <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]">
+                  <div
                     className={clsx(
-                      `currentColor sector-icon`,
-                      `sector-icon-${index}`
+                      "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer ",
+                      deactivateMouseEvents && "cursor-auto pointer-events-none"
                     )}
                   >
-                    <path
-                      d="M12 5V19"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M5 12H19"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              </div>
+                    <div className={"font-mono text-sm"}>{sector.title}</div>
 
-              <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-white rounded-[27px]  overflow-hidden z-0">
-                <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
-                  {sector.entries.map((entry: any, ix: number) => {
-                    return (
-                      <div
-                        key={index + ix}
-                        className={clsx(
-                          "sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer",
-                          deactivateMouseEvents &&
-                            "pointer-events-none cursor-auto"
-                        )}
-                      >
+                    <svg
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={clsx(
+                        `currentColor sector-icon`,
+                        `sector-icon-${index}`
+                      )}
+                    >
+                      <path
+                        d="M12 5V19"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path
+                        d="M5 12H19"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+
+                <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-white rounded-[27px]  overflow-hidden z-0">
+                  <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
+                    {sector.entries.map((entry: any, ix: number) => {
+                      return (
                         <div
-                          onClick={() =>
-                            showExpandedectors(
-                              entry.slug,
-                              entry.sector,
-                              realIndex + ix
-                            )
-                          }
+                          key={index + ix}
+                          className={clsx(
+                            "sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer",
+                            deactivateMouseEvents &&
+                              "pointer-events-none cursor-auto"
+                          )}
                         >
-                          {entry.title}
+                          <div
+                            onClick={() =>
+                              showExpandedectors(
+                                entry.slug,
+                                entry.sector,
+                                realIndex + ix
+                              )
+                            }
+                          >
+                            {entry.title}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
       <SectionPortfolioBackground

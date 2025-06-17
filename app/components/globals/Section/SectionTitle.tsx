@@ -12,7 +12,6 @@ gsap.registerPlugin(SplitText);
 
 const SectionTitle = ({ title, id }: { title: string; id: string }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const linesContainerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const { hoverSector, sectorsActive } = useStore();
   useGSAP(
@@ -32,18 +31,30 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
         preserveNewlines: true,
       });
 
-      console.log(splitText.lines);
+      // const sections = document.querySelectorAll(".section");
+      const section = document.querySelector(`#${id}`);
 
       const tl = gsap.timeline({
         paused: true,
         scrollTrigger: {
           id: `title-${id}`,
-          trigger: ref.current,
-          start: sectionTrigger.start,
-          end: sectionTrigger.end,
-          markers: false,
+          trigger: section,
+          start: sectionTrigger?.start,
+          end: sectionTrigger?.end,
+          markers: { indent: 200 },
           scrub: false,
           toggleActions: "play none reverse reverse",
+          onEnter: () => {},
+          onLeave: () => {
+            gsap.to(splitText.lines, {
+              y: -30,
+              opacity: 0,
+              duration: 0.2,
+              stagger: 0.05,
+              ease: "power2.out",
+            });
+          },
+          onEnterBack: () => {},
         },
       });
 
@@ -68,21 +79,22 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
     { scope: ref, dependencies: [id, title] }
   );
 
-  useGSAP(() => {
-    if (sectorsActive) {
-      gsap.to(ref.current, {
-        opacity: 0,
-        duration: 0.2,
-        ease: "power2.inOut",
-      });
-    } else {
-      gsap.to(ref.current, {
-        opacity: 1,
-        duration: 0.2,
-        ease: "power2.inOut",
-      });
-    }
-  }, [sectorsActive]);
+  // useGSAP(() => {
+  //   console.log(sectorsActive, "sectorsActive");
+  //   if (sectorsActive) {
+  //     gsap.to(ref.current, {
+  //       opacity: 0,
+  //       duration: 0.2,
+  //       ease: "power2.inOut",
+  //     });
+  //   } else {
+  //     gsap.to(ref.current, {
+  //       opacity: 1,
+  //       duration: 0.2,
+  //       ease: "power2.inOut",
+  //     });
+  //   }
+  // }, [sectorsActive]);
 
   return (
     <>
@@ -90,7 +102,7 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
         id={`section-title-${id}`}
         ref={ref}
         className={clsx(
-          "section-title absolute top-4 mb-6 z-10 px-3  ",
+          "section-title fixed top-4 mb-6 z-10 px-3  ",
           hoverSector && "mix-blend-color-dodge"
         )}
       >

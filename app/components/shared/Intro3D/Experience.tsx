@@ -29,15 +29,19 @@ const Experience = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  useFrame((state) => {});
+  useFrame((state) => {
+    if (gradientMaterial.uniforms) {
+      gradientMaterial.uniforms.time.value = state.clock.getElapsedTime() * 0.5;
+    }
+  });
 
   useEffect(() => {
-    if (gradientMaterial.uniforms) {
-      gradientMaterial.uniforms.mousePosition.value.set(
-        mousePosition.x,
-        mousePosition.y
-      );
-    }
+    // if (gradientMaterial.uniforms) {
+    //   gradientMaterial.uniforms.mousePosition.value.set(
+    //     mousePosition.x,
+    //     mousePosition.y
+    //   );
+    // }
   }, [mousePosition]);
 
   return (
