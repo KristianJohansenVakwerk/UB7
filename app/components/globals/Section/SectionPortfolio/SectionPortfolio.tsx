@@ -7,6 +7,7 @@ import SectionPortfolioBackground from "./SectionPortfolioBackground";
 import React from "react";
 import { useStore } from "@/store/store";
 import Sectors from "../../Sectors/Sectors";
+import SectionTitle from "../SectionTitle";
 
 const SectionPortfolio = (props: any) => {
   const { data, title } = props;
@@ -23,7 +24,7 @@ const SectionPortfolio = (props: any) => {
   );
   const [entriesFrom, setEntriesFrom] = useState<number>(0);
   const [entriesTo, setEntriesTo] = useState<number>(entries.length);
-
+  const [showTitle, setShowTitle] = useState<boolean>(false);
   const [ready, setReady] = useState<boolean>(true);
   const [showUI, setShowUI] = useState<boolean>(true);
   const [deactivateMouseEvents, setDeactivateMouseEvents] =
@@ -34,8 +35,6 @@ const SectionPortfolio = (props: any) => {
 
   useGSAP(() => {
     gsap.set(".sector-item", { width: "53px" });
-
-    console.log(document.querySelector(".section-portfolio")?.clientHeight);
 
     const tl = gsap.timeline({
       onComplete: () => {
@@ -60,15 +59,16 @@ const SectionPortfolio = (props: any) => {
         start: "top top",
         end: `bottom top`,
         toggleActions: "play none none reverse",
-        markers: true,
+        markers: false,
         scrub: false,
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
         onEnter: () => {
-          console.log("onEnter");
+          setShowTitle(true);
         },
         onLeave: () => {
+          setShowTitle(false);
           gsap.to(".sector-item", {
             opacity: 0,
             stagger: 0.2,
@@ -78,6 +78,7 @@ const SectionPortfolio = (props: any) => {
           });
         },
         onEnterBack: () => {
+          setShowTitle(true);
           gsap.to(".sector-item", {
             opacity: 1,
             stagger: 0.2,
@@ -85,6 +86,9 @@ const SectionPortfolio = (props: any) => {
               setDeactivateMouseEvents(false);
             },
           });
+        },
+        onLeaveBack: () => {
+          setShowTitle(false);
         },
       },
     });
@@ -203,7 +207,7 @@ const SectionPortfolio = (props: any) => {
         onComplete: () => {
           setShowExpandedSectors(true);
 
-          gsap.to(["#progress", "#section-title-portfolio"], {
+          gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
             opacity: 0,
             duration: 0.4,
             ease: "power4.inOut",
@@ -230,7 +234,7 @@ const SectionPortfolio = (props: any) => {
       duration: 0.2,
       ease: "power2.inOut",
       onComplete: () => {
-        gsap.to(["#progress", "#section-title-portfolio"], {
+        gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
           opacity: 1,
           duration: 0.4,
           ease: "power4.inOut",
@@ -301,9 +305,11 @@ const SectionPortfolio = (props: any) => {
           !ready && "opacity-0"
         )}
       >
-        <div className={"text-title font-sans pt-7 "}>{title}</div>
+        <div className={"pt-7"}>
+          <SectionTitle title={title} id={"portfolio"} play={showTitle} />
+        </div>
 
-        <div className="w-full relative flex flex-row items-center justify-start">
+        <div className="w-full relative flex flex-row items-center justify-start translate-y-[-53px]">
           {data.map((sector: any, index: number) => {
             const realIndex = index * sector.entries.length;
             return (

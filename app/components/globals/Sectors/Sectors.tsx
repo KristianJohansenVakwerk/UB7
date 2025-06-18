@@ -52,7 +52,6 @@ const Sectors = (props: SectorsProps) => {
 
   useGSAP(() => {
     gsap.set(sectorsContainerRef.current, { autoAlpha: 0 });
-    console.log("active", active);
 
     if (active) {
       activeContainersRef.current = draggableContainers.current.slice(
@@ -305,9 +304,9 @@ const Sectors = (props: SectorsProps) => {
     if (!currentIndex) return;
 
     if (currentIndex <= entries.length - 1) {
-      updateCurrentSector(entries[currentIndex].sector);
+      updateCurrentSector(entries[currentIndex]?.sector);
     } else {
-      updateCurrentSector(entries[entries.length - 1].sector);
+      updateCurrentSector(entries[entries.length - 1]?.sector);
     }
   }, [currentIndex]);
 

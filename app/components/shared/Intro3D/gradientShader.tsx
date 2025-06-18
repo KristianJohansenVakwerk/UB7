@@ -71,16 +71,18 @@ export const gradientMaterial = new THREE.ShaderMaterial({
         float t = vUv.y + mousePosition.x * 0.1 + sin(time) * 0.1;
         
         // Sample and blur the gradient
-        float blurAmount = 0.1;
-        vec3 color = vec3(0.0);
-        float samples = 5.0;
+        // float blurAmount = 0.0;
+        // vec3 color = vec3(0.0);
+        // float samples = 3.0;
         
-        for(float i = 0.0; i < samples; i++) {
-          float offset = (i / (samples - 1.0) - 0.5) * blurAmount;
-          color += getColorAt(t + offset);
-        }
+        // for(float i = 0.0; i < samples; i++) {
+        //   float offset = (i / (samples - 1.0) - 0.5) * blurAmount;
+        //   color += getColorAt(t + offset);
+        // }
         
-        color /= samples;
+        // color /= samples;
+
+        vec3 color = getColorAt(t);
         
         gl_FragColor = vec4(color, 1.0);
       }

@@ -6,18 +6,20 @@ import { useGSAP } from "@gsap/react";
 import Slider from "../../../shared/Slider/Slider";
 import clsx from "clsx";
 import { TeamMember, teamMembers } from "@/app/utils/data";
+import SectionTitle from "../SectionTitle";
+import { useLenis } from "lenis/react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const SectionAbout = (props: any) => {
   const { title } = props;
-  // const wrapperRef = useRef<HTMLDivElement>(null);
-  // const [sliderActive, setSliderActive] = useState(false);
-  // const animationRef = useRef<any>(null);
+
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const aboutTriggerOneRef = useRef<HTMLDivElement | null>(null);
-  const aboutTriggerTwoRef = useRef<HTMLDivElement | null>(null);
-  const sliderContainerRef = useRef<HTMLDivElement | null>(null);
   const teamMemberWrapperRef = useRef<HTMLDivElement | null>(null);
+  const clickCloseRef = useRef<HTMLDivElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
+  const [showTitle, setShowTitle] = useState<boolean>(false);
+  const lenis = useLenis();
 
   useGSAP(() => {
     const slides = gsap.utils.toArray(".team-member");
@@ -36,6 +38,7 @@ const SectionAbout = (props: any) => {
     const tl = gsap
       .timeline({
         scrollTrigger: {
+          id: "about-trigger",
           trigger: aboutTriggerOneRef.current,
           start: "top top",
           end: `+=${scrollDistance}`,
@@ -44,9 +47,20 @@ const SectionAbout = (props: any) => {
           anticipatePin: 1,
           scrub: 0.1,
           markers: false,
+          onEnter: () => {
+            setShowTitle(true);
+          },
+          onEnterBack: () => {
+            setShowTitle(true);
+          },
+          onLeave: () => {
+            setShowTitle(false);
+          },
+          onLeaveBack: () => {
+            setShowTitle(false);
+          },
         },
       })
-
       .to(
         imageContainerRef.current,
         {
@@ -64,126 +78,130 @@ const SectionAbout = (props: any) => {
       });
   }, []);
 
-  // useGSAP(() => {
-  //   const slides = gsap.utils.toArray(".team-member");
-  //   const wrapper = document.querySelector(".slider-wrapper") as HTMLElement;
+  useGSAP(() => {
+    if (!imageContainerRef.current || !clickCloseRef.current) return;
 
-  //   const endpoint = sliderContainerRef.current?.offsetHeight as number;
+    let isScaled = false;
 
-  //   gsap.to(aboutTriggerOneRef.current, {
-  //     scrollTrigger: {
-  //       id: "about-trigger-one",
-  //       trigger: aboutTriggerOneRef.current,
-  //       start: "top top",
-  //       end: `+=50%`,
-  //       // markers: { indent: 300 },
-  //       markers: false,
-  //       pin: true,
-  //       pinSpacing: true,
-  //       anticipatePin: 1,
-  //       onEnter: () => {
-  //         gsap.to(imageContainerRef.current, {
-  //           opacity: 1,
-  //           duration: 0.3,
-  //           ease: "power2.inOut",
-  //         });
-  //       },
-  //       onLeave: () => {
-  //         gsap.to(imageContainerRef.current, {
-  //           opacity: 0,
-  //           duration: 0.3,
-  //           ease: "power2.inOut",
-  //         });
-  //       },
-  //       onEnterBack: () => {
-  //         gsap.to(imageContainerRef.current, {
-  //           opacity: 1,
-  //           duration: 0.3,
-  //           ease: "power2.inOut",
-  //         });
-  //       },
-  //     },
-  //     onComplete: () => {},
-  //   });
+    const handleResize = () => {
+      if (!isScaled || !imageRef.current) return;
 
-  //   const totalSlidesWidth = slides.reduce(
-  //     (total: number, entry: any, index: number) => {
-  //       const w = (entry as HTMLElement).offsetWidth;
+      const image = imageRef.current;
+      const imageWidth = image.offsetWidth;
+      const imageHeight = image.offsetHeight;
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
 
-  //       const gap = 48;
+      const availableWidth = windowWidth - (48 + 100); // 48px left, 100px right
+      const availableHeight = windowHeight - (48 + 48); // 48px top and bottom
 
-  //       return total + w + gap;
-  //     },
-  //     0
-  //   );
+      const widthScale = availableWidth / imageWidth;
+      const heightScale = availableHeight / imageHeight;
+      const scale = Math.min(widthScale, heightScale);
 
-  //   // Calculate the end position
-  //   // const viewportWidth = window.innerWidth;
-  //   // const endPosition = -(totalSlidesWidth - viewportWidth + 48);
-  //   // const wrapperHeight = (teamMemberWrapperRef.current as HTMLElement)
-  //   //   .offsetHeight;
+      gsap.to(image, {
+        scale: scale,
+        duration: 0.3,
+        ease: "power2.inOut",
+      });
+    };
 
-  //   // gsap.to(teamMemberWrapperRef.current, {
-  //   //   scrollTrigger: {
-  //   //     id: "about-trigger-two",
-  //   //     trigger: aboutTriggerTwoRef.current,
-  //   //     start: `top center-=${wrapperHeight / 2}px`,
-  //   //     scrub: true,
-  //   //     end: `+=${Math.abs(endPosition / 2)}px`,
-  //   //     // markers: { indent: 800 },
-  //   //     markers: false,
-  //   //     pin: true,
-  //   //     pinSpacing: true,
-  //   //     anticipatePin: 1,
-  //   //     onEnter: () => {
-  //   //       // gsap.to(sliderInnerContainerRef.current, {
-  //   //       //   opacity: 1,
-  //   //       //   duration: 0.3,
-  //   //       //   ease: "power2.inOut",
-  //   //       // });
-  //   //     },
-  //   //     onEnterBack: () => {
-  //   //       // gsap.to(sliderInnerContainerRef.current, {
-  //   //       //   opacity: 1,
-  //   //       //   duration: 0.3,
-  //   //       //   ease: "power2.inOut",
-  //   //       // });
-  //   //     },
-  //   //     onLeave: () => {
-  //   //       // gsap.to(sliderInnerContainerRef.current, {
-  //   //       //   opacity: 0,
-  //   //       //   duration: 0.3,
-  //   //       //   ease: "power2.inOut",
-  //   //       // });
-  //   //     },
-  //   //     onLeaveBack: () => {
-  //   //       // gsap.to(sliderInnerContainerRef.current, {
-  //   //       //   opacity: 0,
-  //   //       //   duration: 0.3,
-  //   //       //   ease: "power2.inOut",
-  //   //       // });
-  //   //     },
-  //   //   },
-  //   //   x: endPosition,
-  //   //   onComplete: () => {},
-  //   // });
-  // }, []);
+    const handleClick = (state: boolean) => {
+      isScaled = state;
+      const image = imageRef.current;
+      const imageWidth = image?.offsetWidth as number;
+      const imageHeight = image?.offsetHeight as number;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const padding = { top: 48, left: 48, button: 48, right: 100 };
+
+      const availableWidth = vw - (padding.left + padding.right);
+      const availableHeight = vh - (padding.top + padding.button);
+
+      const scaleX = availableWidth / imageWidth;
+      const scaleY = availableHeight / imageHeight;
+
+      const scale = Math.min(scaleX, scaleY);
+
+      if (state) {
+        lenis?.stop();
+        gsap.to(image, {
+          opacity: 1,
+          scale: scale,
+          y: 112 - padding.top,
+          transformOrigin: "left bottom",
+          willChange: "transform",
+          duration: 0.8,
+          ease: "power4.inOut",
+        });
+      } else {
+        lenis?.start();
+        gsap.to(imageRef.current, {
+          scale: 1,
+          y: 0,
+          transformOrigin: "left bottom",
+          duration: 0.8,
+          ease: "power4.inOut",
+        });
+      }
+    };
+
+    clickCloseRef.current.addEventListener("click", () => handleClick(false));
+    imageContainerRef.current.addEventListener("click", () =>
+      handleClick(true)
+    );
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      clickCloseRef.current?.removeEventListener("click", () =>
+        handleClick(false)
+      );
+      imageContainerRef.current?.removeEventListener("click", () =>
+        handleClick(true)
+      );
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [lenis]);
 
   return (
     <div
       ref={aboutTriggerOneRef}
       className="w-full h-screen flex flex-col items-start justify-between"
     >
-      <div className={"text-title font-sans pt-7 px-3"}>{title}</div>
+      <div className={" pt-7 px-3"}>
+        <SectionTitle title={title} id={"about"} play={showTitle} />
+      </div>
+
+      <div
+        ref={clickCloseRef}
+        className="absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer"
+      >
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M15 5L5 15M5 5L15 15"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
 
       {/* New wrapper div for horizontal layout */}
-      <div className="w-full h-full flex flex-row items-center gap-3">
+      <div className="w-full flex flex-row items-end gap-3 pb-7">
         {/* Image container */}
         <div
           ref={imageContainerRef}
-          className="relative w-[30vw] min-w-[300px] opacity-100 pl-3"
+          className="relative w-[50vw] min-w-[300px] max-w-[768px] opacity-100 pl-3"
         >
           <img
+            ref={imageRef}
             src="/Reel.jpg"
             width={"693"}
             height={"376"}
@@ -218,7 +236,7 @@ export const TeamMembers = () => {
           {m.name}
         </Box>
         <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
-          <Box className="team-member-image h-full opacity-100 flex items-center justify-center ">
+          <Box className="team-member-image h-full opacity-100 flex items-center justify-center">
             <img
               src={m.image}
               width={267}

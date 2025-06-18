@@ -1,112 +1,55 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 import gsap from "gsap";
 import clsx from "clsx";
-import { globalSectionTriggers } from "@/app/utils/gsapUtils";
 import { useStore } from "@/store/store";
 // Register the SplitText plugin
 gsap.registerPlugin(SplitText);
 
-const SectionTitle = ({ title, id }: { title: string; id: string }) => {
+const SectionTitle = ({
+  title,
+  id,
+  play,
+}: {
+  title: string;
+  id: string;
+  play: boolean;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const { hoverSector, sectorsActive } = useStore();
+  const animationRef = useRef<any>(null);
+
   useGSAP(
     () => {
-      // Find the matching section trigger for this title
-      const sectionTrigger = globalSectionTriggers.find(
-        (trigger) => trigger.id === id
-      );
+      if (!textRef.current) return;
 
-      if (!sectionTrigger || !textRef.current) return;
-
-      // Create the split text
       const splitText = new SplitText(textRef.current, {
+        id: `${id}-title`,
         type: "lines",
         linesClass: "split-line",
         preserveSpaces: true,
         preserveNewlines: true,
       });
 
-      // const sections = document.querySelectorAll(".section");
-      const section = document.querySelector(`#${id}`);
+      const tl = gsap.timeline({ id: `title-animation-${id}`, paused: true });
 
-      gsap.timeline({
-        paused: true,
-        scrollTrigger: {
-          id: `title-${id}`,
-          trigger: section,
-          start: sectionTrigger?.start,
-          end: sectionTrigger?.end,
-          markers: { indent: 1000 },
-          scrub: false,
-          toggleActions: "play none reverse reverse",
-          onEnter: () => {
-            gsap.to(splitText.lines, {
-              y: 0,
-              opacity: 1,
-              duration: 0.2,
-              stagger: 0.05,
-              delay: 0.5,
-              willChange: "transform, opacity",
-              ease: "power2.out",
-            });
-          },
-          onLeave: () => {
-            gsap.to(splitText.lines, {
-              y: -30,
-              opacity: 0,
-              duration: 0.2,
-              stagger: 0.05,
-
-              willChange: "transform, opacity",
-              ease: "power2.out",
-            });
-          },
-          onEnterBack: () => {
-            gsap.to(splitText.lines, {
-              y: 0,
-              opacity: 1,
-              duration: 0.2,
-              stagger: 0.05,
-              delay: 0.5,
-              willChange: "transform, opacity",
-              ease: "power2.out",
-            });
-          },
-          onLeaveBack: () => {
-            gsap.to(splitText.lines, {
-              y: -30,
-              opacity: 0,
-
-              willChange: "transform, opacity",
-              duration: 0.2,
-              stagger: 0.05,
-              ease: "power2.out",
-            });
-          },
-        },
-      });
-
-      gsap.set(splitText.lines, {
+      tl.from(splitText.lines, {
         y: 30,
         opacity: 0,
+        duration: 0.2,
+        stagger: 0.05,
+        delay: 0.2,
         willChange: "transform, opacity",
+        ease: "power2.out",
+        immediateRender: true,
       });
 
-      // tl.to(splitText.lines, {
-      //   y: 0,
-      //   opacity: 1,
-      //   duration: 0.2,
-      //   stagger: 0.05,
-      //   willChange: "transform, opacity",
-      //   ease: "power2.out",
-      // });
+      animationRef.current = tl;
 
-      // Cleanup function
       return () => {
         splitText.revert();
       };
@@ -114,11 +57,16 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
     { scope: ref, dependencies: [id, title] }
   );
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     ref.current?.classList.add("opacity-100");
-  //   });
-  // }, []);
+  useGSAP(
+    () => {
+      if (play) {
+        animationRef.current.restart();
+      } else {
+        animationRef.current.reverse();
+      }
+    },
+    { scope: ref, dependencies: [play] }
+  );
 
   return (
     <>
@@ -126,7 +74,7 @@ const SectionTitle = ({ title, id }: { title: string; id: string }) => {
         id={`section-title-${id}`}
         ref={ref}
         className={clsx(
-          "section-title fixed top-4 mb-6 z-10 px-3",
+          "section-title z-10",
           hoverSector && "mix-blend-color-dodge"
         )}
       >

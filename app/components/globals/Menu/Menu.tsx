@@ -2,11 +2,10 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Box from "../../ui/Box/Box";
 import { useRef } from "react";
 
 import { useLenis } from "lenis/react";
-import { globalSectionTriggers } from "@/app/utils/gsapUtils";
+import { globalTriggers } from "@/app/utils/gsapUtils";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -24,6 +23,7 @@ const Menu = ({ data }: MenuProps) => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
   useGSAP(() => {
     const handleClick = (id: string) => {
       const targetElement = document.getElementById(id);
@@ -36,16 +36,26 @@ const Menu = ({ data }: MenuProps) => {
         immediate: true,
         onComplete: () => {
           ScrollTrigger.refresh(true);
-          ScrollTrigger.getAll().forEach((trigger) => {
-            if (trigger.animation) {
-              if (trigger.vars.id === id) {
+          const trigger = ScrollTrigger.getById(`${id}-trigger`);
+          const titleAnimation = gsap.getById(`title-animation-${id}`);
+
+          if (titleAnimation) {
+            titleAnimation.play();
+          }
+
+          switch (id) {
+            case "intro":
+              break;
+            case "portfolio":
+              if (trigger && trigger.animation) {
                 trigger.animation.play();
-              } else {
-                const p = trigger.progress;
-                trigger.animation.progress(p);
               }
-            }
-          });
+              break;
+            case "about":
+              break;
+            case "contact":
+              break;
+          }
 
           if (menuRef.current && id !== "intro") {
             gsap.to(menuRef.current, {
@@ -71,59 +81,57 @@ const Menu = ({ data }: MenuProps) => {
       });
     };
 
-    const sectionTriggers = [
-      { start: "top top", end: "bottom center", id: "intro" },
-      ...globalSectionTriggers,
-    ];
+    setTimeout(() => {
+      globalTriggers.forEach((section) => {
+        const trigger = ScrollTrigger.getById(section.trigger);
+        const triggerEl = document.getElementById(section.id);
+        const progressBar = document.getElementById(
+          `${section.id}-progress`
+        ) as HTMLElement;
 
-    // Create ScrollTriggers for each section
-    data.forEach((item, index) => {
-      if (!item.id) return;
+        const targetElement = document.getElementById(section.id);
+        const targetElementMenu = document.getElementById(`${section.id}-menu`);
 
-      const targetElement = document.getElementById(item.id);
-      const targetElementMenu = document.getElementById(`${item.id}-menu`);
+        ScrollTrigger.create({
+          id: `${section.id}-progress`,
+          trigger: triggerEl,
+          start: trigger?.start,
+          end: trigger?.end,
+          onUpdate: (self) => {},
+          onEnter: () => {
+            if (menuRef.current && section.id !== "intro") {
+              gsap.to(menuRef.current, {
+                opacity: 1,
+                duration: 0.2,
+                ease: "power2.inOut",
+              });
+            }
 
-      if (!targetElement || !targetElementMenu) return;
-
-      ScrollTrigger.create({
-        trigger: targetElement,
-        start: sectionTriggers[index].start,
-        end: sectionTriggers[index].end,
-        id: item.id,
-        markers: false,
-        onEnter: () => {
-          if (menuRef.current && item.id !== "intro") {
-            gsap.to(menuRef.current, {
-              opacity: 1,
+            gsap.to(menuProgressRef.current, {
+              width: targetElementMenu?.offsetWidth,
+              x: targetElementMenu?.offsetLeft,
               duration: 0.2,
               ease: "power2.inOut",
             });
-          }
-
-          gsap.to(menuProgressRef.current, {
-            width: targetElementMenu.offsetWidth,
-            x: targetElementMenu.offsetLeft,
-            duration: 0.2,
-            ease: "power2.inOut",
-          });
-        },
-        onEnterBack: () => {
-          if (menuRef.current && item.id === "intro") {
-            gsap.to(menuRef.current, {
-              opacity: 0,
+          },
+          onEnterBack: () => {
+            if (menuRef.current && section.id === "intro") {
+              gsap.to(menuRef.current, {
+                opacity: 0,
+                duration: 0.2,
+                ease: "power2.inOut",
+              });
+            }
+            gsap.to(menuProgressRef.current, {
+              width: targetElementMenu?.offsetWidth,
+              x: targetElementMenu?.offsetLeft,
               duration: 0.2,
               ease: "power2.inOut",
             });
-          }
-          gsap.to(menuProgressRef.current, {
-            width: targetElementMenu.offsetWidth,
-            x: targetElementMenu.offsetLeft,
-            duration: 0.2,
-            ease: "power2.inOut",
-          });
-        },
+          },
+        });
       });
-    });
+    }, 100);
 
     // Add click event listeners to menu items
     menuItemsRef.current.forEach((item, index) => {
@@ -143,7 +151,11 @@ const Menu = ({ data }: MenuProps) => {
   }, [lenis, data]);
 
   return (
-    <div ref={menuRef} className="fixed bottom-3 left-3 z-10 opacity-0">
+    <div
+      ref={menuRef}
+      className="fixed bottom-3 left-3 z-10 opacity-0"
+      id={"menu"}
+    >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">
         <div className="flex flex-row items-center ">
           {data.map((item, index) => (

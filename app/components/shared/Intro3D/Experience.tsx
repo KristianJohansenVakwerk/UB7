@@ -4,11 +4,17 @@ import { useFrame } from "@react-three/fiber";
 import { useThree } from "@react-three/fiber";
 import { gradientMaterial } from "./gradientShader";
 import { SvgMesh } from "./SvgMesh";
-const Experience = () => {
+const Experience = ({ paused }: { paused: boolean }) => {
   const gradientMeshRef = useRef<any>({});
   const maskMeshRef = useRef<any>(null);
-  const { viewport } = useThree();
+  const { viewport, gl } = useThree();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (gl) {
+      gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    }
+  }, [gl]);
 
   useEffect(() => {
     if (gradientMeshRef.current) {
@@ -30,19 +36,21 @@ const Experience = () => {
   }, []);
 
   useFrame((state) => {
+    if (paused) return;
+
     if (gradientMaterial.uniforms) {
       gradientMaterial.uniforms.time.value = state.clock.getElapsedTime() * 0.5;
     }
   });
 
-  useEffect(() => {
-    // if (gradientMaterial.uniforms) {
-    //   gradientMaterial.uniforms.mousePosition.value.set(
-    //     mousePosition.x,
-    //     mousePosition.y
-    //   );
-    // }
-  }, [mousePosition]);
+  // useEffect(() => {
+  //   // if (gradientMaterial.uniforms) {
+  //   //   gradientMaterial.uniforms.mousePosition.value.set(
+  //   //     mousePosition.x,
+  //   //     mousePosition.y
+  //   //   );
+  //   // }
+  // }, [mousePosition]);
 
   return (
     <group>

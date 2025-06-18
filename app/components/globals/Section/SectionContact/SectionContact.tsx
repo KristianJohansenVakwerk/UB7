@@ -1,9 +1,11 @@
 import Box from "@/app/components/ui/Box/Box";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
+import SectionTitle from "../SectionTitle";
+import Link from "next/link";
 
 // Register the plugins
 gsap.registerPlugin(SplitText, ScrollTrigger);
@@ -22,7 +24,6 @@ const info = [
         label: "Instagram",
         url: "https://www.instagram.com/thiagosilva",
       },
-      {},
     ],
   },
   {
@@ -53,16 +54,30 @@ const SectionContact = (props: Props) => {
   const container = useRef<HTMLDivElement>(null);
   const titleRefs = useRef<(HTMLDivElement | null)[]>([]);
   const labelRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [showTitle, setShowTitle] = useState<boolean>(false);
 
   useGSAP(
     () => {
       const tl = gsap.timeline({
         scrollTrigger: {
+          id: "contact-trigger",
           trigger: container.current,
-          start: "top top",
+          start: "top top+=100px",
           end: "bottom bottom",
           markers: false,
           toggleActions: "play none none reverse",
+          onEnter: () => {
+            setShowTitle(true);
+          },
+          onEnterBack: () => {
+            setShowTitle(true);
+          },
+          onLeave: () => {
+            // setShowTitle(false);
+          },
+          onLeaveBack: () => {
+            setShowTitle(false);
+          },
         },
       });
 
@@ -86,7 +101,11 @@ const SectionContact = (props: Props) => {
 
         // Animate each label in the item
         item.items.forEach((_, linkIndex) => {
-          const refIndex = index * item.items.length + linkIndex;
+          const refIndex =
+            info
+              .slice(0, index)
+              .reduce((acc, section) => acc + section.items.length, 0) +
+            linkIndex;
           const labelRef = labelRefs.current[refIndex];
           if (labelRef) {
             const splitLabel = new SplitText(labelRef, {
@@ -117,7 +136,9 @@ const SectionContact = (props: Props) => {
       ref={container}
       className="section w-full h-full flex flex-col gap-0 items-start justify-start px-3"
     >
-      <div className={"text-title font-sans pt-7  mb-5"}>{title}</div>
+      <div className={"text-title font-sans pt-7  mb-[100px] lg:mb-[250px]"}>
+        <SectionTitle title={title} id={"contact"} play={showTitle} />
+      </div>
       <Box className="grid grid-cols-16 w-full">
         {info.map((item, index) => {
           return (
@@ -135,8 +156,12 @@ const SectionContact = (props: Props) => {
               </Box>
 
               <Box className="flex flex-col gap-0">
-                {item.items.map((link, linkIndex) => {
-                  const refIndex = index * item.items.length + linkIndex;
+                {item.items.map((link: any, linkIndex: number) => {
+                  const refIndex =
+                    info
+                      .slice(0, index)
+                      .reduce((acc, section) => acc + section.items.length, 0) +
+                    linkIndex;
                   return (
                     <Box
                       key={linkIndex}
@@ -145,7 +170,9 @@ const SectionContact = (props: Props) => {
                       }}
                       className="cursor-pointer font-sans text-base text-light-grey"
                     >
-                      {link.label}
+                      <Link href={link?.url || "#"} target="_blank">
+                        {link.label}
+                      </Link>
                     </Box>
                   );
                 })}

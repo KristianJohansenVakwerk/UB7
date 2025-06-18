@@ -38,3 +38,10 @@ export const globalSectionTriggers = [
     id: "contact",
   }, // Contact section
 ];
+
+export const globalTriggers = [
+  { id: "intro", trigger: "intro-trigger" },
+  { id: "portfolio", trigger: "portfolio-trigger" },
+  { id: "about", trigger: "about-trigger" },
+  { id: "contact", trigger: "contact-trigger" },
+];

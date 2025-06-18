@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Box from "../../ui/Box/Box";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 import { useLenis } from "lenis/react";
 import Intro3D from "../../shared/Intro3D/Intro3D";
@@ -12,6 +12,7 @@ import Clock from "../../shared/Clock/Clock";
 const SectionIntro = () => {
   const ref = useRef<HTMLDivElement>(null);
   const lenis = useLenis((lenis) => {});
+  const [paused, setPaused] = useState(false);
 
   useGSAP(() => {
     const handleClick = () => {
@@ -40,12 +41,21 @@ const SectionIntro = () => {
   useGSAP(() => {
     gsap.to(ref.current, {
       scrollTrigger: {
-        id: "intro-new",
+        id: "intro-trigger",
         trigger: ref.current,
         start: "top top",
         end: "+=50%",
         markers: false,
         scrub: true,
+        onEnter: () => {},
+        onLeave: () => {
+          setPaused(true);
+        },
+        onEnterBack: () => {
+          setTimeout(() => {
+            setPaused(false);
+          }, 50);
+        },
       },
       autoAlpha: 0,
       display: "none",
@@ -60,7 +70,7 @@ const SectionIntro = () => {
       id="intro"
       className="intro w-screen h-screen fixed top-0 left-0 opacity-100 "
     >
-      {/* <Intro3D /> */}
+      {/* <Intro3D paused={paused} /> */}
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none  flex flex-col items-center justify-end p-4 ">
         <div
