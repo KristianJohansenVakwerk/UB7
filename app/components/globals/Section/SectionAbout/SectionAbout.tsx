@@ -10,7 +10,6 @@ import { TeamMember, teamMembers } from "@/app/utils/data";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 const SectionAbout = (props: any) => {
   const { title } = props;
-  const container = useRef<HTMLDivElement>(null);
   // const wrapperRef = useRef<HTMLDivElement>(null);
   // const [sliderActive, setSliderActive] = useState(false);
   // const animationRef = useRef<any>(null);
@@ -171,36 +170,34 @@ const SectionAbout = (props: any) => {
   // }, []);
 
   return (
-    <div ref={container} className={clsx("relative w-full h-full")}>
-      <div
-        ref={aboutTriggerOneRef}
-        className="w-full h-screen flex flex-col items-start"
-      >
-        <div className={"text-title font-sans pt-7 px-3"}>{title}</div>
+    <div
+      ref={aboutTriggerOneRef}
+      className="w-full h-screen flex flex-col items-start justify-between"
+    >
+      <div className={"text-title font-sans pt-7 px-3"}>{title}</div>
 
-        {/* New wrapper div for horizontal layout */}
-        <div className="w-full h-full flex flex-row items-center gap-3">
-          {/* Image container */}
+      {/* New wrapper div for horizontal layout */}
+      <div className="w-full h-full flex flex-row items-center gap-3">
+        {/* Image container */}
+        <div
+          ref={imageContainerRef}
+          className="relative w-[30vw] min-w-[300px] opacity-100 pl-3"
+        >
+          <img
+            src="/Reel.jpg"
+            width={"693"}
+            height={"376"}
+            className="w-full h-full object-cover object-center"
+          />
+        </div>
+
+        {/* Team members container */}
+        <div className="flex-1 overflow-hidden">
           <div
-            ref={imageContainerRef}
-            className="relative w-[30vw] min-w-[300px] opacity-100 pl-3"
+            ref={teamMemberWrapperRef}
+            className="flex flex-row gap-3 translate-x-full"
           >
-            <img
-              src="/Reel.jpg"
-              width={"693"}
-              height={"376"}
-              className="w-full h-full object-cover object-center"
-            />
-          </div>
-
-          {/* Team members container */}
-          <div className="flex-1 overflow-hidden">
-            <div
-              ref={teamMemberWrapperRef}
-              className="flex flex-row gap-3 translate-x-full"
-            >
-              <TeamMembers />
-            </div>
+            <TeamMembers />
           </div>
         </div>
       </div>
