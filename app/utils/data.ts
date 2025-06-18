@@ -506,8 +506,8 @@ export interface TeamMember {
 
 export const teamMembers: TeamMember[] = [
   {
-    name: "Thiago Silva Pontes 1",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+    name: "Thiago Silva Pontes",
+    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
     image: "/test-media/m_1.jpg",
     socials: [
       { platform: "Website", url: "https://thiagosilva.com" },
@@ -516,7 +516,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vinicius Junior 2",
+    name: "Vinicius Junior",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_2.jpg",
     socials: [
@@ -526,7 +526,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vini Jr.3",
+    name: "Vini Jr.",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_3.jpg",
     socials: [
@@ -536,7 +536,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Thiago Silva Pontes 4",
+    name: "Thiago Silva Pontes",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_1.jpg",
     socials: [
@@ -546,7 +546,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vinicius Junior 5",
+    name: "Vinicius Junior",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_2.jpg",
     socials: [
@@ -556,7 +556,7 @@ export const teamMembers: TeamMember[] = [
     ],
   },
   {
-    name: "Vini Jr. 6",
+    name: "Vini Jr.",
     text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
     image: "/test-media/m_3.jpg",
     socials: [

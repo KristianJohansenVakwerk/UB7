@@ -70,7 +70,7 @@ const SectionIntro = () => {
       id="intro"
       className="intro w-screen h-screen fixed top-0 left-0 opacity-100 "
     >
-      {/* <Intro3D paused={paused} /> */}
+      <Intro3D paused={paused} />
 
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none  flex flex-col items-center justify-end p-4 ">
         <div

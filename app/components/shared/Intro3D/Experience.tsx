@@ -39,7 +39,7 @@ const Experience = ({ paused }: { paused: boolean }) => {
     if (paused) return;
 
     if (gradientMaterial.uniforms) {
-      gradientMaterial.uniforms.time.value = state.clock.getElapsedTime() * 0.5;
+      // gradientMaterial.uniforms.time.value = state.clock.getElapsedTime() * 0.5;
     }
   });
 
