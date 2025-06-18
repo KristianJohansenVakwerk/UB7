@@ -19,6 +19,7 @@ const SectionAbout = (props: any) => {
   const clickCloseRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [showTitle, setShowTitle] = useState<boolean>(false);
+  const [showClose, setShowClose] = useState<boolean>(false);
   const lenis = useLenis();
 
   useGSAP(() => {
@@ -125,16 +126,33 @@ const SectionAbout = (props: any) => {
 
       if (state) {
         lenis?.stop();
-        gsap.to(image, {
-          opacity: 1,
-          scale: scale,
-          y: 112 - padding.top,
-          transformOrigin: "left bottom",
-          willChange: "transform",
-          duration: 0.8,
-          ease: "power4.inOut",
+
+        gsap.to(["#progress", "#menu", "#section-title-about"], {
+          autoAlpha: 0,
+          duration: 0.4,
+          ease: "power2.inOut",
+          onComplete: () => {
+            gsap.to(imageContainerRef.current, {
+              opacity: 1,
+              duration: 0.8,
+              ease: "power4.inOut",
+            });
+
+            gsap.to(image, {
+              scale: scale,
+              y: 112 - padding.top,
+              transformOrigin: "left bottom",
+              willChange: "transform",
+              duration: 0.8,
+              ease: "power4.inOut",
+              onComplete: () => {
+                setShowClose(true);
+              },
+            });
+          },
         });
       } else {
+        setShowClose(false);
         lenis?.start();
         gsap.to(imageRef.current, {
           scale: 1,
@@ -142,6 +160,13 @@ const SectionAbout = (props: any) => {
           transformOrigin: "left bottom",
           duration: 0.8,
           ease: "power4.inOut",
+          onComplete: () => {
+            gsap.to(["#progress", "#menu", "#section-title-about"], {
+              autoAlpha: 1,
+              duration: 0.4,
+              ease: "power2.inOut",
+            });
+          },
         });
       }
     };
@@ -174,7 +199,10 @@ const SectionAbout = (props: any) => {
 
       <div
         ref={clickCloseRef}
-        className="absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer"
+        className={clsx(
+          "absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer, opacity-0 transition-all duration-300 ease",
+          showClose && "opacity-100"
+        )}
       >
         <svg
           width="25"

@@ -26,7 +26,7 @@ const SectionTitle = ({
   useGSAP(
     () => {
       if (!textRef.current) return;
-
+      console.log("do we call this multiple times");
       const splitText = new SplitText(textRef.current, {
         id: `${id}-title`,
         type: "lines",
