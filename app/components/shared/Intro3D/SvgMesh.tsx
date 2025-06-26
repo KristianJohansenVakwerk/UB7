@@ -13,6 +13,28 @@ export const SvgMesh = () => {
   const [mesh, setMesh] = useState<THREE.Mesh | null>(null);
   const [geometry, setGeometry] = useState<THREE.ShapeGeometry | null>(null);
 
+  const gradientTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+
+    if (ctx) {
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, "#03763B");
+      gradient.addColorStop(0.3077, "#7EFA50");
+      gradient.addColorStop(0.6394, "#FEFFC2");
+      gradient.addColorStop(1, "#D9D9D9");
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, []);
+
   // useFrame((state) => {
   //   // if (isAnimating && gradientMaterialSVG.uniforms) {
   //   //   gradientMaterialSVG.uniforms.progress.value = Math.max(
@@ -66,12 +88,22 @@ export const SvgMesh = () => {
         geometry.translate(-center.x, -center.y, 0);
 
         setGeometry(geometry);
-        setMesh(new THREE.Mesh(geometry, gradientMaterialSVG));
+        const material = new THREE.MeshPhysicalMaterial({
+          side: THREE.BackSide,
+          opacity: 1, // Control transparency (0 = fully transparent, 1 = fully opaque)
+          metalness: 0.1, // How metallic the surface is (0-1)
+          roughness: 0.3, // How rough/smooth the surface is (0-1)
+          envMapIntensity: 1, // Strength of environment reflections
+          clearcoat: 0.5, // Adds a clear coat layer for extra shine
+          clearcoatRoughness: 0.1, // Roughness of the clear coat
+          map: gradientTexture,
+        });
+        setMesh(new THREE.Mesh(geometry, material));
       })
       .catch((error) => {
         console.error("Error loading SVG:", error);
       });
-  }, [gradientMaterialSVG]); // Empty dependency array since SVG doesn't change
+  }, [gradientMaterialSVG, gradientTexture]); // Empty dependency array since SVG doesn't change
 
   // Only update scale when viewport changes
   useEffect(() => {
@@ -91,5 +123,12 @@ export const SvgMesh = () => {
     };
   }, [geometry]);
 
-  return mesh ? <primitive object={mesh} /> : null;
+  return mesh ? (
+    <primitive
+      object={mesh}
+      position-z={0}
+      // rotation-y={Math.PI}
+      // rotation-x={Math.PI}
+    />
+  ) : null;
 };

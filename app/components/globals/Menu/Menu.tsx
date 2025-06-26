@@ -31,7 +31,7 @@ const Menu = ({ data }: MenuProps) => {
 
       if (!targetElement || !lenis || !targetElementMenu) return;
 
-      lenis.scrollTo(targetElement, {
+      lenis.scrollTo(id === "intro" ? 0 : targetElement, {
         duration: 0,
         immediate: true,
         onComplete: () => {

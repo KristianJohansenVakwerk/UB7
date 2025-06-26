@@ -1,11 +1,9 @@
-import Sectors from "../components/globals/Sectors/Sectors";
-import Slider from "../components/shared/Slider/Slider";
+import SmoothWrapper from "../components/globals/SmoothWrapper/SmoothWrapper";
 
 export default function Home() {
   return (
     <>
-      {/* <Slider /> */}
-      {/* <Sectors /> */}
+      <SmoothWrapper />
     </>
   );
 }

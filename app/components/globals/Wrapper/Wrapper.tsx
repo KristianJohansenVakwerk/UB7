@@ -30,23 +30,25 @@ export function Wrapper({
 
   return (
     <>
-      <main
-        className={cn(
-          "relative flex flex-col grow opacity-0",
-          className,
-          ready && "opacity-100"
-        )}
-        {...props}
-      >
-        {children}
-      </main>
-      {lenis && (
+      <div>
+        <main
+          className={cn(
+            "relative flex flex-col grow opacity-0",
+            className,
+            ready && "opacity-100"
+          )}
+          {...props}
+        >
+          {children}
+        </main>
+      </div>
+      {/* {lenis && (
         <Lenis
           root
           options={typeof lenis === "object" ? lenis : {}}
           onProgress={onProgress}
         />
-      )}
+      )} */}
     </>
   );
 }

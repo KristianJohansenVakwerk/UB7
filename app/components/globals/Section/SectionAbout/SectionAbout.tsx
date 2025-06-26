@@ -41,24 +41,37 @@ const SectionAbout = (props: any) => {
         scrollTrigger: {
           id: "about-trigger",
           trigger: aboutTriggerOneRef.current,
-          start: "top top",
-          end: `+=${scrollDistance}`,
+          start: "top top+=10px",
+          end: `+=${scrollDistance} bottom-=100px`,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,
           scrub: 0.1,
-          markers: false,
+          markers: { indent: 800 },
+
           onEnter: () => {
-            setShowTitle(true);
+            setTimeout(() => {
+              console.log("onEnter");
+              setShowTitle(true);
+            }, 100);
           },
           onEnterBack: () => {
-            setShowTitle(true);
+            setTimeout(() => {
+              console.log("onEnterBack");
+              setShowTitle(true);
+            }, 100);
           },
           onLeave: () => {
-            setShowTitle(false);
+            setTimeout(() => {
+              console.log("onLeave");
+              setShowTitle(false);
+            }, 100);
           },
           onLeaveBack: () => {
-            setShowTitle(false);
+            setTimeout(() => {
+              console.log("onLeaveBack");
+              setShowTitle(false);
+            }, 100);
           },
         },
       })

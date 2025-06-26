@@ -56,14 +56,13 @@ const SectionPortfolio = (props: any) => {
       scrollTrigger: {
         id: "portfolio-trigger",
         trigger: ".section-portfolio",
-        start: "top top",
+        start: "top top+=10px",
         end: `bottom top`,
         toggleActions: "play none none reverse",
         markers: false,
         scrub: false,
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
+        pin: false,
+        pinSpacing: false,
         onEnter: () => {
           setShowTitle(true);
         },
@@ -136,13 +135,18 @@ const SectionPortfolio = (props: any) => {
 
   const useSetHeightOfAccordion = () => {
     const sectors = gsap.utils.toArray(".sector-item-content");
-
     accordionAnis.current = sectors.map((sector: any, index: number) => {
       const sectorHeight = sector.scrollHeight;
+
       gsap.set(sector, { height: 0, opacity: 1 });
 
       return gsap
         .timeline({ paused: true })
+        .to(sector.querySelector(".sector-item-trigger"), {
+          backgroundColor: "rgba(255,0,0,1)",
+          duration: 0.3,
+          ease: "power3.inOut",
+        })
         .to(sector, {
           height: sectorHeight,
           duration: 0.3,
@@ -301,7 +305,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "gap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between",
+          "gap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between bg-blue-500",
           !ready && "opacity-0"
         )}
       >
@@ -357,7 +361,7 @@ const SectionPortfolio = (props: any) => {
                   </div>
                 </div>
 
-                <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-white rounded-[27px]  overflow-hidden z-0">
+                <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-[rgba(255,255,255,0.5)] rounded-[27px] overflow-hidden z-0">
                   <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
                     {sector.entries.map((entry: any, ix: number) => {
                       return (

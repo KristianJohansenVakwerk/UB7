@@ -6,6 +6,8 @@ import { Wrapper } from "./components/globals/Wrapper/Wrapper";
 import Box from "./components/ui/Box/Box";
 import Menu from "./components/globals/Menu/Menu";
 import Progress from "./components/globals/Progress/Progress";
+import SmoothWrapper from "./components/globals/SmoothWrapper/SmoothWrapper";
+import SectionsController from "./components/globals/SectionsController/SectionsController";
 
 export default function Home() {
   return (
@@ -41,8 +43,11 @@ export default function Home() {
 
       <Wrapper lenis={{}}>
         <Progress />
-        <SectionIntro />
-        <SmoothScroll />
+        {/* <SectionIntro /> */}
+        {/* <SmoothScroll /> */}
+        <SmoothWrapper>
+          <SectionsController />
+        </SmoothWrapper>
 
         <Menu
           data={[

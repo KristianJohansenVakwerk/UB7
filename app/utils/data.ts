@@ -1,5 +1,9 @@
 export const sectionsData = [
   {
+    id: "intro",
+    title: "intro",
+  },
+  {
     title: "portfolio",
     text: `Redefining capital with flair, <br> precision, and purpose. <br> Operating across four <br> strategic sectors.`,
     id: "portfolio",
