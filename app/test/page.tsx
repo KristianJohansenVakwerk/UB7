@@ -1,9 +1,5 @@
-import SmoothWrapper from "../components/globals/SmoothWrapper/SmoothWrapper";
+// import SmoothWrapper from "../components/globals/SmoothWrapper/SmoothWrapper";
 
 export default function Home() {
-  return (
-    <>
-      <SmoothWrapper />
-    </>
-  );
+  return <>{/* <SmoothWrapper /> */}</>;
 }

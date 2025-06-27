@@ -72,6 +72,7 @@ const SmoothWrapper = (props: Props) => {
       wrapper: ".smooth-wrapper",
       content: ".smooth-content",
       smooth: 1,
+
       effects: false,
       normalizeScroll: true,
       smoothTouch: 0.2,
@@ -98,8 +99,8 @@ const SmoothWrapper = (props: Props) => {
       ScrollTrigger.create({
         trigger: container as HTMLElement,
         id: `snap-container-${index}`,
-        start: "top top",
-        end: "bottom bottom",
+        start: !isLastContainer ? "top top" : "top bottom",
+        end: !isLastContainer ? "bottom bottom" : "bottom bottom",
         markers: isLastContainer ? true : false,
         snap: {
           snapTo: sections.length > 1 ? [0, 1] : 1,

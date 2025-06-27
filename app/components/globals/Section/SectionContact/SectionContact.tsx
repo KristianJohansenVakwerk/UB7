@@ -1,3 +1,4 @@
+"use client";
 import Box from "@/app/components/ui/Box/Box";
 import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";

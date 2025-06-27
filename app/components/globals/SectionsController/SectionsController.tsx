@@ -1,41 +1,15 @@
 "use client";
-
-import { useMemo } from "react";
 import { portfolioData, sectionsData } from "@/app/utils/data";
 import React from "react";
 import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
 import SectionAbout from "../Section/SectionAbout/SectionAbout";
 import SectionContact from "../Section/SectionContact/SectionContact";
 import clsx from "clsx";
+import { useMappedSections } from "@/app/hooks/useMappedSections";
+import SectionIntro from "../Section/SectionIntro";
 
 const SectionsController = () => {
-  const mappedSections = useMemo(() => {
-    const groups = [] as any;
-    let currentGroup = [] as any;
-
-    sectionsData.forEach((section: any, index: number) => {
-      if (section.id === "intro" || section.id === "portfolio") {
-        currentGroup.push(section);
-      } else {
-        if (currentGroup.length) {
-          groups.push({ type: "snap", sections: [...currentGroup] });
-          currentGroup = [];
-        }
-
-        if (section.id === "about") {
-          groups.push({ type: "free", sections: [section] });
-        }
-
-        if (section.id === "contact") {
-          groups.push({ type: "snap", sections: [section] });
-        }
-      }
-    });
-
-    return groups;
-  }, []);
-
-  console.log("mappedSections", mappedSections);
+  const mappedSections = useMappedSections(sectionsData);
 
   return (
     <div>
@@ -57,10 +31,9 @@ const SectionsController = () => {
                         "relative section flex flex-col items-start justify-start w-screen",
                         ` section-${index + 1}`,
                         `section-${section.id}`,
-                        section.id === "about" && "h-[auto] px-0 bg-red-500",
+                        section.id === "about" && "h-[auto] px-0",
                         section.id !== "about" && "h-screen",
-                        section.id === "portfolio" && "justify-center",
-                        section.id === "contact" && "bg-yellow-500"
+                        section.id === "portfolio" && "justify-center"
                       )}
                     >
                       {section.id === "portfolio" ? (
@@ -73,7 +46,7 @@ const SectionsController = () => {
                       ) : section.id === "contact" ? (
                         <SectionContact title={section.text} />
                       ) : section.id === "intro" ? (
-                        <div className="w-screen h-screen spacer bg-red-500"></div>
+                        <SectionIntro />
                       ) : (
                         <div>missing id</div>
                       )}

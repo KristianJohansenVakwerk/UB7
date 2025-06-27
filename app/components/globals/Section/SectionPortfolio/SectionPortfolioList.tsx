@@ -1,0 +1,296 @@
+"use client";
+import gsap from "gsap";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import { useCallback, useRef, useState } from "react";
+import { useStore } from "@/store/store";
+import clsx from "clsx";
+import {
+  getTimeline,
+  useSectorListAnimation,
+  useSectorListEvents,
+} from "./SectionPortfolioHooks";
+
+gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
+
+type Props = {
+  data: any;
+};
+
+const SectionPortfolioList = (props: Props) => {
+  const { data } = props;
+  const [activeSector, setActiveSector] = useState<string | null>(null);
+
+  const [entries, setEntries] = useState<any[]>(
+    data.flatMap((sector: any, sectorIndex: number) =>
+      sector.entries.map((entry: any) => ({
+        ...entry,
+        sectorIndex,
+        media: sector.media,
+      }))
+    )
+  );
+  const [entriesFrom, setEntriesFrom] = useState<number>(0);
+  const [entriesTo, setEntriesTo] = useState<number>(entries.length);
+
+  const [deactivateMouseEvents, setDeactivateMouseEvents] =
+    useState<boolean>(false);
+  const [showExpandedSectors, setShowExpandedSectors] =
+    useState<boolean>(false);
+  const { setHoverSector } = useStore();
+
+  // Init the animation that controls the sector list
+  useSectorListAnimation();
+
+  useSectorListEvents("onComplete", () => {
+    console.log("section: onComplete");
+    useSetHeightOfAccordion();
+  });
+
+  useSectorListEvents("onUpdate", () => {
+    console.log("section: onUpdate");
+  });
+
+  const accordionAnis = useRef<any>(null);
+  const iconAnis = useRef<any>(null);
+  const activeIndexRef = useRef<number | null>(null);
+
+  const useSetHeightOfAccordion = () => {
+    console.log("useSetHeightOfAccordion");
+    const sectors = gsap.utils.toArray(".sector-item-content");
+    accordionAnis.current = sectors.map((sector: any, index: number) => {
+      const sectorHeight = sector.scrollHeight;
+
+      gsap.set(sector, { height: 0, opacity: 1 });
+
+      return gsap
+        .timeline({ paused: true })
+        .to(sector.querySelector(".sector-item-trigger"), {
+          backgroundColor: "rgba(255,0,0,1)",
+          duration: 0.3,
+          ease: "power3.inOut",
+        })
+        .to(sector, {
+          height: sectorHeight,
+          duration: 0.3,
+          ease: "power3.inOut",
+        })
+        .to(sector.querySelectorAll(".sector-item-content-entry"), {
+          opacity: 1,
+          y: 0,
+          duration: 0.2,
+          stagger: 0.2,
+          ease: "power3.inOut",
+        });
+    });
+
+    iconAnis.current = sectors.map((sector: any, index: number) => {
+      return gsap
+        .timeline({ paused: true })
+        .to(`.sector-icon-${index} path:first-child`, {
+          rotation: 90,
+          duration: 0.3,
+          transformOrigin: "center center",
+          ease: "power2.inOut",
+        });
+    });
+  };
+
+  const handleMouseEnter = useCallback(
+    (index: number, sector: string) => {
+      if (deactivateMouseEvents) return;
+
+      console.log("handleMouseEnter", index, sector);
+
+      setActiveSector(sector);
+      playAccordion(index);
+      setHoverSector(true);
+    },
+    [deactivateMouseEvents]
+  );
+
+  const handleMouseLeave = useCallback(() => {
+    if (deactivateMouseEvents) return;
+
+    setActiveSector("");
+    resetAccordion();
+    setHoverSector(false);
+  }, [deactivateMouseEvents]);
+
+  const showExpandedectors = (
+    slug: string,
+    sector: string,
+    entryIndex: number
+  ) => {
+    // Pause smooth scroll when opening sectors
+    const smoother = ScrollSmoother.get();
+    smoother?.paused(true);
+
+    setEntriesFrom(entryIndex);
+    setActiveSector(sector);
+    setDeactivateMouseEvents(true);
+    resetAccordion(() => {
+      gsap.to(".sector-item", {
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.2,
+        ease: "power2.inOut",
+        onComplete: () => {
+          setShowExpandedSectors(true);
+
+          gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
+            opacity: 0,
+            duration: 0.4,
+            ease: "power4.inOut",
+          });
+        },
+      });
+    });
+  };
+
+  const handleUpdateSector = (sector: string) => {
+    setActiveSector(sector);
+  };
+
+  const resetAccordion = useCallback((cb?: () => void) => {
+    accordionAnis.current.forEach((tl: any) => {
+      tl.reverse();
+      tl.eventCallback("onReverseComplete", () => {
+        cb?.();
+      });
+    });
+    iconAnis.current.forEach((tl: any) => {
+      tl.reverse();
+    });
+
+    activeIndexRef.current = null;
+  }, []);
+
+  const playAccordion = useCallback(async (index: number) => {
+    if (activeIndexRef.current === index) return;
+
+    console.log("playAccordion", index, activeIndexRef.current);
+
+    if (activeIndexRef.current !== null) {
+      const currentAccordion = accordionAnis.current[activeIndexRef.current];
+      const currentIcon = iconAnis.current[activeIndexRef.current];
+
+      await Promise.all([
+        new Promise((resolve) => {
+          if (
+            currentAccordion &&
+            !currentAccordion.reversed() &&
+            currentAccordion.progress() > 0
+          ) {
+            currentAccordion
+              .reverse()
+              .eventCallback("onReverseComplete", resolve);
+          } else {
+            resolve(false);
+          }
+        }),
+        new Promise((resolve) => {
+          if (
+            currentIcon &&
+            !currentIcon.reversed() &&
+            currentIcon.progress() > 0
+          ) {
+            currentIcon.reverse().eventCallback("onReverseComplete", resolve);
+          } else {
+            resolve(false);
+          }
+        }),
+      ]);
+    }
+
+    iconAnis.current[index].play();
+    accordionAnis.current[index].play();
+    activeIndexRef.current = index;
+  }, []);
+
+  return (
+    <div className="w-full relative flex flex-row items-center justify-start translate-y-[-53px]">
+      {data.map((sector: any, index: number) => {
+        const realIndex = index * sector.entries.length;
+        return (
+          <div
+            key={index}
+            className="sector-item relative w-[53px]"
+            onMouseEnter={() => handleMouseEnter(index, sector.title)}
+            onMouseLeave={() => handleMouseLeave()}
+          >
+            <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]">
+              <div
+                className={clsx(
+                  "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer ",
+                  deactivateMouseEvents && "cursor-auto pointer-events-none"
+                )}
+              >
+                <div className={"font-mono text-sm"}>{sector.title}</div>
+
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={clsx(
+                    `currentColor sector-icon`,
+                    `sector-icon-${index}`
+                  )}
+                >
+                  <path
+                    d="M12 5V19"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M5 12H19"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+
+            <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-[rgba(255,255,255,0.5)] rounded-[27px] overflow-hidden z-0">
+              <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
+                {sector.entries.map((entry: any, ix: number) => {
+                  return (
+                    <div
+                      key={index + ix}
+                      className={clsx(
+                        "sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer",
+                        deactivateMouseEvents &&
+                          "pointer-events-none cursor-auto"
+                      )}
+                    >
+                      <div
+                        onClick={() =>
+                          showExpandedectors(
+                            entry.slug,
+                            entry.sector,
+                            realIndex + ix
+                          )
+                        }
+                      >
+                        {entry.title}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export default SectionPortfolioList;

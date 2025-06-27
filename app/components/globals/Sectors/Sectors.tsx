@@ -261,19 +261,6 @@ const Sectors = (props: SectorsProps) => {
 
     const handleClose = () => {
       readyToThrow.current = false;
-      // setCurrentIndex(null);
-      // currentIndexRef.current = 0;
-
-      // gsap.to(draggableContainers.current, {
-      //   y: Math.random() * 100,
-      //   x: Math.random() * 100,
-      //   rotation: Math.random() * 360,
-      //   duration: 0.5,
-      //   ease: "power4.inOut",
-      //   onComplete: () => {
-      //     onClose();
-      //   },
-      // });
 
       gsap.to(sectorsContainerRef.current, {
         autoAlpha: 0,
@@ -313,7 +300,7 @@ const Sectors = (props: SectorsProps) => {
   return (
     <div
       ref={sectorsContainerRef}
-      className={" fixed top-0 left-0 w-full h-full z-50 opacity-0"}
+      className={"absolute top-0 left-0 w-full h-full z-50 opacity-0"}
     >
       <div
         ref={clickCloseRef}

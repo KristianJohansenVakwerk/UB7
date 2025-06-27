@@ -14,7 +14,7 @@ const SectionPortfolioBackground = (props: Props) => {
     console.log(activeSector);
   }, [activeSector]);
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen object-cover object-center  overflow-hidden z-0 pointer-events-none">
+    <div className="absolute top-0 left-0 w-screen h-screen object-cover object-center  overflow-hidden z-0 pointer-events-none">
       {data.map((entry: any, index: number) => {
         return (
           <img

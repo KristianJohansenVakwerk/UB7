@@ -1,3 +1,5 @@
+"use client";
+
 import Box from "../../../ui/Box/Box";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef, useState } from "react";
@@ -42,7 +44,7 @@ const SectionAbout = (props: any) => {
           id: "about-trigger",
           trigger: aboutTriggerOneRef.current,
           start: "top top+=10px",
-          end: `+=${scrollDistance} bottom-=100px`,
+          end: `+=${scrollDistance + 10} bottom+=9px`,
           pin: true,
           pinSpacing: true,
           anticipatePin: 1,

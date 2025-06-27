@@ -72,7 +72,7 @@ const SectionIntro = () => {
     <Box
       ref={ref}
       id="intro"
-      className="intro w-screen h-screen fixed top-0 left-0 opacity-100 snap-section"
+      className="intro w-screen h-screen fixed top-0 left-0 opacity-100 snap-section bg-red-500"
     >
       {/* <Intro3D paused={paused} /> */}
 
