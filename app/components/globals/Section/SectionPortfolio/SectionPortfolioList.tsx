@@ -2,7 +2,6 @@
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { useCallback, useRef, useState } from "react";
 import { useStore } from "@/store/store";
 import clsx from "clsx";
@@ -10,102 +9,56 @@ import {
   getTimeline,
   useSectorListAnimation,
   useSectorListEvents,
-} from "./SectionPortfolioHooks";
+} from "../../../../hooks/AnimationsHooks";
+
+import {
+  useAccordionSetup,
+  useAccordionControls,
+} from "../../../../hooks/AccordionHooks";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
 type Props = {
   data: any;
+  onExpandViewMode: (entryIndex: number, sector: string) => void;
+  onShowBackground: (sector: string) => void;
 };
 
 const SectionPortfolioList = (props: Props) => {
-  const { data } = props;
-  const [activeSector, setActiveSector] = useState<string | null>(null);
-
-  const [entries, setEntries] = useState<any[]>(
-    data.flatMap((sector: any, sectorIndex: number) =>
-      sector.entries.map((entry: any) => ({
-        ...entry,
-        sectorIndex,
-        media: sector.media,
-      }))
-    )
-  );
-  const [entriesFrom, setEntriesFrom] = useState<number>(0);
-  const [entriesTo, setEntriesTo] = useState<number>(entries.length);
+  const { data, onExpandViewMode, onShowBackground } = props;
+  const { accordionAnis, iconAnis, setupAccordion } = useAccordionSetup();
+  const { playAccordion, resetAccordion } = useAccordionControls();
 
   const [deactivateMouseEvents, setDeactivateMouseEvents] =
-    useState<boolean>(false);
-  const [showExpandedSectors, setShowExpandedSectors] =
-    useState<boolean>(false);
+    useState<boolean>(true);
+
   const { setHoverSector } = useStore();
 
   // Init the animation that controls the sector list
   useSectorListAnimation();
 
   useSectorListEvents("onComplete", () => {
-    console.log("section: onComplete");
-    useSetHeightOfAccordion();
+    setupAccordion();
+    setDeactivateMouseEvents(false);
   });
 
-  useSectorListEvents("onUpdate", () => {
-    console.log("section: onUpdate");
+  useSectorListEvents("onReverseComplete", () => {
+    setDeactivateMouseEvents(true);
   });
 
-  const accordionAnis = useRef<any>(null);
-  const iconAnis = useRef<any>(null);
-  const activeIndexRef = useRef<number | null>(null);
-
-  const useSetHeightOfAccordion = () => {
-    console.log("useSetHeightOfAccordion");
-    const sectors = gsap.utils.toArray(".sector-item-content");
-    accordionAnis.current = sectors.map((sector: any, index: number) => {
-      const sectorHeight = sector.scrollHeight;
-
-      gsap.set(sector, { height: 0, opacity: 1 });
-
-      return gsap
-        .timeline({ paused: true })
-        .to(sector.querySelector(".sector-item-trigger"), {
-          backgroundColor: "rgba(255,0,0,1)",
-          duration: 0.3,
-          ease: "power3.inOut",
-        })
-        .to(sector, {
-          height: sectorHeight,
-          duration: 0.3,
-          ease: "power3.inOut",
-        })
-        .to(sector.querySelectorAll(".sector-item-content-entry"), {
-          opacity: 1,
-          y: 0,
-          duration: 0.2,
-          stagger: 0.2,
-          ease: "power3.inOut",
-        });
-    });
-
-    iconAnis.current = sectors.map((sector: any, index: number) => {
-      return gsap
-        .timeline({ paused: true })
-        .to(`.sector-icon-${index} path:first-child`, {
-          rotation: 90,
-          duration: 0.3,
-          transformOrigin: "center center",
-          ease: "power2.inOut",
-        });
-    });
-  };
+  useSectorListEvents("onScrollTriggerLeave", () => {
+    resetAccordion(accordionAnis, iconAnis);
+    setHoverSector(false);
+    onShowBackground("");
+  });
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
       if (deactivateMouseEvents) return;
 
-      console.log("handleMouseEnter", index, sector);
-
-      setActiveSector(sector);
-      playAccordion(index);
+      playAccordion(index, accordionAnis, iconAnis);
       setHoverSector(true);
+      onShowBackground(sector);
     },
     [deactivateMouseEvents]
   );
@@ -113,11 +66,12 @@ const SectionPortfolioList = (props: Props) => {
   const handleMouseLeave = useCallback(() => {
     if (deactivateMouseEvents) return;
 
-    setActiveSector("");
-    resetAccordion();
+    resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
+    onShowBackground("");
   }, [deactivateMouseEvents]);
 
+  const { timelineRef } = useSectorListAnimation();
   const showExpandedectors = (
     slug: string,
     sector: string,
@@ -126,101 +80,36 @@ const SectionPortfolioList = (props: Props) => {
     // Pause smooth scroll when opening sectors
     const smoother = ScrollSmoother.get();
     smoother?.paused(true);
-
-    setEntriesFrom(entryIndex);
-    setActiveSector(sector);
     setDeactivateMouseEvents(true);
-    resetAccordion(() => {
-      gsap.to(".sector-item", {
-        opacity: 0,
-        stagger: 0.1,
-        duration: 0.2,
-        ease: "power2.inOut",
-        onComplete: () => {
-          setShowExpandedSectors(true);
 
+    resetAccordion(accordionAnis, iconAnis, () => {
+      if (timelineRef?.current) {
+        timelineRef.current.seek(1);
+        timelineRef.current.reverse();
+        timelineRef.current.eventCallback("onReverseComplete", () => {
           gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
             opacity: 0,
             duration: 0.4,
             ease: "power4.inOut",
           });
-        },
-      });
+          onExpandViewMode(entryIndex, sector);
+        });
+      }
     });
   };
-
-  const handleUpdateSector = (sector: string) => {
-    setActiveSector(sector);
-  };
-
-  const resetAccordion = useCallback((cb?: () => void) => {
-    accordionAnis.current.forEach((tl: any) => {
-      tl.reverse();
-      tl.eventCallback("onReverseComplete", () => {
-        cb?.();
-      });
-    });
-    iconAnis.current.forEach((tl: any) => {
-      tl.reverse();
-    });
-
-    activeIndexRef.current = null;
-  }, []);
-
-  const playAccordion = useCallback(async (index: number) => {
-    if (activeIndexRef.current === index) return;
-
-    console.log("playAccordion", index, activeIndexRef.current);
-
-    if (activeIndexRef.current !== null) {
-      const currentAccordion = accordionAnis.current[activeIndexRef.current];
-      const currentIcon = iconAnis.current[activeIndexRef.current];
-
-      await Promise.all([
-        new Promise((resolve) => {
-          if (
-            currentAccordion &&
-            !currentAccordion.reversed() &&
-            currentAccordion.progress() > 0
-          ) {
-            currentAccordion
-              .reverse()
-              .eventCallback("onReverseComplete", resolve);
-          } else {
-            resolve(false);
-          }
-        }),
-        new Promise((resolve) => {
-          if (
-            currentIcon &&
-            !currentIcon.reversed() &&
-            currentIcon.progress() > 0
-          ) {
-            currentIcon.reverse().eventCallback("onReverseComplete", resolve);
-          } else {
-            resolve(false);
-          }
-        }),
-      ]);
-    }
-
-    iconAnis.current[index].play();
-    accordionAnis.current[index].play();
-    activeIndexRef.current = index;
-  }, []);
 
   return (
-    <div className="w-full relative flex flex-row items-center justify-start translate-y-[-53px]">
+    <div className="w-full relative flex flex-row items-start justify-start">
       {data.map((sector: any, index: number) => {
         const realIndex = index * sector.entries.length;
         return (
           <div
             key={index}
-            className="sector-item relative w-[53px]"
+            className="sector-item relative w-[53px] opacity-0"
             onMouseEnter={() => handleMouseEnter(index, sector.title)}
             onMouseLeave={() => handleMouseLeave()}
           >
-            <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-full border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]">
+            <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)] ">
               <div
                 className={clsx(
                   "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer ",
@@ -258,8 +147,10 @@ const SectionPortfolioList = (props: Props) => {
               </div>
             </div>
 
-            <div className="absolute top-0 left-0 w-full h-fit sector-item-content opacity-0 bg-[rgba(255,255,255,0.5)] rounded-[27px] overflow-hidden z-0">
-              <div className="sector-item-content-inner  w-full pt-[100px] px-1 pb-2">
+            <div className="absolute top-0 left-0 w-full h-[53px] sector-item-content-background bg-[rgba(0,0,0,0)] rounded-[27px] z-0" />
+
+            <div className="absolute top-[53px] left-0 w-full h-fit sector-item-content opacity-0  rounded-[27px] overflow-hidden z-20">
+              <div className="sector-item-content-inner  w-full pt-[53px] px-1 pb-2">
                 {sector.entries.map((entry: any, ix: number) => {
                   return (
                     <div

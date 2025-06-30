@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Sector, { getScale, getTranslation } from "./Sector";
-import { useLenis } from "lenis/react";
 import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { useGSAP } from "@gsap/react";
+import { useSectorListAnimation } from "@/app/hooks/AnimationsHooks";
 
 // Register the Draggable plugin
 gsap.registerPlugin(Draggable, InertiaPlugin);
@@ -27,7 +27,6 @@ const Sectors = (props: SectorsProps) => {
     entriesTo,
     onClose,
   } = props;
-  const lenis = useLenis();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const currentIndexRef = useRef<number>(0);
@@ -35,7 +34,6 @@ const Sectors = (props: SectorsProps) => {
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const clickNextRef = useRef<HTMLDivElement>(null);
   const clickPrevRef = useRef<HTMLDivElement>(null);
-  const clickCloseRef = useRef<HTMLDivElement>(null);
   const draggableContainers = useRef<HTMLElement[]>([]);
   const activeContainersRef = useRef<HTMLElement[]>([]);
   const readyToThrow = useRef<boolean>(false);
@@ -153,18 +151,6 @@ const Sectors = (props: SectorsProps) => {
     }
   }, [active, currentIndex]);
 
-  useEffect(() => {
-    if (lenis && active) {
-      lenis.stop();
-    }
-
-    return () => {
-      if (lenis) {
-        lenis.start();
-      }
-    };
-  }, [lenis, active]);
-
   useGSAP(() => {
     if (
       typeof window !== "undefined" &&
@@ -178,14 +164,28 @@ const Sectors = (props: SectorsProps) => {
           allowNativeTouchScrolling: true,
           cursor: "grab",
           activeCursor: "grabbing",
+          dragClickables: false,
+          clickableTest: (el) => {
+            if (el instanceof HTMLImageElement) {
+              return true;
+            }
 
+            return false;
+          },
           onDragStart: (self) => {},
-          onDrag: () => {
+          onDrag: (self) => {
             const el = item;
 
             if (el) {
               const vx = InertiaPlugin.getVelocity(el, "x");
               const vy = InertiaPlugin.getVelocity(el, "y");
+
+              // draggableContainers.current.forEach((item, index) => {
+              //   gsap.set(item, {
+              //     x: 0,
+              //     scale:
+              //   });
+              // });
 
               gsap.to(el, {
                 rotation: vx * 0.01,
@@ -259,20 +259,6 @@ const Sectors = (props: SectorsProps) => {
       }
     };
 
-    const handleClose = () => {
-      readyToThrow.current = false;
-
-      gsap.to(sectorsContainerRef.current, {
-        autoAlpha: 0,
-        duration: 0.5,
-        ease: "power4.inOut",
-        onComplete: () => {
-          onClose();
-        },
-      });
-    };
-
-    clickCloseRef.current?.addEventListener("click", () => handleClose());
     clickNextRef.current?.addEventListener("click", () => handleClick("next"));
     clickPrevRef.current?.addEventListener("click", () => handleClick("prev"));
 
@@ -283,9 +269,28 @@ const Sectors = (props: SectorsProps) => {
       clickPrevRef.current?.removeEventListener("click", () =>
         handleClick("prev")
       );
-      clickCloseRef.current?.removeEventListener("click", () => handleClose());
     };
   }, []);
+
+  const { timelineRef } = useSectorListAnimation();
+
+  const handleClose = () => {
+    readyToThrow.current = false;
+    gsap.to(sectorsContainerRef.current, {
+      id: "sectors-container-close",
+      autoAlpha: 0,
+      duration: 0.5,
+      ease: "power4.inOut",
+      onComplete: () => {
+        if (timelineRef?.current) {
+          onClose();
+
+          timelineRef.current.seek(0);
+          timelineRef.current.play();
+        }
+      },
+    });
+  };
 
   useEffect(() => {
     if (!currentIndex) return;
@@ -303,8 +308,8 @@ const Sectors = (props: SectorsProps) => {
       className={"absolute top-0 left-0 w-full h-full z-50 opacity-0"}
     >
       <div
-        ref={clickCloseRef}
         className="absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer"
+        onClick={handleClose}
       >
         <svg
           width="25"

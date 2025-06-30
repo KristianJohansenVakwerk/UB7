@@ -90,23 +90,17 @@ export const useSectorListAnimation = () => {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useGSAP(() => {
-    gsap.set(".sector-item", { width: "53px" });
+    // gsap.set(".sector-item", { width: "53px" });
 
     const tl = gsap.timeline({
       id: "sector-list-animation",
       onComplete: () => {
-        //  setShowUI(true);
-        //  setDeactivateMouseEvents(false);
-        //  useSetHeightOfAccordion();
         eventManager.triggerCallbacks("sector-list-animation", "onComplete");
       },
       onUpdate: () => {
-        //  setDeactivateMouseEvents(true);
         eventManager.triggerCallbacks("sector-list-animation", "onUpdate");
       },
       onReverseComplete: () => {
-        //  setShowUI(false);
-        //  setDeactivateMouseEvents(true);
         eventManager.triggerCallbacks(
           "sector-list-animation",
           "onReverseComplete"
@@ -127,19 +121,16 @@ export const useSectorListAnimation = () => {
         pin: false,
         pinSpacing: false,
         onEnter: () => {
-          //  setShowTitle(true);
           eventManager.triggerCallbacks(
             "sector-list-animation",
             "onScrollTriggerEnter"
           );
         },
         onLeave: () => {
-          //  setShowTitle(false);
           gsap.to(".sector-item", {
             opacity: 0,
             stagger: 0.2,
             onComplete: () => {
-              //  setDeactivateMouseEvents(true);
               eventManager.triggerCallbacks(
                 "sector-list-animation",
                 "onScrollTriggerLeave"
@@ -148,12 +139,10 @@ export const useSectorListAnimation = () => {
           });
         },
         onEnterBack: () => {
-          //  setShowTitle(true);
           gsap.to(".sector-item", {
             opacity: 1,
             stagger: 0.2,
             onComplete: () => {
-              //  setDeactivateMouseEvents(false);
               eventManager.triggerCallbacks(
                 "sector-list-animation",
                 "onScrollTriggerEnterBack"
@@ -162,7 +151,6 @@ export const useSectorListAnimation = () => {
           });
         },
         onLeaveBack: () => {
-          //  setShowTitle(false);
           eventManager.triggerCallbacks(
             "sector-list-animation",
             "onScrollTriggerLeaveBack"
@@ -171,27 +159,34 @@ export const useSectorListAnimation = () => {
       },
     });
 
-    tl.fromTo(
-      ".sector-item",
-      { width: "53px" },
-      {
-        width: "25%",
-        stagger: 0.2,
-        duration: 0.4,
-        immediateRender: false,
-        ease: "power2.inOut",
-      }
-    );
+    tl.to(".sector-item", {
+      width: "25%",
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.2,
+      immediateRender: false,
+      ease: "power2.inOut",
+    });
 
     tl.to(
-      ".sector-item-trigger",
+      ".sector-item-content-background",
 
       {
         width: "100%",
         backgroundColor: "rgba(255,255,255,0.5)",
         borderColor: "transparent",
-        stagger: 0.2,
-        duration: 0.4,
+        stagger: 0.1,
+        duration: 0.2,
+      },
+      "<"
+    );
+
+    tl.to(
+      ".sector-item-trigger",
+      {
+        borderColor: "transparent",
+        stagger: 0.1,
+        duration: 0.2,
       },
       "<"
     );
@@ -200,9 +195,9 @@ export const useSectorListAnimation = () => {
       ".sector-item-trigger-content",
       {
         opacity: 1,
-        stagger: 0.2,
+        stagger: 0.1,
         delay: 0.5,
-        duration: 0.4,
+        duration: 0.2,
       },
       "<"
     );

@@ -1,21 +1,16 @@
 "use client";
 import clsx from "clsx";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import SectionPortfolioBackground from "./SectionPortfolioBackground";
 import React from "react";
 import { useStore } from "@/store/store";
 import Sectors from "../../Sectors/Sectors";
 import SectionTitle from "../SectionTitle";
 import SectionPortfolioList from "./SectionPortfolioList";
-import {
-  getTimeline,
-  useSectorListEvents,
-  useTimelineEvents,
-} from "./SectionPortfolioHooks";
+import { useSectorListEvents } from "../../../../hooks/AnimationsHooks";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
@@ -42,12 +37,10 @@ const SectionPortfolio = (props: any) => {
     useState<boolean>(false);
   const { setHoverSector } = useStore();
 
+  // Animation of list is complete allow background to be shown on mouse enter
   useSectorListEvents("onComplete", () => {
-    console.log("section: onComplete");
     setShowUI(true);
   });
-
-  useSectorListEvents("onUpdate", () => {});
 
   useSectorListEvents("onScrollTriggerEnter", () => {
     setShowTitle(true);
@@ -74,7 +67,7 @@ const SectionPortfolio = (props: any) => {
     smoother?.paused(false);
 
     setActiveSector("");
-    // resetAccordion();
+
     setHoverSector(false);
     setDeactivateMouseEvents(false);
     setShowExpandedSectors(false);
@@ -94,18 +87,39 @@ const SectionPortfolio = (props: any) => {
     });
   };
 
+  const handleExpandViewMode = useCallback(
+    (entryIndex: number, sector: string) => {
+      console.log("handleExpandViewMode", entryIndex, sector);
+      setActiveSector(sector);
+      setEntriesFrom(entryIndex);
+      setShowExpandedSectors(true);
+    },
+    []
+  );
+
+  const handleShowBackground = useCallback((sector: string) => {
+    setActiveSector(sector);
+  }, []);
+
   return (
     <>
       <div
         className={clsx(
-          "gap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between"
+          "relativegap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between"
         )}
       >
-        <div className={"pt-7"}>
-          <SectionTitle title={title} id={"portfolio"} play={showTitle} />
+        <div>
+          <div className={"pt-7"}>
+            <SectionTitle title={title} id={"portfolio"} play={showTitle} />
+          </div>
         </div>
-
-        <SectionPortfolioList data={data} />
+        <div className="relative w-full  ">
+          <SectionPortfolioList
+            data={data}
+            onExpandViewMode={handleExpandViewMode}
+            onShowBackground={handleShowBackground}
+          />
+        </div>
 
         <div></div>
       </div>

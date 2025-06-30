@@ -15,15 +15,6 @@ const Sector = (props: Props) => {
   const { data, index, currentIndex, active } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
 
-  useGSAP(() => {
-    // gsap.to(draggableRef.current, {
-    //   y: getTranslation(index, currentIndex || 0),
-    //   scale: getScale(index, currentIndex || 0),
-    //   duration: 0.8,
-    //   ease: "elastic",
-    // });
-  }, [currentIndex]);
-
   return (
     <div
       className="sector-draggable-container absolute inset-0  flex items-center justify-center  "
