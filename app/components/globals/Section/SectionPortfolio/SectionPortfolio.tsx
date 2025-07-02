@@ -139,7 +139,7 @@ const SectionPortfolio = (props: any) => {
         active={showExpandedSectors}
         updateCurrentSector={handleUpdateSector}
         onClose={handleClose}
-        init={initSectors}
+        // init={initSectors}
       />
     </>
   );

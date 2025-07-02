@@ -73,8 +73,8 @@ const SectionAbout = (props: any) => {
             gsap.killTweensOf(items);
             gsap.to(items, {
               autoAlpha: 1,
-              duration: 0.3,
-              stagger: 0.2,
+              duration: 0.2,
+              stagger: 0.1,
               delay: 1.2,
               ease: "power2.inOut",
             });
@@ -92,16 +92,15 @@ const SectionAbout = (props: any) => {
             });
           },
           onLeave: () => {
-            setTimeout(() => {
-              setShowTitle(false);
-            }, 100);
-
-            gsap.to(textRef.current, {
-              autoAlpha: 0,
-              duration: 0.3,
-              delay: 0.4,
-              ease: "power2.inOut",
-            });
+            // setTimeout(() => {
+            //   setShowTitle(false);
+            // }, 100);
+            // gsap.to(textRef.current, {
+            //   autoAlpha: 0,
+            //   duration: 0.3,
+            //   delay: 0.4,
+            //   ease: "power2.inOut",
+            // });
           },
           onLeaveBack: () => {
             setTimeout(() => {
@@ -339,6 +338,7 @@ export const TeamMembers = ({
   imageRef: RefObject<HTMLImageElement | null>;
 }) => {
   return items.map((m, index: number) => {
+    // @ts-ignore
     if (m.type === "box") {
       return (
         <Box

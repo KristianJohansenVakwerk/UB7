@@ -73,7 +73,7 @@ const SmoothWrapper = (props: Props) => {
     smootherRef.current = ScrollSmoother.create({
       wrapper: ".smooth-wrapper",
       content: ".smooth-content",
-      smooth: 0.1,
+      smooth: 0.4,
       effects: false,
       normalizeScroll: true,
       smoothTouch: 0.2,
@@ -121,7 +121,7 @@ const SmoothWrapper = (props: Props) => {
         markers: isLastContainer ? true : false,
         snap: {
           snapTo: sections.length > 1 ? [0, 1] : 1,
-          duration: 0.4,
+          duration: 0.6,
           ease: "power2.inOut",
         },
         onEnter: () => {},

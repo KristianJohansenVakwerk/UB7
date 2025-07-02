@@ -23,7 +23,6 @@ type SectorsProps = {
   active: boolean;
   updateCurrentSector: (sector: string) => void;
   onClose: () => void;
-  init: boolean;
 };
 
 const Sectors = (props: SectorsProps) => {
@@ -34,7 +33,6 @@ const Sectors = (props: SectorsProps) => {
     entriesFrom,
     entriesTo,
     onClose,
-    init,
   } = props;
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -200,10 +198,8 @@ const Sectors = (props: SectorsProps) => {
   useGSAP(() => {
     if (
       typeof window !== "undefined" &&
-      draggableContainers.current.length > 0 &&
-      init
+      draggableContainers.current.length > 0
     ) {
-      console.log("init draggable");
       draggableContainers.current.forEach((item, index) => {
         Draggable.create(item, {
           ...draggableConfig,
@@ -251,7 +247,7 @@ const Sectors = (props: SectorsProps) => {
         });
       });
     }
-  }, [init]);
+  }, []);
 
   useGSAP(() => {
     const handleClick = (direction: "next" | "prev") => {
