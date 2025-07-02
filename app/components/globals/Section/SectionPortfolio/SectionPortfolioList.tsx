@@ -106,10 +106,12 @@ const SectionPortfolioList = (props: Props) => {
           <div
             key={index}
             className="sector-item relative w-[53px] opacity-0"
-            onMouseEnter={() => handleMouseEnter(index, sector.title)}
             onMouseLeave={() => handleMouseLeave()}
           >
-            <div className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)] ">
+            <div
+              className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)] "
+              onMouseEnter={() => handleMouseEnter(index, sector.title)}
+            >
               <div
                 className={clsx(
                   "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer ",
@@ -147,10 +149,10 @@ const SectionPortfolioList = (props: Props) => {
               </div>
             </div>
 
-            <div className="absolute top-0 left-0 w-full h-[53px] sector-item-content-background bg-[rgba(0,0,0,0)] rounded-[27px] z-0" />
+            <div className="absolute top-0 left-0 w-full h-[53px] sector-item-content-background bg-[rgba(255,255,255,0)] rounded-[27px] z-0" />
 
             <div className="absolute top-[53px] left-0 w-full h-fit sector-item-content opacity-0  rounded-[27px] overflow-hidden z-20">
-              <div className="sector-item-content-inner  w-full pt-[53px] px-1 pb-2">
+              <div className="sector-item-content-inner w-full pt-2 px-2 pb-1">
                 {sector.entries.map((entry: any, ix: number) => {
                   return (
                     <div

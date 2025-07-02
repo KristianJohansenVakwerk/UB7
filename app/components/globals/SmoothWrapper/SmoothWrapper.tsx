@@ -4,7 +4,7 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, ScrollSmoother);
 
@@ -15,6 +15,8 @@ const SmoothWrapper = (props: Props) => {
   const { children } = props;
   const smootherRef = useRef<ScrollSmoother | null>(null);
   const directionRef = useRef<number>(0);
+  const [scrolling, setScrolling] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSmootherStop = useCallback((self: ScrollSmoother) => {
     const freeContainerScroller = ScrollTrigger.getById(
@@ -71,18 +73,33 @@ const SmoothWrapper = (props: Props) => {
     smootherRef.current = ScrollSmoother.create({
       wrapper: ".smooth-wrapper",
       content: ".smooth-content",
-      smooth: 1,
-
+      smooth: 1.2,
       effects: false,
       normalizeScroll: true,
       smoothTouch: 0.2,
       onStop: handleSmootherStop,
+      onUpdate: () => {
+        setScrolling(true);
+
+        // Clear existing timeout before setting a new one
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+
+        timerRef.current = setTimeout(() => {
+          setScrolling(false);
+        }, 50);
+      },
     });
 
     // Cleanup function
     return () => {
       if (smootherRef.current) {
         smootherRef.current.kill();
+      }
+      // Clear timeout on cleanup
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
     };
   }, [handleSmootherStop]);
@@ -135,7 +152,10 @@ const SmoothWrapper = (props: Props) => {
   }, []);
 
   return (
-    <div className="smooth-wrapper">
+    <div
+      className="smooth-wrapper"
+      style={{ pointerEvents: scrolling ? "none" : "auto" }}
+    >
       <div className="smooth-content">{children}</div>
     </div>
   );

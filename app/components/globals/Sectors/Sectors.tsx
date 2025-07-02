@@ -114,7 +114,7 @@ const Sectors = (props: SectorsProps) => {
         //     randomY = -1000 - Math.random() * 1000;
         //   }
         // }
-        console.log("container", container);
+
         gsap.set(container, {
           x: -400,
           // y: randomY,
@@ -132,16 +132,12 @@ const Sectors = (props: SectorsProps) => {
         delay: 0.8,
         ease: "power2.inOut",
         onComplete: () => {
-          console.log(
-            "sectors container is in start animation the active containers in",
-            currentIndex
-          );
           gsap.to(activeContainers, {
             y: (index) => getTranslation(index, currentIndex || 0),
             scale: (index) => getScale(index, currentIndex || 0),
             stagger: -0.1,
-            duration: 0.5,
-            ease: "power4.inOut",
+            duration: 0.3,
+            ease: "power2.inOut",
             onComplete: () => {
               readyToThrow.current = true;
               currentIndexRef.current = entriesFrom;
