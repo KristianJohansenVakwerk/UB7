@@ -1,9 +1,18 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Application, useTick, extend } from "@pixi/react";
+import { Application, useTick, extend, useApplication } from "@pixi/react";
 
-import { Container, Graphics, Filter, GlProgram, Texture } from "pixi.js";
+import {
+  Container,
+  Graphics,
+  Filter,
+  GlProgram,
+  Texture,
+  Assets,
+  FillGradient,
+  Sprite,
+} from "pixi.js";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -16,6 +25,7 @@ extend({
   GlProgram,
   Filter,
   Texture,
+  Sprite,
 });
 
 const vertex = `
@@ -115,11 +125,6 @@ const IntroPixi = () => {
   // Predefined position states
   const positionStates = {
     default: { pos1: 0.0, pos2: 0.2, pos3: 0.5, pos4: 1.0 },
-    compressed: { pos1: 0.0, pos2: 0.1, pos3: 0.3, pos4: 1.0 },
-    expanded: { pos1: 0.0, pos2: 0.4, pos3: 0.7, pos4: 1.0 },
-    inverted: { pos1: 1.0, pos2: 0.8, pos3: 0.5, pos4: 0.0 },
-    centered: { pos1: 0.3, pos2: 0.4, pos3: 0.6, pos4: 0.7 },
-    scattered: { pos1: 0.0, pos2: 0.3, pos3: 0.6, pos4: 1.0 },
   };
 
   // Predefined color schemes
@@ -211,159 +216,120 @@ const IntroPixi = () => {
     });
   }, [filter]);
 
-  const handleButtonClick = () => {
-    if (filter) {
-      if (isAnimating) {
-        setIsAnimating(false);
-        gsap.killTweensOf(filter.resources.timeUniforms.uniforms);
-      } else {
-        setIsAnimating(true);
-        gsap.fromTo(
-          filter.resources.timeUniforms.uniforms,
-          { uTime: 0 },
-          {
-            uTime: 5,
-            duration: 5,
-            ease: "power4.inOut",
-            onComplete: () => {
-              setIsAnimating(false);
-            },
-          }
-        );
-      }
-    }
-  };
-
-  const animateToState = (stateName: keyof typeof positionStates) => {
-    const targetState = positionStates[stateName];
-    setPositions(targetState);
-
-    if (filter) {
-      gsap.to(filter.resources.timeUniforms.uniforms, {
-        uPos1: targetState.pos1,
-        uPos2: targetState.pos2,
-        uPos3: targetState.pos3,
-        uPos4: targetState.pos4,
-        duration: 1.5,
-        ease: "power2.inOut",
-      });
-    }
-  };
-
-  const animateToColorScheme = (schemeName: keyof typeof colorSchemes) => {
-    const targetScheme = colorSchemes[schemeName];
-    setColors(targetScheme);
-
-    console.log(filter.resources.timeUniforms.uniforms);
-
-    if (filter) {
-      const tweenColor = (uniformKey: string, targetColor: number[]) => {
-        const colorArray = filter.resources.timeUniforms.uniforms[uniformKey]; // Already a Float32Array or Array of 3
-        gsap.to(colorArray, {
-          0: targetColor[0],
-          1: targetColor[1],
-          2: targetColor[2],
-          duration: 0.5,
-          ease: "power4.inOut",
-        });
-      };
-
-      tweenColor("uColor1", targetScheme.color1);
-      tweenColor("uColor2", targetScheme.color2);
-      tweenColor("uColor3", targetScheme.color3);
-      tweenColor("uColor4", targetScheme.color4);
-    }
-  };
-
-  const handlePositionChange = (position: string, value: number) => {
-    const newPositions = { ...positions, [position]: value };
-    setPositions(newPositions);
-
-    if (filter) {
-      gsap.to(filter.resources.timeUniforms.uniforms, {
-        uPos1: newPositions.pos1,
-        uPos2: newPositions.pos2,
-        uPos3: newPositions.pos3,
-        uPos4: newPositions.pos4,
-        duration: 0.5,
-        ease: "power2.out",
-      });
-    }
-  };
-
-  const handleColorChange = (
-    colorIndex: string,
-    channel: number,
-    value: number
-  ) => {
-    const newColors = { ...colors };
-    newColors[colorIndex as keyof typeof colors][channel] = value;
-    setColors(newColors);
-
-    if (filter) {
-      gsap.to(filter.resources.timeUniforms.uniforms, {
-        [`u${colorIndex.charAt(0).toUpperCase() + colorIndex.slice(1)}`]:
-          newColors[colorIndex as keyof typeof colors],
-        duration: 0.5,
-        ease: "power2.out",
-      });
-    }
-  };
-
   return (
     <div
       className="fixed top-0 left-0 w-screen h-screen bg-[#D9D9D9]"
       ref={parentRef}
     >
-      <Application resizeTo={parentRef} backgroundColor={0xd9d9d9}>
-        <PixiChild
+      <Application
+        antialias={true}
+        resizeTo={parentRef}
+        backgroundColor={0xd9d9d9}
+      >
+        <PixiGradient
           setFilter={setFilter}
           isAnimating={isAnimating}
           positions={positions}
           colors={colors}
         />
+        <PixiSVG />
       </Application>
-      {/* 
-      <div className="absolute top-4 right-4 flex flex-col gap-2 z-10 max-h-screen overflow-y-auto">
-        <div className="bg-white p-4 rounded-md">
-          <h3 className="font-mono text-sm mb-2">Color Schemes</h3>
-          <div className="grid grid-cols-2 gap-1 mb-4">
-            {Object.keys(colorSchemes).map((schemeName) => (
-              <button
-                key={schemeName}
-                onClick={() =>
-                  animateToColorScheme(schemeName as keyof typeof colorSchemes)
-                }
-                className="bg-gray-100 hover:bg-gray-200 text-black px-2 py-1 rounded text-xs font-mono transition-colors"
-              >
-                {schemeName}
-              </button>
-            ))}
-          </div>
-
-          <h3 className="font-mono text-sm mb-2">Position States</h3>
-          <div className="grid grid-cols-2 gap-1 mb-4">
-            {Object.keys(positionStates).map((stateName) => (
-              <button
-                key={stateName}
-                onClick={() =>
-                  animateToState(stateName as keyof typeof positionStates)
-                }
-                className="bg-gray-100 hover:bg-gray-200 text-black px-2 py-1 rounded text-xs font-mono transition-colors"
-              >
-                {stateName}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };
 
 export default IntroPixi;
 
-const PixiChild = ({
+const svgVertex = `
+  in vec2 aPosition;
+  out vec2 vTextureCoord;
+
+  void main(void) {
+    gl_Position = vec4(aPosition * 2.0 - 1.0, 0.0, 1.0);
+    vTextureCoord = vec2(aPosition.x, 1.0 - aPosition.y);
+  }
+`;
+
+const svgFragment = `
+  in vec2 vTextureCoord;
+  precision mediump float;
+
+  uniform sampler2D uSampler;
+  uniform float uTime;
+  uniform vec3 uColor1;
+  uniform vec3 uColor2;
+  uniform vec3 uColor3;
+  uniform vec3 uColor4;
+  
+  void main(void) {
+    vec4 texColor = texture(uSampler, vTextureCoord);
+    
+    // Only apply gradient to non-transparent pixels
+    if (texColor.a > 0.0) {
+      vec2 uv = vTextureCoord;
+      
+      // Create gradient based on Y position
+      float gradientY = uv.y;
+      
+      vec3 gradientColor;
+      if (gradientY < 0.33) {
+        float t = gradientY / 0.33;
+        gradientColor = mix(uColor1, uColor2, t);
+      } else if (gradientY < 0.66) {
+        float t = (gradientY - 0.33) / 0.33;
+        gradientColor = mix(uColor2, uColor3, t);
+      } else {
+        float t = (gradientY - 0.66) / 0.34;
+        gradientColor = mix(uColor3, uColor4, t);
+      }
+      
+      // Apply gradient to the texture color
+      gl_FragColor = vec4(gradientColor, texColor.a);
+    } else {
+      gl_FragColor = texColor;
+    }
+  }
+`;
+
+const PixiSVG = () => {
+  const application = useApplication();
+
+  useEffect(() => {
+    const loader = async () => {
+      try {
+        const svgContext = await Assets.load({
+          src: "/logo.svg",
+          data: {
+            parseAsGraphicsContext: true, // If false, it returns a texture instead.
+          },
+        });
+
+        const graphics = new Graphics(svgContext);
+        graphics.x = 50;
+        graphics.y = 50;
+
+        const fillGradient = new FillGradient({
+          end: { x: 0, y: 1 }, // vertical gradient
+          colorStops: [
+            { offset: 0, color: 0x00ff00 },
+            { offset: 1, color: 0xffff00 },
+          ],
+        });
+        graphics.clear();
+        graphics.fill(fillGradient);
+
+        application.app.stage.addChild(graphics);
+      } catch (error) {
+        console.error("Error loading SVG:", error);
+      }
+    };
+    loader();
+  }, []);
+
+  return null;
+};
+
+const PixiGradient = ({
   setFilter,
   isAnimating,
   positions,
@@ -381,6 +347,7 @@ const PixiChild = ({
 }) => {
   const ref = useRef<any>(null);
   const [filter, setLocalFilter] = useState<any>(null);
+  const application = useApplication();
   // const [time, setTime] = useState(0);
 
   useTick((ticker) => {
@@ -426,19 +393,8 @@ const PixiChild = ({
       graphics.filters = [gradientFilter];
       setLocalFilter(gradientFilter);
       setFilter(gradientFilter);
-      ref.current.addChild(graphics);
 
-      // gsap.fromTo(
-      //   gradientFilter.resources.timeUniforms.uniforms,
-      //   { uTime: 0 },
-      //   {
-      //     uTime: 5,
-      //     duration: 5,
-      //     ease: "power2.inOut",
-      //     repeat: -1,
-      //     yoyo: true,
-      //   }
-      // );
+      ref.current.addChild(graphics);
     }
   }, [setFilter]);
 
