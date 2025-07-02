@@ -29,24 +29,8 @@ const Progress = () => {
               width: `${self.progress * 100}%`,
             });
           },
-          onEnter: () => {
-            if (progressRef.current && section.id !== "intro") {
-              gsap.to(progressRef.current, {
-                opacity: 1,
-                duration: 0.2,
-                ease: "power2.inOut",
-              });
-            }
-          },
-          onEnterBack: () => {
-            if (progressRef.current && section.id === "intro") {
-              gsap.to(progressRef.current, {
-                opacity: 0,
-                duration: 0.2,
-                ease: "power2.inOut",
-              });
-            }
-          },
+          onEnter: () => {},
+          onEnterBack: () => {},
         });
       });
     }, 100);
@@ -56,7 +40,7 @@ const Progress = () => {
     <div
       id={"progress"}
       ref={progressRef}
-      className="fixed top-2 left-3 right-3 flex flex-row z-50 gap-1 opacity-0"
+      className="fixed top-2 left-3 right-3 flex flex-row z-50 gap-1 opacity-100"
     >
       {globalTriggers.map((section: any, index: number) => {
         return (

@@ -37,7 +37,7 @@ const SmoothWrapper = (props: Props) => {
         ) {
           gsap.to(smootherRef.current, {
             scrollTop: freeContainerScroller.start + window.innerHeight,
-            duration: 0.8,
+            duration: 0.4,
             ease: "power2.inOut",
           });
         }
@@ -49,7 +49,7 @@ const SmoothWrapper = (props: Props) => {
         ) {
           gsap.to(smootherRef.current, {
             scrollTop: freeContainerScroller.start,
-            duration: 0.8,
+            duration: 0.4,
             ease: "power2.inOut",
           });
         }
@@ -73,7 +73,7 @@ const SmoothWrapper = (props: Props) => {
     smootherRef.current = ScrollSmoother.create({
       wrapper: ".smooth-wrapper",
       content: ".smooth-content",
-      smooth: 1.2,
+      smooth: 0.1,
       effects: false,
       normalizeScroll: true,
       smoothTouch: 0.2,
@@ -121,14 +121,10 @@ const SmoothWrapper = (props: Props) => {
         markers: isLastContainer ? true : false,
         snap: {
           snapTo: sections.length > 1 ? [0, 1] : 1,
-          duration: { min: 0.3, max: 0.8 },
-          delay: 0.01,
+          duration: 0.4,
           ease: "power2.inOut",
-          inertia: false,
         },
-        onEnter: () => {
-          console.log("onEnter", container);
-        },
+        onEnter: () => {},
         onLeave: () => {},
       });
     });

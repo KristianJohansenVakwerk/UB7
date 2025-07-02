@@ -22,23 +22,10 @@ export function Wrapper({
 }: WrapperProps) {
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setReady(true);
-    }, 500);
-  }, []);
-
   return (
     <>
       <div>
-        <main
-          className={cn(
-            "relative flex flex-col grow opacity-0",
-            className,
-            ready && "opacity-100"
-          )}
-          {...props}
-        >
+        <main className={cn("relative flex flex-col grow")} {...props}>
           {children}
         </main>
       </div>

@@ -3,11 +3,11 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 
-import { useLenis } from "lenis/react";
 import { globalTriggers } from "@/app/utils/gsapUtils";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
 interface MenuItem {
   title: string;
@@ -19,65 +19,34 @@ interface MenuProps {
 }
 
 const Menu = ({ data }: MenuProps) => {
-  const lenis = useLenis((lenis) => {});
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    const smoother = ScrollSmoother.get();
+    const body = document?.body;
+
     const handleClick = (id: string) => {
       const targetElement = document.getElementById(id);
       const targetElementMenu = document.getElementById(`${id}-menu`);
 
-      if (!targetElement || !lenis || !targetElementMenu) return;
+      if (!targetElement || !targetElementMenu || !smoother) return;
 
-      lenis.scrollTo(id === "intro" ? 0 : targetElement, {
-        duration: 0,
-        immediate: true,
-        onComplete: () => {
-          ScrollTrigger.refresh(true);
-          const trigger = ScrollTrigger.getById(`${id}-trigger`);
-          const titleAnimation = gsap.getById(`title-animation-${id}`);
+      // smoother?.scrollTo(id === "intro" ? 0 : targetElement);
+      console.log(targetElement, targetElementMenu);
 
-          if (titleAnimation) {
-            titleAnimation.play();
-          }
+      gsap.to(smoother, {
+        scrollTop: smoother?.offset(targetElement),
+        duration: 1,
+        ease: "power4.inOut",
+      });
 
-          switch (id) {
-            case "intro":
-              break;
-            case "portfolio":
-              if (trigger && trigger.animation) {
-                trigger.animation.play();
-              }
-              break;
-            case "about":
-              break;
-            case "contact":
-              break;
-          }
-
-          if (menuRef.current && id !== "intro") {
-            gsap.to(menuRef.current, {
-              opacity: 1,
-              duration: 0.2,
-              ease: "power2.inOut",
-            });
-          } else {
-            gsap.to(menuRef.current, {
-              opacity: 0,
-              duration: 0.2,
-              ease: "power2.inOut",
-            });
-          }
-
-          gsap.to(menuProgressRef.current, {
-            width: targetElementMenu.offsetWidth,
-            x: targetElementMenu.offsetLeft,
-            duration: 0.2,
-            ease: "power2.inOut",
-          });
-        },
+      gsap.to(menuProgressRef.current, {
+        width: targetElementMenu.offsetWidth,
+        x: targetElementMenu.offsetLeft,
+        duration: 0.2,
+        ease: "power2.inOut",
       });
     };
 
@@ -85,9 +54,6 @@ const Menu = ({ data }: MenuProps) => {
       globalTriggers.forEach((section) => {
         const trigger = ScrollTrigger.getById(section.trigger);
         const triggerEl = document.getElementById(section.id);
-        const progressBar = document.getElementById(
-          `${section.id}-progress`
-        ) as HTMLElement;
 
         const targetElement = document.getElementById(section.id);
         const targetElementMenu = document.getElementById(`${section.id}-menu`);
@@ -97,16 +63,7 @@ const Menu = ({ data }: MenuProps) => {
           trigger: triggerEl,
           start: trigger?.start,
           end: trigger?.end,
-          onUpdate: (self) => {},
           onEnter: () => {
-            if (menuRef.current && section.id !== "intro") {
-              gsap.to(menuRef.current, {
-                opacity: 1,
-                duration: 0.2,
-                ease: "power2.inOut",
-              });
-            }
-
             gsap.to(menuProgressRef.current, {
               width: targetElementMenu?.offsetWidth,
               x: targetElementMenu?.offsetLeft,
@@ -115,13 +72,6 @@ const Menu = ({ data }: MenuProps) => {
             });
           },
           onEnterBack: () => {
-            if (menuRef.current && section.id === "intro") {
-              gsap.to(menuRef.current, {
-                opacity: 0,
-                duration: 0.2,
-                ease: "power2.inOut",
-              });
-            }
             gsap.to(menuProgressRef.current, {
               width: targetElementMenu?.offsetWidth,
               x: targetElementMenu?.offsetLeft,
@@ -148,12 +98,12 @@ const Menu = ({ data }: MenuProps) => {
         }
       });
     };
-  }, [lenis, data]);
+  }, [data]);
 
   return (
     <div
       ref={menuRef}
-      className="fixed bottom-3 left-3 z-10 opacity-0"
+      className="fixed bottom-3 left-3 z-10 opacity-100"
       id={"menu"}
     >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">

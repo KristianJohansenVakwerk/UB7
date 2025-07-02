@@ -42,7 +42,7 @@
   --text-md--line-height: 1.02;
   --text-lg: 5.125rem;
   --text-lg--line-height: 1.02;
-  --text-title: clamp(35px, 3.5vw, 80px);
+  --text-title: clamp(35px, 3.5vw, 65px);
   --text-title--line-height: 0.9;
   --radius-menu: 35px;
   --radius-progress-bar: 20px;
@@ -171,7 +171,7 @@ p {
 }
 
 .pin-spacer {
-  border: 2px dashed red;
+  /* border: 2px dashed red; */
 
-  background-color: rgba(255, 0, 0, 0.05);
+  /* background-color: rgba(255, 0, 0, 0.05); */
 }

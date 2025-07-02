@@ -32,8 +32,8 @@ const SectionsController = () => {
                         ` section-${index + 1}`,
                         `section-${section.id}`,
                         section.id === "about" && "h-[auto] px-0",
-                        section.id !== "about" && "h-screen",
-                        section.id === "portfolio" && "justify-center"
+                        section.id !== "about" && "h-screen ",
+                        section.id === "portfolio" && "h-sreen justify-center "
                       )}
                     >
                       {section.id === "portfolio" ? (

@@ -2,16 +2,16 @@
 
 import Box from "../../../ui/Box/Box";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState } from "react";
+import { RefObject, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import Slider from "../../../shared/Slider/Slider";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import clsx from "clsx";
 import { TeamMember, teamMembers } from "@/app/utils/data";
 import SectionTitle from "../SectionTitle";
 import { useLenis } from "lenis/react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const SectionAbout = (props: any) => {
   const { title } = props;
 
@@ -20,16 +20,24 @@ const SectionAbout = (props: any) => {
   const teamMemberWrapperRef = useRef<HTMLDivElement | null>(null);
   const clickCloseRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
+  const textRef = useRef<HTMLDivElement | null>(null);
   const [showTitle, setShowTitle] = useState<boolean>(false);
   const [showClose, setShowClose] = useState<boolean>(false);
-  const lenis = useLenis();
+  const itemsContainer = useRef<HTMLDivElement | null>(null);
+  const itemsContainerSlider = useRef<HTMLDivElement | null>(null);
+
+  // const lenis = useLenis();
+
+  const items = useMemo(() => {
+    return [{ type: "box" }, ...teamMembers];
+  }, []);
 
   useGSAP(() => {
-    const slides = gsap.utils.toArray(".team-member");
+    const items = gsap.utils.toArray(".item");
     const viewportWidth = window.innerWidth;
 
     // Calculate total width of all team member slides
-    const totalSlidesWidth = slides.reduce((total: number, entry: any) => {
+    const totalSlidesWidth = items.reduce((total: number, entry: any) => {
       const w = (entry as HTMLElement).offsetWidth;
       const gap = 48;
       return total + w + gap;
@@ -53,45 +61,81 @@ const SectionAbout = (props: any) => {
 
           onEnter: () => {
             setTimeout(() => {
-              console.log("onEnter");
               setShowTitle(true);
             }, 100);
+
+            gsap.to(textRef.current, {
+              autoAlpha: 1,
+              duration: 0.3,
+              delay: 0.9,
+              ease: "power2.inOut",
+            });
+            gsap.killTweensOf(items);
+            gsap.to(items, {
+              autoAlpha: 1,
+              duration: 0.3,
+              stagger: 0.2,
+              delay: 1.2,
+              ease: "power2.inOut",
+            });
           },
           onEnterBack: () => {
             setTimeout(() => {
-              console.log("onEnterBack");
               setShowTitle(true);
             }, 100);
+
+            gsap.to(textRef.current, {
+              autoAlpha: 1,
+              duration: 0.3,
+              delay: 0.4,
+              ease: "power2.inOut",
+            });
           },
           onLeave: () => {
             setTimeout(() => {
-              console.log("onLeave");
               setShowTitle(false);
             }, 100);
+
+            gsap.to(textRef.current, {
+              autoAlpha: 0,
+              duration: 0.3,
+              delay: 0.4,
+              ease: "power2.inOut",
+            });
           },
           onLeaveBack: () => {
             setTimeout(() => {
-              console.log("onLeaveBack");
               setShowTitle(false);
             }, 100);
+
+            gsap.killTweensOf(items);
+            gsap.to(items, {
+              autoAlpha: 0,
+              duration: 0.3,
+              stagger: -0.2,
+              delay: 0.8,
+              ease: "power2.inOut",
+            });
+
+            gsap.to(textRef.current, {
+              autoAlpha: 0,
+              duration: 0.3,
+              delay: 0.4,
+              ease: "power2.inOut",
+            });
           },
         },
       })
+
       .to(
-        imageContainerRef.current,
+        itemsContainerSlider.current,
         {
-          autoAlpha: 0,
-          display: "none",
-          duration: 0.3,
+          x: -scrollDistance,
+          duration: 1,
           ease: "none",
         },
-        "+=0.5"
-      ) // Add a 1-second delay before fading out
-      .to(teamMemberWrapperRef.current, {
-        x: -scrollDistance,
-        duration: 1,
-        ease: "none",
-      });
+        "+=0.1"
+      );
   }, []);
 
   useGSAP(() => {
@@ -123,6 +167,8 @@ const SectionAbout = (props: any) => {
     };
 
     const handleClick = (state: boolean) => {
+      const smoother = ScrollSmoother.get();
+
       isScaled = state;
       const image = imageRef.current;
       const imageWidth = image?.offsetWidth as number;
@@ -140,35 +186,38 @@ const SectionAbout = (props: any) => {
       const scale = Math.min(scaleX, scaleY);
 
       if (state) {
-        lenis?.stop();
+        smoother?.paused(true);
 
-        gsap.to(["#progress", "#menu", "#section-title-about"], {
-          autoAlpha: 0,
-          duration: 0.4,
-          ease: "power2.inOut",
-          onComplete: () => {
-            gsap.to(imageContainerRef.current, {
-              opacity: 1,
-              duration: 0.8,
-              ease: "power4.inOut",
-            });
+        gsap.to(
+          ["#progress", "#menu", "#section-title-about", ".item-team-member"],
+          {
+            autoAlpha: 0,
+            duration: 0.4,
+            ease: "power2.inOut",
+            onComplete: () => {
+              gsap.to(imageContainerRef.current, {
+                opacity: 1,
+                duration: 0.8,
+                ease: "power4.inOut",
+              });
 
-            gsap.to(image, {
-              scale: scale,
-              y: 112 - padding.top,
-              transformOrigin: "left bottom",
-              willChange: "transform",
-              duration: 0.8,
-              ease: "power4.inOut",
-              onComplete: () => {
-                setShowClose(true);
-              },
-            });
-          },
-        });
+              gsap.to(image, {
+                scale: scale,
+                y: 112 - padding.top,
+                transformOrigin: "left bottom",
+                willChange: "transform",
+                duration: 0.8,
+                ease: "power4.inOut",
+                onComplete: () => {
+                  setShowClose(true);
+                },
+              });
+            },
+          }
+        );
       } else {
         setShowClose(false);
-        lenis?.start();
+        smoother?.paused(false);
         gsap.to(imageRef.current, {
           scale: 1,
           y: 0,
@@ -176,11 +225,19 @@ const SectionAbout = (props: any) => {
           duration: 0.8,
           ease: "power4.inOut",
           onComplete: () => {
-            gsap.to(["#progress", "#menu", "#section-title-about"], {
-              autoAlpha: 1,
-              duration: 0.4,
-              ease: "power2.inOut",
-            });
+            gsap.to(
+              [
+                "#progress",
+                "#menu",
+                "#section-title-about",
+                ".item-team-member",
+              ],
+              {
+                autoAlpha: 1,
+                duration: 0.4,
+                ease: "power2.inOut",
+              }
+            );
           },
         });
       }
@@ -201,21 +258,52 @@ const SectionAbout = (props: any) => {
       );
       window.removeEventListener("resize", handleResize);
     };
-  }, [lenis]);
+  }, []);
 
   return (
     <div
       ref={aboutTriggerOneRef}
       className="w-full h-screen flex flex-col items-start justify-between"
     >
-      <div className={" pt-7 px-3"}>
-        <SectionTitle title={title} id={"about"} play={showTitle} />
+      <div className="pt-7 px-3 flex flex-row gap-3">
+        <div className="flex-2">
+          <SectionTitle title={title} id={"about"} play={showTitle} />
+        </div>
+
+        <div
+          ref={textRef}
+          className="flex-1 text-light-grey text-base/none opacity-0 lg:translate-y-[15px]"
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        </div>
       </div>
 
       <div
+        ref={itemsContainer}
+        className="w-full pb-7 overflow-hidden will-change-transform"
+      >
+        <div
+          ref={itemsContainerSlider}
+          className="flex flex-row items-start gap-3 px-3"
+        >
+          <TeamMembers
+            items={items}
+            imageContainerRef={imageContainerRef}
+            imageRef={imageRef}
+          />
+        </div>
+      </div>
+      {/* 
+      <div
         ref={clickCloseRef}
         className={clsx(
-          "absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer, opacity-0 transition-all duration-300 ease",
+          "absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer, opacity-100 transition-all duration-300 ease",
           showClose && "opacity-100"
         )}
       >
@@ -234,14 +322,29 @@ const SectionAbout = (props: any) => {
             strokeLinejoin="round"
           />
         </svg>
-      </div>
+      </div> */}
+    </div>
+  );
+};
 
-      {/* New wrapper div for horizontal layout */}
-      <div className="w-full flex flex-row items-end gap-3 pb-7">
-        {/* Image container */}
-        <div
+export default SectionAbout;
+
+export const TeamMembers = ({
+  items,
+  imageContainerRef,
+  imageRef,
+}: {
+  items: (TeamMember | { type: string })[];
+  imageContainerRef: RefObject<HTMLDivElement | null>;
+  imageRef: RefObject<HTMLImageElement | null>;
+}) => {
+  return items.map((m, index: number) => {
+    if (m.type === "box") {
+      return (
+        <Box
           ref={imageContainerRef}
-          className="relative w-[50vw] min-w-[300px] max-w-[768px] opacity-100 pl-3"
+          key={index}
+          className="item item-box rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity"
         >
           <img
             ref={imageRef}
@@ -250,65 +353,53 @@ const SectionAbout = (props: any) => {
             height={"376"}
             className="w-full h-full object-cover object-center"
           />
-        </div>
-
-        {/* Team members container */}
-        <div className="flex-1 overflow-hidden">
-          <div
-            ref={teamMemberWrapperRef}
-            className="flex flex-row gap-3 translate-x-full"
-          >
-            <TeamMembers />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default SectionAbout;
-
-export const TeamMembers = () => {
-  return teamMembers.map((m: TeamMember, index: number) => (
-    <Box
-      key={index}
-      className="team-member bg-white rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-100"
-    >
-      <Box className="px-3 py-3 flex flex-col gap-1 h-full">
-        <Box className="team-member-name text-light-grey text-base/none opacity-100">
-          {m.name}
         </Box>
-        <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
-          <Box className="team-member-image  h-full opacity-100 flex items-center justify-center flex-1">
-            <img
-              src={m.image}
-              width={267}
-              height={312}
-              className="w-full h-full object-cover object-center"
-            />
-          </Box>
-          <Box className="text-light-grey  flex-2 mr-3 h-full">
-            <Box className="flex flex-col gap-2 h-full justify-between">
-              <Box className="team-member-text text-base opacity-100">
-                {m.text}
-              </Box>
+      );
+    }
 
-              <Box className="flex flex-row items-center justify-between gap-1 w-full">
-                {m.socials.map((s, index) => (
-                  <Box
-                    key={index}
-                    className="font-mono text-sm text-light-grey bg-gray-100 rounded-full px-1 py-0.5 flex-1 "
-                  >
-                    <span className="team-member-social opacity-100">
-                      {s.platform}
-                    </span>
+    if ("name" in m) {
+      return (
+        <Box
+          key={index}
+          className="item item-team-member bg-white rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity"
+        >
+          <Box className="px-3 py-3 flex flex-col gap-1 h-full">
+            <Box className="team-member-name text-light-grey text-base/none opacity-100">
+              {m.name}
+            </Box>
+            <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
+              <Box className="team-member-image  h-full opacity-100 flex items-center justify-center flex-1">
+                <img
+                  src={m.image}
+                  width={267}
+                  height={312}
+                  className="w-full h-full object-cover object-center"
+                />
+              </Box>
+              <Box className="text-light-grey  flex-2 mr-3 h-full">
+                <Box className="flex flex-col gap-2 h-full justify-between">
+                  <Box className="team-member-text text-base opacity-100">
+                    {m.text}
                   </Box>
-                ))}
+
+                  <Box className="flex flex-row items-center justify-between gap-1 w-full">
+                    {m.socials.map((s, index) => (
+                      <Box
+                        key={index}
+                        className="font-mono text-sm text-light-grey bg-gray-100 rounded-full px-1 py-0.5 flex-1 "
+                      >
+                        <span className="team-member-social opacity-100">
+                          {s.platform}
+                        </span>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
               </Box>
             </Box>
           </Box>
         </Box>
-      </Box>
-    </Box>
-  ));
+      );
+    }
+  });
 };
