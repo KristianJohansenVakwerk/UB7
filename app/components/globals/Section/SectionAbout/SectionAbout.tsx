@@ -285,7 +285,7 @@ const SectionAbout = (props: any) => {
           src="/Reel.jpg"
           width={"693"}
           height={"376"}
-          className="w-full h-full object-contain object-top"
+          className="w-full h-full object-contain object-top-left"
         />
       </div>
 
