@@ -105,10 +105,10 @@ export const useSectorListAnimation = () => {
           "sector-list-animation",
           "onReverseComplete"
         );
-        gsap.to(".sector-item-trigger", {
-          width: "53px",
-          duration: 0.2,
-        });
+        // gsap.to(".sector-item-trigger", {
+        //   width: "53px",
+        //   duration: 0.2,
+        // });
       },
       scrollTrigger: {
         id: "portfolio-trigger",

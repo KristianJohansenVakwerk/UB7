@@ -43,7 +43,7 @@ const SectionAbout = (props: any) => {
       return total + w + gap;
     }, 0);
 
-    const scrollDistance = totalSlidesWidth - viewportWidth;
+    const scrollDistance = totalSlidesWidth + 48 - viewportWidth;
 
     // Create a single timeline for all animations
     const tl = gsap
@@ -188,57 +188,67 @@ const SectionAbout = (props: any) => {
         smoother?.paused(true);
 
         gsap.to(
-          ["#progress", "#menu", "#section-title-about", ".item-team-member"],
+          [
+            "#progress",
+            "#menu",
+            "#section-title-about",
+            ".text-about",
+            ".item",
+          ],
           {
             autoAlpha: 0,
             duration: 0.4,
             ease: "power2.inOut",
             onComplete: () => {
-              gsap.to(imageContainerRef.current, {
-                opacity: 1,
-                duration: 0.8,
-                ease: "power4.inOut",
-              });
-
-              gsap.to(image, {
-                scale: scale,
-                y: 112 - padding.top,
-                transformOrigin: "left bottom",
-                willChange: "transform",
-                duration: 0.8,
-                ease: "power4.inOut",
-                onComplete: () => {
-                  setShowClose(true);
-                },
-              });
+              setShowClose(true);
+              // gsap.to(imageContainerRef.current, {
+              //   opacity: 1,
+              //   duration: 0.8,
+              //   ease: "power4.inOut",
+              // });
+              // gsap.to(image, {
+              //   scale: scale,
+              //   y: 112 - padding.top,
+              //   transformOrigin: "left bottom",
+              //   willChange: "transform",
+              //   duration: 0.8,
+              //   ease: "power4.inOut",
+              //   onComplete: () => {
+              //     setShowClose(true);
+              //   },
+              // });
             },
           }
         );
       } else {
         setShowClose(false);
         smoother?.paused(false);
-        gsap.to(imageRef.current, {
-          scale: 1,
-          y: 0,
-          transformOrigin: "left bottom",
-          duration: 0.8,
-          ease: "power4.inOut",
-          onComplete: () => {
-            gsap.to(
-              [
-                "#progress",
-                "#menu",
-                "#section-title-about",
-                ".item-team-member",
-              ],
-              {
-                autoAlpha: 1,
-                duration: 0.4,
-                ease: "power2.inOut",
-              }
-            );
-          },
-        });
+
+        gsap.to(
+          [
+            "#progress",
+            "#menu",
+            "#section-title-about",
+            ".text-about",
+            ".item",
+          ],
+          {
+            autoAlpha: 1,
+            duration: 0.4,
+            delay: 0.5,
+            ease: "power2.inOut",
+          }
+        );
+        // gsap.to(imageRef.current, {
+        //   scale: 1,
+        //   y: 0,
+        //   transformOrigin: "left bottom",
+        //   duration: 0.8,
+        //   ease: "power4.inOut",
+        //   onComplete: () => {
+
+        //   },
+        // });
       }
     };
 
@@ -262,47 +272,27 @@ const SectionAbout = (props: any) => {
   return (
     <div
       ref={aboutTriggerOneRef}
-      className="w-full h-screen flex flex-col items-start justify-between"
+      className="relative w-full h-screen flex flex-col items-start justify-between"
     >
-      <div className="pt-7 px-3 flex flex-row gap-3">
-        <div className="flex-2">
-          <SectionTitle title={title} id={"about"} play={showTitle} />
-        </div>
-
-        <div
-          ref={textRef}
-          className="flex-1 text-light-grey text-base/none opacity-0 lg:translate-y-[15px]"
-        >
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-          aliquip ex ea commodo consequat. Duis aute irure dolor in
-          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-          culpa qui officia deserunt mollit anim id est laborum.
-        </div>
-      </div>
-
       <div
-        ref={itemsContainer}
-        className="w-full pb-7 overflow-hidden will-change-transform"
+        className={clsx(
+          "absolute top-2 bottom-3 left-3 right-7  z-20 rounded-2xl overflow-hidden  flex items-start justify-start pointer-events-none  opacity-0 transition-all duration-300 ease",
+          showClose && "opacity-100"
+        )}
       >
-        <div
-          ref={itemsContainerSlider}
-          className="flex flex-row items-start gap-3 px-3"
-        >
-          <TeamMembers
-            items={items}
-            imageContainerRef={imageContainerRef}
-            imageRef={imageRef}
-          />
-        </div>
+        <img
+          ref={imageRef}
+          src="/Reel.jpg"
+          width={"693"}
+          height={"376"}
+          className="w-full h-full object-contain object-top"
+        />
       </div>
-      {/* 
+
       <div
         ref={clickCloseRef}
         className={clsx(
-          "absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer, opacity-100 transition-all duration-300 ease",
+          "absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer opacity-0 transition-all duration-300 ease",
           showClose && "opacity-100"
         )}
       >
@@ -321,7 +311,41 @@ const SectionAbout = (props: any) => {
             strokeLinejoin="round"
           />
         </svg>
-      </div> */}
+      </div>
+      <div className="pt-7 px-3 flex flex-row gap-3">
+        <div className="flex-2">
+          <SectionTitle title={title} id={"about"} play={showTitle} />
+        </div>
+
+        <div
+          ref={textRef}
+          className="text-about flex-1 text-light-grey text-base/none opacity-0 lg:translate-y-[15px]"
+        >
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
+          minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat. Duis aute irure dolor in
+          reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+          pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
+          culpa qui officia deserunt mollit anim id est laborum.
+        </div>
+      </div>
+
+      <div
+        ref={itemsContainer}
+        className="relative w-full pb-7 overflow-hidden will-change-transform relative"
+      >
+        <div
+          ref={itemsContainerSlider}
+          className="flex flex-row items-start gap-3 px-3"
+        >
+          <TeamMembers
+            items={items}
+            imageContainerRef={imageContainerRef}
+            imageRef={imageRef}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -344,7 +368,7 @@ export const TeamMembers = ({
         <Box
           ref={imageContainerRef}
           key={index}
-          className="item item-box rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity"
+          className="item item-box rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity cursor-pointer"
         >
           <img
             ref={imageRef}

@@ -66,7 +66,7 @@ const fragment = `
       vec3 color4 = uColor4;
 
       // Subtle movement animation
-      float movement = sin(uTime * 0.1) * 0.2; // Subtle sine wave movement
+      float movement = sin(uTime * 0.1) * 0.1; // Subtle sine wave movement
       
       // Final positions with subtle movement
       float pos1 = uPos1 + movement;
@@ -191,7 +191,7 @@ const IntroPixi = () => {
       id: "intro-pixi-trigger",
       start: "top top",
       end: "+=100%",
-      scrub: false,
+      scrub: true,
       markers: true,
       onUpdate: (self) => {
         const progress = self.progress;

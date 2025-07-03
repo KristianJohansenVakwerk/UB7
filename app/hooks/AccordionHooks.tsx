@@ -8,6 +8,7 @@ export const useAccordionSetup = () => {
 
   const setupAccordion = useCallback(() => {
     const sectors = gsap.utils.toArray(".sector-item-content");
+    console.log("sectors", sectors);
 
     const sectorContentBackgrounds = gsap.utils.toArray(
       ".sector-item-content-background"
@@ -64,6 +65,7 @@ export const useAccordionControls = () => {
   const playAccordion = useCallback(
     (index: number, accordionAnis: any[], iconAnis: any[]) => {
       // If hovering over the same accordion, do nothing
+
       if (activeIndexRef.current === index) return;
 
       // If there's an active accordion, reset it while playing the new one
@@ -81,7 +83,7 @@ export const useAccordionControls = () => {
       }
 
       // Play the new accordion immediately (in sync with reset)
-      iconAnis[index].play();
+      iconAnis[index]?.play();
       accordionAnis[index].play();
 
       activeIndexRef.current = index;

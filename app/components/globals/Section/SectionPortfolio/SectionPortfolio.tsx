@@ -32,8 +32,7 @@ const SectionPortfolio = (props: any) => {
   const [entriesTo, setEntriesTo] = useState<number>(entries.length);
   const [showTitle, setShowTitle] = useState<boolean>(false);
   const [showUI, setShowUI] = useState<boolean>(true);
-  const [deactivateMouseEvents, setDeactivateMouseEvents] =
-    useState<boolean>(true);
+
   const [showExpandedSectors, setShowExpandedSectors] =
     useState<boolean>(false);
   const { setHoverSector } = useStore();
@@ -69,9 +68,8 @@ const SectionPortfolio = (props: any) => {
     smoother?.paused(false);
 
     setActiveSector("");
-
     setHoverSector(false);
-    setDeactivateMouseEvents(false);
+
     setShowExpandedSectors(false);
 
     gsap.to(".sector-item", {
@@ -91,7 +89,6 @@ const SectionPortfolio = (props: any) => {
 
   const handleExpandViewMode = useCallback(
     (entryIndex: number, sector: string) => {
-      console.log("handleExpandViewMode", entryIndex, sector);
       setActiveSector(sector);
       setEntriesFrom(entryIndex);
       setShowExpandedSectors(true);
@@ -115,7 +112,7 @@ const SectionPortfolio = (props: any) => {
             <SectionTitle title={title} id={"portfolio"} play={showTitle} />
           </div>
         </div>
-        <div className="relative w-full  ">
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-3 ">
           <SectionPortfolioList
             data={data}
             onExpandViewMode={handleExpandViewMode}

@@ -15,6 +15,29 @@ const Sector = (props: Props) => {
   const { data, index, currentIndex, active } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
 
+  useGSAP(() => {
+    if (!currentIndex) return;
+    if (index >= currentIndex) {
+      gsap.to(draggableRef.current, {
+        y: getTranslation(index, currentIndex || 0),
+        scale: getScale(index, currentIndex || 0),
+        duration: 0.5,
+        delay: index * 0.1,
+        ease: "power2.inOut",
+      });
+    }
+    if (currentIndex === index) {
+      gsap.to(draggableRef.current, {
+        scale: 1,
+        y: 0,
+        x: 0,
+        rotation: 0,
+        duration: 0.5,
+        ease: "power2.inOut",
+      });
+    }
+  }, [currentIndex]);
+
   return (
     <div
       className="sector-draggable-container absolute inset-0  flex items-center justify-center  "
@@ -35,7 +58,9 @@ const Sector = (props: Props) => {
         }}
       >
         <div className="h-auto w-full py-2  flex flex-col gap-8">
-          <div className={"font-mono text-sm px-2"}>{data.sector}</div>
+          <div className={"font-mono text-sm px-2"}>
+            Category: {data.sector}
+          </div>
           <div className={"flex flex-col gap-4"}>
             <div className={"font-sans text-md px-2"}>{data.title}</div>
 

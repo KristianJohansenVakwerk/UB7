@@ -39,8 +39,8 @@ const Sectors = (props: SectorsProps) => {
   const currentIndexRef = useRef<number>(0);
   const sectorsContainerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
-  const clickNextRef = useRef<HTMLDivElement>(null);
-  const clickPrevRef = useRef<HTMLDivElement>(null);
+  const clickNextRef = useRef<any>(null);
+  const clickPrevRef = useRef<any>(null);
   const draggableContainers = useRef<HTMLElement[]>([]);
   const readyToThrow = useRef<boolean>(false);
 
@@ -89,33 +89,33 @@ const Sectors = (props: SectorsProps) => {
             : -500 - Math.random() * 1000; // Top
 
         // Get the element's dimensions
-        // const rect = container.getBoundingClientRect();
+        const rect = container.getBoundingClientRect();
 
         // Check if the element is visible in the viewport
-        // const isVisible =
-        //   randomX + rect.width > 0 &&
-        //   randomX < windowWidth &&
-        //   randomY + rect.height > 0 &&
-        //   randomY < windowHeight;
+        const isVisible =
+          randomX + rect.width > 0 &&
+          randomX < windowWidth &&
+          randomY + rect.height > 0 &&
+          randomY < windowHeight;
 
         // If visible, adjust position to move it further out
-        // if (isVisible) {
-        //   if (randomX > 0) {
-        //     randomX = windowWidth + 1000 + Math.random() * 1000;
-        //   } else {
-        //     randomX = -1000 - Math.random() * 1000;
-        //   }
+        if (isVisible) {
+          if (randomX > 0) {
+            randomX = windowWidth + 1000 + Math.random() * 1000;
+          } else {
+            randomX = -1000 - Math.random() * 1000;
+          }
 
-        //   if (randomY > 0) {
-        //     randomY = windowHeight + 1000 + Math.random() * 1000;
-        //   } else {
-        //     randomY = -1000 - Math.random() * 1000;
-        //   }
-        // }
+          if (randomY > 0) {
+            randomY = windowHeight + 1000 + Math.random() * 1000;
+          } else {
+            randomY = -1000 - Math.random() * 1000;
+          }
+        }
 
         gsap.set(container, {
-          x: -400,
-          // y: randomY,
+          x: randomX,
+          y: randomY,
           autoAlpha: 1,
           pointerEvents: "none",
           // rotation: Math.random() * 360,
@@ -130,18 +130,22 @@ const Sectors = (props: SectorsProps) => {
         delay: 0.8,
         ease: "power2.inOut",
         onComplete: () => {
-          gsap.to(activeContainers, {
-            y: (index) => getTranslation(index, currentIndex || 0),
-            scale: (index) => getScale(index, currentIndex || 0),
-            stagger: -0.1,
-            duration: 0.3,
-            ease: "power2.inOut",
-            onComplete: () => {
-              readyToThrow.current = true;
-              currentIndexRef.current = entriesFrom;
-              setCurrentIndex(entriesFrom);
-            },
-          });
+          readyToThrow.current = true;
+          currentIndexRef.current = entriesFrom;
+          setCurrentIndex(entriesFrom);
+          // Move logic in to the sector component
+          // gsap.to(activeContainers, {
+          //   y: (index) => getTranslation(index, currentIndex || 0),
+          //   scale: (index) => getScale(index, currentIndex || 0),
+          //   stagger: -0.1,
+          //   duration: 0.3,
+          //   ease: "power2.inOut",
+          //   onComplete: () => {
+          //     readyToThrow.current = true;
+          //     currentIndexRef.current = entriesFrom;
+          //     setCurrentIndex(entriesFrom);
+          //   },
+          // });
         },
       });
     }
@@ -151,29 +155,24 @@ const Sectors = (props: SectorsProps) => {
     console.log("currentIndex", currentIndex);
   }, [currentIndex]);
 
-  useGSAP(() => {
-    if (active && readyToThrow.current) {
-      console.log(
-        "activeContainers",
-        activeContainers,
-        active,
-        readyToThrow.current
-      );
-      activeContainers.forEach((container, ix) => {
-        if (!currentIndex) return;
+  // useGSAP(() => {
+  //   if (active && readyToThrow.current) {
 
-        if (ix >= currentIndex) {
-          gsap.to(container, {
-            y: getTranslation(ix, currentIndex || 0),
-            scale: getScale(ix, currentIndex || 0),
-            duration: 0.5,
-            delay: ix * 0.1,
-            ease: "power4.inOut",
-          });
-        }
-      });
-    }
-  }, [active, currentIndex]);
+  //     activeContainers.forEach((container, ix) => {
+  //       if (!currentIndex) return;
+
+  //       if (ix >= currentIndex) {
+  //         gsap.to(container, {
+  //           y: getTranslation(ix, currentIndex || 0),
+  //           scale: getScale(ix, currentIndex || 0),
+  //           duration: 0.5,
+  //           delay: ix * 0.1,
+  //           ease: "power4.inOut",
+  //         });
+  //       }
+  //     });
+  //   }
+  // }, [active, currentIndex]);
 
   /// Draggable config
   const draggableConfig = useMemo(() => {
@@ -282,12 +281,12 @@ const Sectors = (props: SectorsProps) => {
     const handleClickNext = () => handleClick("next");
     const handleClickPrev = () => handleClick("prev");
 
-    clickNextRef.current?.addEventListener("click", () => handleClickNext);
-    clickPrevRef.current?.addEventListener("click", () => handleClickPrev);
+    clickNextRef.current?.addEventListener("click", handleClickNext);
+    clickPrevRef.current?.addEventListener("click", handleClickPrev);
 
     return () => {
-      clickNextRef.current?.removeEventListener("click", () => handleClickNext);
-      clickPrevRef.current?.removeEventListener("click", () => handleClickPrev);
+      clickNextRef.current?.removeEventListener("click", handleClickNext);
+      clickPrevRef.current?.removeEventListener("click", handleClickPrev);
     };
   }, []);
 
