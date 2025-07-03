@@ -65,19 +65,14 @@ const fragment = `
       vec3 color3 = uColor3;
       vec3 color4 = uColor4;
 
-      float animationProgress = clamp(uTime / 5.0, 0.0, 1.0);
-
-      // Final positions
-      float finalPos1 = uPos1;
-      float finalPos2 = uPos2;
-      float finalPos3 = uPos3;
-      float finalPos4 = uPos4;
-
-      // Animate color positions with time
-      float pos1 = mix(1.0, finalPos1, animationProgress);
-      float pos2 = mix(0.0, finalPos2, animationProgress);
-      float pos3 = mix(0.0, finalPos3, animationProgress);
-      float pos4 = mix(0.0, finalPos4, animationProgress);
+      // Subtle movement animation
+      float movement = sin(uTime * 0.1) * 0.2; // Subtle sine wave movement
+      
+      // Final positions with subtle movement
+      float pos1 = uPos1 + movement;
+      float pos2 = uPos2 + movement;
+      float pos3 = uPos3 + movement;
+      float pos4 = uPos4 + movement;
 
       vec3 color = color1; // Default to first color
       
@@ -115,11 +110,12 @@ const IntroPixi = () => {
     pos4: 1.0,
   });
 
+  // Start with grey colors
   const [colors, setColors] = useState({
-    color1: [0.851, 0.851, 0.851], // #D9D9D9
-    color2: [0.996, 1.0, 0.761], // #FEFFC2
-    color3: [0.494, 0.98, 0.314], // #7EFA50
-    color4: [0.014, 0.463, 0.231], // #03763B
+    color1: [0.898, 0.898, 0.898], // Start with grey
+    color2: [0.898, 0.898, 0.898], // Start with grey
+    color3: [0.898, 0.898, 0.898], // Start with grey
+    color4: [0.898, 0.898, 0.898], // Start with grey
   });
 
   // Predefined position states
@@ -129,20 +125,65 @@ const IntroPixi = () => {
 
   // Predefined color schemes
   const colorSchemes = {
-    default: {
+    grey: {
+      color1: [0.898, 0.898, 0.898],
+      color2: [0.898, 0.898, 0.898],
+      color3: [0.898, 0.898, 0.898],
+      color4: [0.898, 0.898, 0.898],
+    },
+    big: {
       color1: [0.851, 0.851, 0.851], // #D9D9D9
       color2: [0.996, 1.0, 0.761], // #FEFFC2
       color3: [0.494, 0.98, 0.314], // #7EFA50
       color4: [0.014, 0.463, 0.231], // #03763B
     },
-    grey: {
+    bottom: {
       color1: [0.898, 0.898, 0.898],
       color2: [0.898, 0.898, 0.898],
-      color3: [0.898, 0.898, 0.898],
-      color4: [0.494, 0.98, 0.314],
+      color3: [0.898, 0.898, 0.898], // #7EFA50
+      color4: [0.494, 0.98, 0.314], // #03763B
     },
   };
 
+  // Step 1: Animate from grey to big colors on load
+  useGSAP(() => {
+    if (filter) {
+      // Animate from grey to big colors
+      gsap.to(filter.resources.timeUniforms.uniforms.uColor1, {
+        0: colorSchemes.big.color1[0],
+        1: colorSchemes.big.color1[1],
+        2: colorSchemes.big.color1[2],
+        duration: 2,
+        ease: "power4.out",
+      });
+
+      gsap.to(filter.resources.timeUniforms.uniforms.uColor2, {
+        0: colorSchemes.big.color2[0],
+        1: colorSchemes.big.color2[1],
+        2: colorSchemes.big.color2[2],
+        duration: 2,
+        ease: "power4.out",
+      });
+
+      gsap.to(filter.resources.timeUniforms.uniforms.uColor3, {
+        0: colorSchemes.big.color3[0],
+        1: colorSchemes.big.color3[1],
+        2: colorSchemes.big.color3[2],
+        duration: 2,
+        ease: "power4.out",
+      });
+
+      gsap.to(filter.resources.timeUniforms.uniforms.uColor4, {
+        0: colorSchemes.big.color4[0],
+        1: colorSchemes.big.color4[1],
+        2: colorSchemes.big.color4[2],
+        duration: 2,
+        ease: "power4.out",
+      });
+    }
+  }, [filter]);
+
+  // Step 3: Scroll trigger to go from big to bottom colorscheme
   useGSAP(() => {
     const introElement = document.getElementById("intro");
     ScrollTrigger.create({
@@ -155,9 +196,9 @@ const IntroPixi = () => {
       onUpdate: (self) => {
         const progress = self.progress;
         if (filter) {
-          // Interpolate between default and grey color schemes
-          const defaultScheme = colorSchemes.default;
-          const greyScheme = colorSchemes.grey;
+          // Interpolate between big and bottom color schemes
+          const bigScheme = colorSchemes.big;
+          const bottomScheme = colorSchemes.bottom;
 
           // Helper function to interpolate between two colors
           const interpolateColor = (
@@ -175,23 +216,23 @@ const IntroPixi = () => {
           // Calculate interpolated colors
           const interpolatedColors = {
             color1: interpolateColor(
-              defaultScheme.color1,
-              greyScheme.color1,
+              bigScheme.color1,
+              bottomScheme.color1,
               progress
             ),
             color2: interpolateColor(
-              defaultScheme.color2,
-              greyScheme.color2,
+              bigScheme.color2,
+              bottomScheme.color2,
               progress
             ),
             color3: interpolateColor(
-              defaultScheme.color3,
-              greyScheme.color3,
+              bigScheme.color3,
+              bottomScheme.color3,
               progress
             ),
             color4: interpolateColor(
-              defaultScheme.color4,
-              greyScheme.color4,
+              bigScheme.color4,
+              bottomScheme.color4,
               progress
             ),
           };
@@ -232,102 +273,12 @@ const IntroPixi = () => {
           positions={positions}
           colors={colors}
         />
-        <PixiSVG />
       </Application>
     </div>
   );
 };
 
 export default IntroPixi;
-
-const svgVertex = `
-  in vec2 aPosition;
-  out vec2 vTextureCoord;
-
-  void main(void) {
-    gl_Position = vec4(aPosition * 2.0 - 1.0, 0.0, 1.0);
-    vTextureCoord = vec2(aPosition.x, 1.0 - aPosition.y);
-  }
-`;
-
-const svgFragment = `
-  in vec2 vTextureCoord;
-  precision mediump float;
-
-  uniform sampler2D uSampler;
-  uniform float uTime;
-  uniform vec3 uColor1;
-  uniform vec3 uColor2;
-  uniform vec3 uColor3;
-  uniform vec3 uColor4;
-  
-  void main(void) {
-    vec4 texColor = texture(uSampler, vTextureCoord);
-    
-    // Only apply gradient to non-transparent pixels
-    if (texColor.a > 0.0) {
-      vec2 uv = vTextureCoord;
-      
-      // Create gradient based on Y position
-      float gradientY = uv.y;
-      
-      vec3 gradientColor;
-      if (gradientY < 0.33) {
-        float t = gradientY / 0.33;
-        gradientColor = mix(uColor1, uColor2, t);
-      } else if (gradientY < 0.66) {
-        float t = (gradientY - 0.33) / 0.33;
-        gradientColor = mix(uColor2, uColor3, t);
-      } else {
-        float t = (gradientY - 0.66) / 0.34;
-        gradientColor = mix(uColor3, uColor4, t);
-      }
-      
-      // Apply gradient to the texture color
-      gl_FragColor = vec4(gradientColor, texColor.a);
-    } else {
-      gl_FragColor = texColor;
-    }
-  }
-`;
-
-const PixiSVG = () => {
-  const application = useApplication();
-
-  useEffect(() => {
-    const loader = async () => {
-      try {
-        const svgContext = await Assets.load({
-          src: "/logo.svg",
-          data: {
-            parseAsGraphicsContext: true, // If false, it returns a texture instead.
-          },
-        });
-
-        const graphics = new Graphics(svgContext);
-        graphics.x = 50;
-        graphics.y = 50;
-
-        const fillGradient = new FillGradient({
-          end: { x: 0, y: 1 }, // vertical gradient
-          colorStops: [
-            { offset: 0, color: 0x00ff00 },
-            { offset: 1, color: 0xffff00 },
-          ],
-        });
-        graphics.clear();
-        graphics.fill(fillGradient);
-
-        application.app.stage.addChild(graphics);
-      } catch (error) {
-        console.error("Error loading SVG:", error);
-      }
-    };
-    loader();
-  }, []);
-
-  return null;
-};
 
 const PixiGradient = ({
   setFilter,
@@ -348,13 +299,11 @@ const PixiGradient = ({
   const ref = useRef<any>(null);
   const [filter, setLocalFilter] = useState<any>(null);
   const application = useApplication();
-  // const [time, setTime] = useState(0);
 
+  // Step 2: Subtle movement animation
   useTick((ticker) => {
-    // setTime((prev) => prev + ticker.deltaTime);
-
-    if (filter && !isAnimating) {
-      filter.resources.timeUniforms.uniforms.uTime += 0.5 * ticker.deltaTime;
+    if (filter) {
+      filter.resources.timeUniforms.uniforms.uTime += 0.03 * ticker.deltaTime;
     }
   });
 
