@@ -493,6 +493,48 @@ export const portfolioData = [
         ],
         text: "<h3>Manchester City are one of the most successful English clubs in the sport's history.</h3><p>The Club's roots can be traced back to 1880 and the parish of East Manchester. First titled St Mark's West Gorton, the Club became known as Manchester City in 1894, and through many ups and downs, it has become one of the most recognisable and successful names in the global game. The first trophy, the FA Cup, was won in 1904, with it the accolade of being the first team in Manchester to win a major title.City's early successes came with the Club winning the FA Cup in 1904, 1934 and 1956 – and when the Club was crowned English champions in 1936/37. The Club's golden era followed when they were once again crowned English champions for the 1967/68 season, won the FA Cup in 1969 and the League Cup in both 1970 and 1976 and the Club's first continental title, the European Cup Winners' Cup, in 1970. City honours this special time in Club history with a permanent statue at the Etihad Stadium depicting Club greats Colin Bell, Francis Lee and Mike Summerbee – as well as the naming of the Colin Bell stand.</p>",
       },
+      {
+        title: "Everyday Steps",
+        slug: "everyday-steps",
+        sector: "Philanthropy",
+        details: [
+          { title: "Foundation Year", value: "1894" },
+          { title: "Joined UB7", value: "2013" },
+          { title: "Location", value: "Manchester" },
+          { title: "CEO", value: "Ferran Soriano" },
+          {
+            title: "Director of Football",
+            value: "Txiki Begiristain",
+          },
+        ],
+        socials: [
+          {
+            platform: "Instagram",
+            url: "https://www.instagram.com/mancity",
+          },
+          {
+            platform: "Twitter",
+            url: "https://www.twitter.com/mancity",
+          },
+          {
+            platform: "Facebook",
+            url: "https://www.facebook.com/mancity",
+          },
+        ],
+        media: [{ url: "/test-media/sectors/sector-slide-1.jpg" }],
+        slides: [
+          {
+            url: "/test-media/sectors/sector-slide-1.jpg",
+          },
+          {
+            url: "/test-media/sectors/sector-slide-1.jpg",
+          },
+          {
+            url: "/test-media/sectors/sector-slide-1.jpg",
+          },
+        ],
+        text: "<h3>Manchester City are one of the most successful English clubs in the sport's history.</h3><p>The Club's roots can be traced back to 1880 and the parish of East Manchester. First titled St Mark's West Gorton, the Club became known as Manchester City in 1894, and through many ups and downs, it has become one of the most recognisable and successful names in the global game. The first trophy, the FA Cup, was won in 1904, with it the accolade of being the first team in Manchester to win a major title.City's early successes came with the Club winning the FA Cup in 1904, 1934 and 1956 – and when the Club was crowned English champions in 1936/37. The Club's golden era followed when they were once again crowned English champions for the 1967/68 season, won the FA Cup in 1969 and the League Cup in both 1970 and 1976 and the Club's first continental title, the European Cup Winners' Cup, in 1970. City honours this special time in Club history with a permanent statue at the Etihad Stadium depicting Club greats Colin Bell, Francis Lee and Mike Summerbee – as well as the naming of the Colin Bell stand.</p>",
+      },
     ],
     media: "/test-media/sectors/sector_4.jpg",
   },

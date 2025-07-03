@@ -1,21 +1,27 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import Slider from "../../shared/Slider/Slider";
 import gsap from "gsap";
+import Draggable from "gsap/Draggable";
+import InertiaPlugin from "gsap/InertiaPlugin";
+
 import { useGSAP } from "@gsap/react";
+gsap.registerPlugin(Draggable, InertiaPlugin);
 
 type Props = {
   data: any;
   index: number;
   currentIndex: number | null;
   active: boolean;
+  onDagged: (index: number) => void;
 };
 const Sector = (props: Props) => {
-  const { data, index, currentIndex, active } = props;
+  const { data, index, currentIndex, active, onDagged } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    console.log("useGSAP currentIndex", currentIndex, index);
     if (!currentIndex) return;
     if (index >= currentIndex) {
       gsap.to(draggableRef.current, {
@@ -37,6 +43,44 @@ const Sector = (props: Props) => {
       });
     }
   }, [currentIndex]);
+
+  useGSAP(() => {
+    if (typeof window !== "undefined") {
+      Draggable.create(draggableRef.current, {
+        ...draggableConfig,
+        onDrag: (self) => {
+          const el = draggableRef.current;
+
+          if (el) {
+            const vx = InertiaPlugin.getVelocity(el, "x");
+            const vy = InertiaPlugin.getVelocity(el, "y");
+
+            gsap.to(el, {
+              rotation: vx * 0.01,
+              duration: 0.5,
+              ease: "power2.out",
+
+              onComplete: () => {
+                const ww = window.innerWidth;
+                const wh = window.innerHeight;
+                const rect = el.getBoundingClientRect();
+
+                const isOutSide =
+                  rect.left > ww ||
+                  rect.right < 0 ||
+                  rect.top + rect.height > wh ||
+                  rect.bottom + rect.height < 0;
+
+                if (isOutSide) {
+                  onDagged(index);
+                }
+              },
+            });
+          }
+        },
+      });
+    }
+  }, []);
 
   return (
     <div
@@ -145,6 +189,23 @@ const Sector = (props: Props) => {
 
 export default Sector;
 
+/// Draggable config
+export const draggableConfig = {
+  type: "x,y" as const,
+  edgeResistance: 0.65,
+  inertia: true,
+  allowNativeTouchScrolling: true,
+  cursor: "grab",
+  activeCursor: "grabbing",
+  dragClickables: false,
+  clickableTest: (el: Element) => {
+    if (el instanceof HTMLImageElement) {
+      return true;
+    }
+    return false;
+  },
+};
+
 export const getScale = (index: number, currentIndex: number) => {
   if (index === currentIndex) {
     return 1; // First item centered
@@ -158,7 +219,6 @@ export const getScale = (index: number, currentIndex: number) => {
 };
 
 export const getTranslation = (index: number, currentIndex: number) => {
-  console.log("index", index, currentIndex);
   if (index === currentIndex) {
     return "0"; // First item centered
   } else if (index === currentIndex + 1) {

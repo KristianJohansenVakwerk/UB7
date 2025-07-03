@@ -17,7 +17,6 @@ gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 const SectionPortfolio = (props: any) => {
   const { data, title } = props;
   const [activeSector, setActiveSector] = useState<string | null>(null);
-  const [initSectors, setInitSectors] = useState<boolean>(false);
 
   const [entries, setEntries] = useState<any[]>(
     data.flatMap((sector: any, sectorIndex: number) =>
@@ -40,7 +39,6 @@ const SectionPortfolio = (props: any) => {
   // Animation of list is complete allow background to be shown on mouse enter
   useSectorListEvents("onComplete", () => {
     setShowUI(true);
-    setInitSectors(true);
   });
 
   useSectorListEvents("onScrollTriggerEnter", () => {
@@ -89,6 +87,7 @@ const SectionPortfolio = (props: any) => {
 
   const handleExpandViewMode = useCallback(
     (entryIndex: number, sector: string) => {
+      console.log("handleExpandViewMode", entryIndex, sector);
       setActiveSector(sector);
       setEntriesFrom(entryIndex);
       setShowExpandedSectors(true);
@@ -119,8 +118,6 @@ const SectionPortfolio = (props: any) => {
             onShowBackground={handleShowBackground}
           />
         </div>
-
-        <div></div>
       </div>
 
       <SectionPortfolioBackground

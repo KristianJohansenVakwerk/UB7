@@ -68,7 +68,7 @@ const Sectors = (props: SectorsProps) => {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      activeContainers.forEach((container) => {
+      draggableContainers.current.forEach((container) => {
         gsap.set(container, {
           y: "-200%",
           x: 0,
@@ -77,58 +77,58 @@ const Sectors = (props: SectorsProps) => {
         });
       });
 
-      inactiveContainers.forEach((container) => {
-        let randomX =
-          Math.random() > 0.5
-            ? windowWidth + 500 + Math.random() * 1000 // Right side
-            : -500 - Math.random() * 1000; // Left side
+      // inactiveContainers.forEach((container) => {
+      //   let randomX =
+      //     Math.random() > 0.5
+      //       ? windowWidth + 500 + Math.random() * 1000 // Right side
+      //       : -500 - Math.random() * 1000; // Left side
 
-        let randomY =
-          Math.random() > 0.5
-            ? windowHeight + 500 + Math.random() * 1000 // Bottom
-            : -500 - Math.random() * 1000; // Top
+      //   let randomY =
+      //     Math.random() > 0.5
+      //       ? windowHeight + 500 + Math.random() * 1000 // Bottom
+      //       : -500 - Math.random() * 1000; // Top
 
-        // Get the element's dimensions
-        const rect = container.getBoundingClientRect();
+      //   // Get the element's dimensions
+      //   const rect = container.getBoundingClientRect();
 
-        // Check if the element is visible in the viewport
-        const isVisible =
-          randomX + rect.width > 0 &&
-          randomX < windowWidth &&
-          randomY + rect.height > 0 &&
-          randomY < windowHeight;
+      //   // Check if the element is visible in the viewport
+      //   const isVisible =
+      //     randomX + rect.width > 0 &&
+      //     randomX < windowWidth &&
+      //     randomY + rect.height > 0 &&
+      //     randomY < windowHeight;
 
-        // If visible, adjust position to move it further out
-        if (isVisible) {
-          if (randomX > 0) {
-            randomX = windowWidth + 1000 + Math.random() * 1000;
-          } else {
-            randomX = -1000 - Math.random() * 1000;
-          }
+      //   // If visible, adjust position to move it further out
+      //   if (isVisible) {
+      //     if (randomX > 0) {
+      //       randomX = windowWidth + 1000 + Math.random() * 1000;
+      //     } else {
+      //       randomX = -1000 - Math.random() * 1000;
+      //     }
 
-          if (randomY > 0) {
-            randomY = windowHeight + 1000 + Math.random() * 1000;
-          } else {
-            randomY = -1000 - Math.random() * 1000;
-          }
-        }
+      //     if (randomY > 0) {
+      //       randomY = windowHeight + 1000 + Math.random() * 1000;
+      //     } else {
+      //       randomY = -1000 - Math.random() * 1000;
+      //     }
+      //   }
 
-        gsap.set(container, {
-          x: randomX,
-          y: randomY,
-          autoAlpha: 1,
-          pointerEvents: "none",
-          // rotation: Math.random() * 360,
-        });
+      //   gsap.set(container, {
+      //     x: randomX,
+      //     y: randomY,
+      //     autoAlpha: 1,
+      //     pointerEvents: "none",
+      //     // rotation: Math.random() * 360,
+      //   });
 
-        setCurrentIndex(entriesFrom);
-      });
+      //   setCurrentIndex(entriesFrom);
+      // });
 
       gsap.to(sectorsContainerRef.current, {
         autoAlpha: 1,
         duration: 0.4,
         delay: 0.8,
-        ease: "power2.inOut",
+        ease: "power4.inOut",
         onComplete: () => {
           readyToThrow.current = true;
           currentIndexRef.current = entriesFrom;
@@ -175,78 +175,78 @@ const Sectors = (props: SectorsProps) => {
   // }, [active, currentIndex]);
 
   /// Draggable config
-  const draggableConfig = useMemo(() => {
-    return {
-      type: "x,y" as const,
-      edgeResistance: 0.65,
-      inertia: true,
-      allowNativeTouchScrolling: true,
-      cursor: "grab",
-      activeCursor: "grabbing",
-      dragClickables: false,
-      clickableTest: (el: Element) => {
-        if (el instanceof HTMLImageElement) {
-          return true;
-        }
-        return false;
-      },
-    };
-  }, []);
+  // const draggableConfig = useMemo(() => {
+  //   return {
+  //     type: "x,y" as const,
+  //     edgeResistance: 0.65,
+  //     inertia: true,
+  //     allowNativeTouchScrolling: true,
+  //     cursor: "grab",
+  //     activeCursor: "grabbing",
+  //     dragClickables: false,
+  //     clickableTest: (el: Element) => {
+  //       if (el instanceof HTMLImageElement) {
+  //         return true;
+  //       }
+  //       return false;
+  //     },
+  //   };
+  // }, []);
 
   /// Draggable init
-  useGSAP(() => {
-    if (
-      typeof window !== "undefined" &&
-      draggableContainers.current.length > 0
-    ) {
-      draggableContainers.current.forEach((item, index) => {
-        Draggable.create(item, {
-          ...draggableConfig,
-          onDragStart: (self) => {},
-          onDrag: (self) => {
-            const el = item;
+  // useGSAP(() => {
+  //   if (
+  //     typeof window !== "undefined" &&
+  //     draggableContainers.current.length > 0
+  //   ) {
+  //     draggableContainers.current.forEach((item, index) => {
+  //       Draggable.create(item, {
+  //         ...draggableConfig,
+  //         onDragStart: (self) => {},
+  //         onDrag: (self) => {
+  //           const el = item;
 
-            if (el) {
-              const vx = InertiaPlugin.getVelocity(el, "x");
-              const vy = InertiaPlugin.getVelocity(el, "y");
+  //           if (el) {
+  //             const vx = InertiaPlugin.getVelocity(el, "x");
+  //             const vy = InertiaPlugin.getVelocity(el, "y");
 
-              gsap.to(el, {
-                rotation: vx * 0.01,
-                duration: 0.5,
-                ease: "power2.out",
+  //             gsap.to(el, {
+  //               rotation: vx * 0.01,
+  //               duration: 0.5,
+  //               ease: "power2.out",
 
-                onComplete: () => {
-                  const ww = window.innerWidth;
-                  const wh = window.innerHeight;
-                  const rect = el.getBoundingClientRect();
+  //               onComplete: () => {
+  //                 const ww = window.innerWidth;
+  //                 const wh = window.innerHeight;
+  //                 const rect = el.getBoundingClientRect();
 
-                  const isOutSide =
-                    rect.left > ww ||
-                    rect.right < 0 ||
-                    rect.top + rect.height > wh ||
-                    rect.bottom + rect.height < 0;
+  //                 const isOutSide =
+  //                   rect.left > ww ||
+  //                   rect.right < 0 ||
+  //                   rect.top + rect.height > wh ||
+  //                   rect.bottom + rect.height < 0;
 
-                  if (isOutSide) {
-                    const currentIndex = index;
+  //                 if (isOutSide) {
+  //                   const currentIndex = index;
 
-                    currentIndexRef.current = currentIndex;
-                    const nextIndex = currentIndexRef.current + 1;
-                    currentIndexRef.current = nextIndex;
+  //                   currentIndexRef.current = currentIndex;
+  //                   const nextIndex = currentIndexRef.current + 1;
+  //                   currentIndexRef.current = nextIndex;
 
-                    setCurrentIndex((prev: any) =>
-                      prev <= draggableContainers.current.length - 1
-                        ? nextIndex
-                        : prev
-                    );
-                  }
-                },
-              });
-            }
-          },
-        });
-      });
-    }
-  }, []);
+  //                   setCurrentIndex((prev: any) =>
+  //                     prev <= draggableContainers.current.length - 1
+  //                       ? nextIndex
+  //                       : prev
+  //                   );
+  //                 }
+  //               },
+  //             });
+  //           }
+  //         },
+  //       });
+  //     });
+  //   }
+  // }, []);
 
   useGSAP(() => {
     const handleClick = (direction: "next" | "prev") => {
@@ -309,6 +309,11 @@ const Sectors = (props: SectorsProps) => {
       },
     });
   }, [onClose]);
+
+  const handleDagged = useCallback((index: number) => {
+    console.log("we are handle dragged here", index);
+    setCurrentIndex(index + 1);
+  }, []);
 
   useEffect(() => {
     if (!currentIndex) return;
@@ -395,6 +400,7 @@ const Sectors = (props: SectorsProps) => {
             index={index}
             currentIndex={currentIndex}
             active={active}
+            onDagged={handleDagged}
           />
         ))}
       </div>

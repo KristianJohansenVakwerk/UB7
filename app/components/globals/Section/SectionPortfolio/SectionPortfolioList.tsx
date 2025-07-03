@@ -15,6 +15,7 @@ import {
   useAccordionSetup,
   useAccordionControls,
 } from "../../../../hooks/AccordionHooks";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
@@ -27,15 +28,15 @@ type Props = {
 const SectionPortfolioList = (props: Props) => {
   const { data, onExpandViewMode, onShowBackground } = props;
   const { accordionAnis, iconAnis, setupAccordion } = useAccordionSetup();
-
   const { playAccordion, resetAccordion } = useAccordionControls();
-
   const { setHoverSector } = useStore();
 
-  // Init the animation that controls the sector list
-  useSectorListAnimation();
+  // Add state to track if expanded view mode is active
+  const [isExpandedMode, setIsExpandedMode] = useState(false);
 
-  useSectorListEvents("onComplete", () => {
+  // Init the animation that controls the sector list and the accordions
+  useSectorListAnimation();
+  useGSAP(() => {
     setupAccordion();
   });
 
@@ -55,10 +56,12 @@ const SectionPortfolioList = (props: Props) => {
   );
 
   const handleMouseLeave = useCallback(() => {
+    if (isExpandedMode) return;
+    console.log("handleMouseLeave");
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
     onShowBackground("");
-  }, [accordionAnis, iconAnis]);
+  }, [accordionAnis, iconAnis, isExpandedMode]);
 
   const { timelineRef } = useSectorListAnimation();
 
@@ -71,7 +74,12 @@ const SectionPortfolioList = (props: Props) => {
     const smoother = ScrollSmoother.get();
     smoother?.paused(true);
 
+    console.log("showExpandedectors");
+
+    setIsExpandedMode(true);
+
     resetAccordion(accordionAnis, iconAnis, () => {
+      console.log("showExpandedectors callback");
       if (timelineRef?.current) {
         timelineRef.current.seek(1);
         timelineRef.current.reverse();

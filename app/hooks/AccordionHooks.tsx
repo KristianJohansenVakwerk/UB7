@@ -15,14 +15,10 @@ export const useAccordionSetup = () => {
     );
 
     accordionAnis.current = sectors.map((sector: any, index: number) => {
-      const sectorHeight = sector.scrollHeight;
-
-      // gsap.set(sector, { height: 0, opacity: 1 });
-
       return gsap
         .timeline({ paused: true })
         .to(sectorContentBackgrounds[index] as HTMLElement, {
-          height: sectorHeight + 53,
+          height: 100,
           duration: 0.2,
           ease: "power2.inOut",
         })
@@ -35,7 +31,7 @@ export const useAccordionSetup = () => {
           opacity: 1,
           y: 0,
           duration: 0.2,
-          stagger: 0.2,
+          stagger: 0.1,
           ease: "power2.inOut",
         });
     });
@@ -65,6 +61,12 @@ export const useAccordionControls = () => {
   const playAccordion = useCallback(
     (index: number, accordionAnis: any[], iconAnis: any[]) => {
       // If hovering over the same accordion, do nothing
+
+      const sectors = gsap.utils.toArray(
+        ".sector-item-content"
+      ) as HTMLElement[];
+      const sectorHeight = sectors[index].scrollHeight;
+      accordionAnis[index].getChildren()[0].vars.height = sectorHeight + 53;
 
       if (activeIndexRef.current === index) return;
 
@@ -107,17 +109,6 @@ export const useAccordionControls = () => {
 
         activeIndexRef.current = null;
       }
-      // accordionAnis.forEach((tl: any) => {
-      //   tl.reverse();
-      //   tl.eventCallback("onReverseComplete", () => {
-      //     console.log("resetAccordion");
-
-      //     cb?.();
-      //   });
-      // });
-      // iconAnis.forEach((tl: any) => {
-      //   tl.reverse();
-      // });
     },
     []
   );
