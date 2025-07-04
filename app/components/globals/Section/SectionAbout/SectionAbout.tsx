@@ -57,7 +57,7 @@ const SectionAbout = (props: any) => {
           pinSpacing: true,
           anticipatePin: 1,
           scrub: 0.1,
-          markers: { indent: 800 },
+          markers: false,
 
           onEnter: () => {
             setTimeout(() => {

@@ -71,7 +71,7 @@ const SmoothScroll = () => {
             trigger: wrapper,
             start: "bottom bottom", // when the whole wrapper is leaving view
             end: "+=100", // minimal scroll after that
-            markers: { indent: 300 },
+            markers: false,
             onLeave: (self) => {
               setScroll(true);
             },

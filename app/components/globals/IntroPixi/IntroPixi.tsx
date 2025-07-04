@@ -192,7 +192,7 @@ const IntroPixi = () => {
       start: "top top",
       end: "+=100%",
       scrub: true,
-      markers: true,
+      markers: false,
       onUpdate: (self) => {
         const progress = self.progress;
         if (filter) {
@@ -259,7 +259,7 @@ const IntroPixi = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 w-screen h-screen bg-[#D9D9D9]"
+      className="fixed top-0 left-0 w-screen h-screen bg-[#D9D9D9] z-0"
       ref={parentRef}
     >
       <Application

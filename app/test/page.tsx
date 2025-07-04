@@ -1,80 +1,85 @@
 "use client";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
-
+import IntroPixi from "../components/globals/IntroPixi/IntroPixi";
+import SectionIntro from "../components/globals/Section/SectionIntro";
 gsap.registerPlugin(ScrollTrigger);
-
 export default function Home() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const horizontalListRef = useRef<HTMLDivElement>(null);
+  useGSAP(() => {
+    if (!scrollContainerRef.current) return;
 
-  useEffect(() => {
-    if (!horizontalListRef.current) return;
-
-    const items = horizontalListRef.current.querySelectorAll(".scroll-item");
-
-    items.forEach((item) => {
-      gsap.fromTo(
-        item,
-        { x: 100, opacity: 0 },
-        {
-          x: 0,
-          opacity: 1,
-          scrollTrigger: {
-            trigger: item,
-            scroller: scrollContainerRef.current,
-            start: "left center",
-            end: "right center",
-            scrub: true,
-            horizontal: true,
-          },
-        }
-      );
+    ScrollTrigger.create({
+      trigger: scrollContainerRef.current,
+      start: "top top",
+      end: "bottom top",
+      scrub: true,
+      markers: false,
+      onUpdate: (self) => {
+        console.log("onUpdate", self.progress);
+      },
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
+    const items = gsap.utils.toArray(".scroll-item");
+
+    items.forEach((item, index) => {
+      ScrollTrigger.create({
+        id: `scroll-item-${index}`,
+        trigger: item as HTMLElement,
+        start: "top top",
+        end: "bottom top",
+        scrub: false,
+        markers: false,
+        onUpdate: (self) => {
+          console.log("onUpdate", self.progress, index);
+        },
+      });
+    });
   }, []);
 
   return (
-    <div
-      ref={scrollContainerRef}
-      className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
-    >
-      {/* Section 1 */}
-      <section className="snap-start h-screen flex items-center justify-center bg-red-300">
-        <h1 className="text-4xl font-bold">Section 1</h1>
-      </section>
+    <>
+      <div
+        ref={scrollContainerRef}
+        className="relative h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth z-10"
+      >
+        {/* Section 1 */}
+        <section className="snap-start scroll-item h-screen flex items-center justify-center ">
+          <SectionIntro />
+        </section>
 
-      {/* Section 2 */}
-      <section className="snap-start h-screen flex items-center justify-center bg-green-300">
-        <h1 className="text-4xl font-bold">Section 2</h1>
-      </section>
+        {/* Section 2 */}
+        <section className="snap-start scroll-item h-screen flex items-center justify-center ">
+          <h1 className="text-4xl font-bold">Section 2</h1>
+        </section>
 
-      {/* Section 3 - auto height */}
-      {/* Section 3 with sticky scroll */}
-      <section className="snap-start section-3-wrapper relative h-[350vh] bg-gray-100">
-        {/* Sticky inner section */}
-        <div className="section-3-sticky sticky top-0 h-screen flex items-center px-10 overflow-hidden">
-          <div ref={horizontalListRef} className="flex space-x-8 w-max">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <div
-                key={num}
-                className="scroll-item w-[400px] h-[300px] bg-blue-500 rounded-md text-white flex items-center justify-center text-2xl shrink-0"
-              >
-                Item {num}
-              </div>
-            ))}
+        {/* Section 3 - auto height */}
+        {/* Section 3 with sticky scroll */}
+        <section className="snap-start scroll-item section-3-wrapper relative h-[350vh] ">
+          {/* Sticky inner section */}
+          <div className="section-3-sticky sticky top-0 h-screen flex items-center px-10 overflow-hidden">
+            <div className="flex space-x-8 w-max">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <div
+                  key={num}
+                  className="scroll-item w-[400px] h-[300px]  rounded-md text-white flex items-center justify-center text-2xl shrink-0 bg-red-500"
+                >
+                  Item {num}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Section 4 */}
-      <section className="snap-start h-screen flex items-center justify-center bg-purple-300">
-        <h1 className="text-4xl font-bold">Section 4</h1>
-      </section>
-    </div>
+        {/* Section 4 */}
+        <section className="snap-start scroll-item h-screen flex items-center justify-center">
+          <h1 className="text-4xl font-bold">Section 4</h1>
+        </section>
+      </div>
+
+      <IntroPixi />
+    </>
   );
 }

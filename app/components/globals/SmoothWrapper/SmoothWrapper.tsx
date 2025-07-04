@@ -119,6 +119,7 @@ const SmoothWrapper = (props: Props) => {
         start: !isLastContainer ? "top top" : "top bottom",
         end: !isLastContainer ? "bottom bottom" : "bottom bottom",
         markers: isLastContainer ? true : false,
+        scroller: ".smooth-wrapper",
         snap: {
           snapTo: sections.length > 1 ? [0, 1] : 1,
           duration: 0.6,
@@ -140,7 +141,7 @@ const SmoothWrapper = (props: Props) => {
       trigger: freeContainer,
       start: "top bottom",
       end: "+=80%",
-      markers: { indent: 800 },
+      markers: false,
       onUpdate: (self) => {
         directionRef.current = self.direction;
       },
@@ -152,7 +153,7 @@ const SmoothWrapper = (props: Props) => {
       className="smooth-wrapper"
       style={{ pointerEvents: scrolling ? "none" : "auto" }}
     >
-      <div className="smooth-content">{children}</div>
+      <div className="smooth-content will-change-transform">{children}</div>
     </div>
   );
 };
