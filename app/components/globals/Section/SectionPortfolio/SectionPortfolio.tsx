@@ -30,7 +30,7 @@ const SectionPortfolio = (props: any) => {
   const [entriesFrom, setEntriesFrom] = useState<number>(0);
   const [entriesTo, setEntriesTo] = useState<number>(entries.length);
   const [showTitle, setShowTitle] = useState<boolean>(false);
-  const [showUI, setShowUI] = useState<boolean>(true);
+  const [showUI, setShowUI] = useState<boolean>(false);
 
   const [showExpandedSectors, setShowExpandedSectors] =
     useState<boolean>(false);
@@ -116,6 +116,7 @@ const SectionPortfolio = (props: any) => {
             data={data}
             onExpandViewMode={handleExpandViewMode}
             onShowBackground={handleShowBackground}
+            active={!showExpandedSectors}
           />
         </div>
       </div>
@@ -126,14 +127,16 @@ const SectionPortfolio = (props: any) => {
         active={showUI}
       />
 
-      <Sectors
-        entries={entries}
-        entriesFrom={entriesFrom}
-        entriesTo={entriesTo}
-        active={showExpandedSectors}
-        updateCurrentSector={handleUpdateSector}
-        onClose={handleClose}
-      />
+      {showUI && (
+        <Sectors
+          entries={entries}
+          entriesFrom={entriesFrom}
+          entriesTo={entriesTo}
+          active={showExpandedSectors}
+          updateCurrentSector={handleUpdateSector}
+          onClose={handleClose}
+        />
+      )}
     </>
   );
 };

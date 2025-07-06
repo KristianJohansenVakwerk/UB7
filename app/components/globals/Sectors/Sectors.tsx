@@ -44,16 +44,16 @@ const Sectors = (props: SectorsProps) => {
   const draggableContainers = useRef<HTMLElement[]>([]);
   const readyToThrow = useRef<boolean>(false);
 
-  const activeContainers = useMemo(() => {
-    if (!active || !draggableContainers.current.length) return [];
+  // const activeContainers = useMemo(() => {
+  //   if (!active || !draggableContainers.current.length) return [];
 
-    return draggableContainers.current.slice(entriesFrom, entriesTo);
-  }, [active, entriesFrom, entriesTo]);
+  //   return draggableContainers.current.slice(entriesFrom, entriesTo);
+  // }, [active, entriesFrom, entriesTo]);
 
-  const inactiveContainers = useMemo(() => {
-    if (!active || !draggableContainers.current.length) return [];
-    return draggableContainers.current.slice(0, entriesFrom);
-  }, [active, entriesFrom]);
+  // const inactiveContainers = useMemo(() => {
+  //   if (!active || !draggableContainers.current.length) return [];
+  //   return draggableContainers.current.slice(0, entriesFrom);
+  // }, [active, entriesFrom]);
 
   useGSAP(() => {
     draggableContainers.current = gsap.utils.toArray(
@@ -68,14 +68,14 @@ const Sectors = (props: SectorsProps) => {
       const windowWidth = window.innerWidth;
       const windowHeight = window.innerHeight;
 
-      draggableContainers.current.forEach((container) => {
-        gsap.set(container, {
-          y: "-200%",
-          x: 0,
-          autoAlpha: 1,
-          pointerEvents: "auto",
-        });
-      });
+      // draggableContainers.current.forEach((container) => {
+      //   gsap.set(container, {
+      //     y: "-200%",
+      //     x: 0,
+      //     autoAlpha: 1,
+      //     pointerEvents: "auto",
+      //   });
+      // });
 
       // inactiveContainers.forEach((container) => {
       //   let randomX =
@@ -305,6 +305,7 @@ const Sectors = (props: SectorsProps) => {
 
           timelineRef.current.seek(0);
           timelineRef.current.play();
+          setCurrentIndex(null);
         }
       },
     });

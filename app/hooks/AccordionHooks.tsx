@@ -61,6 +61,8 @@ export const useAccordionControls = () => {
   const playAccordion = useCallback(
     (index: number, accordionAnis: any[], iconAnis: any[]) => {
       // If hovering over the same accordion, do nothing
+      console.log("playAccordion: ", index);
+      // gsap.killTweensOf(accordionAnis, iconAnis);
 
       const sectors = gsap.utils.toArray(
         ".sector-item-content"
@@ -95,19 +97,49 @@ export const useAccordionControls = () => {
 
   const resetAccordion = useCallback(
     (accordionAnis: any[], iconAnis: any[], cb?: () => void) => {
+      console.log(
+        "resetAccordion called with activeIndex:",
+        activeIndexRef.current,
+        "callback:",
+        !!cb
+      );
+
+      // gsap.killTweensOf(accordionAnis, iconAnis);
+
       if (activeIndexRef.current !== null) {
         const currentAccordion = accordionAnis[activeIndexRef.current];
         const currentIcon = iconAnis[activeIndexRef.current];
 
-        currentAccordion.reverse();
-        currentIcon.reverse();
+        // Clear any existing callbacks FIRST, before reversing
+        console.log("Clearing existing callback");
+        currentAccordion.eventCallback("onReverseComplete", null);
 
-        currentAccordion.eventCallback("onReverseComplete", () => {
-          console.log("resetAccordion");
-          cb?.();
-        });
+        // Set the new callback BEFORE reversing (if one is provided)
+        if (cb) {
+          console.log("Setting new callback");
+          currentAccordion.eventCallback("onReverseComplete", () => {
+            console.log("onReverseComplete triggered - executing callback");
+            cb();
+          });
+        } else {
+          console.log(
+            "No callback provided - ensuring no event callback is set"
+          );
+          // Double-check that no callback is set
+          currentAccordion.eventCallback("onReverseComplete", null);
+        }
+
+        console.log("Reversing animations");
+        if (currentAccordion) {
+          currentAccordion.reverse();
+        }
+        if (currentIcon) {
+          currentIcon.reverse();
+        }
 
         activeIndexRef.current = null;
+      } else {
+        console.log("No active index - nothing to reset");
       }
     },
     []

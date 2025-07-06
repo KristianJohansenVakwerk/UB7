@@ -21,25 +21,34 @@ const Sector = (props: Props) => {
   const draggableRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    console.log("useGSAP currentIndex", currentIndex, index);
-    if (!currentIndex) return;
-    if (index >= currentIndex) {
+    if (currentIndex === null) {
+      gsap.set(draggableRef.current, {
+        y: "-200%",
+        x: 0,
+        scale: 0.9,
+        autoAlpha: 1,
+        rotation: 0,
+      });
+    } else {
+      if (index < currentIndex) {
+        gsap.set(draggableRef.current, {
+          y: "-200%",
+          x: 0,
+          scale: 0.9,
+          autoAlpha: 0,
+          rotation: 0,
+        });
+        return;
+      }
+
       gsap.to(draggableRef.current, {
         y: getTranslation(index, currentIndex || 0),
         scale: getScale(index, currentIndex || 0),
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: "power2.inOut",
-      });
-    }
-    if (currentIndex === index) {
-      gsap.to(draggableRef.current, {
-        scale: 1,
-        y: 0,
-        x: 0,
+        autoAlpha: 1,
         rotation: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
+        duration: 0.4,
+        delay: (index - currentIndex) * 0.2,
+        ease: "power1.inOut",
       });
     }
   }, [currentIndex]);
@@ -60,23 +69,37 @@ const Sector = (props: Props) => {
               duration: 0.5,
               ease: "power2.out",
 
-              onComplete: () => {
-                const ww = window.innerWidth;
-                const wh = window.innerHeight;
-                const rect = el.getBoundingClientRect();
-
-                const isOutSide =
-                  rect.left > ww ||
-                  rect.right < 0 ||
-                  rect.top + rect.height > wh ||
-                  rect.bottom + rect.height < 0;
-
-                if (isOutSide) {
-                  onDagged(index);
-                }
-              },
+              onComplete: () => {},
             });
           }
+        },
+        onDragEnd: (self) => {
+          const el = draggableRef.current;
+
+          if (!el) return;
+
+          // const ww = window.innerWidth;
+          // const wh = window.innerHeight;
+          const rect = el.getBoundingClientRect();
+
+          // const isOutSide =
+          //   rect.left > ww ||
+          //   rect.right < 0 ||
+          //   rect.top + rect.height > wh ||
+          //   rect.bottom + rect.height < 0;
+          console.log("inside: ", index);
+          gsap.to(el, {
+            x: "400%",
+            duration: 0.5,
+            ease: "power2.out",
+            onComplete: () => {
+              onDagged(index);
+            },
+          });
+          // if (isOutSide) {
+          //   console.log("outside: ", index, "outside");
+          //   onDagged(index);
+          // }
         },
       });
     }

@@ -2,7 +2,7 @@
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import { useStore } from "@/store/store";
 import clsx from "clsx";
 import {
@@ -23,10 +23,11 @@ type Props = {
   data: any;
   onExpandViewMode: (entryIndex: number, sector: string) => void;
   onShowBackground: (sector: string) => void;
+  active: boolean;
 };
 
 const SectionPortfolioList = (props: Props) => {
-  const { data, onExpandViewMode, onShowBackground } = props;
+  const { data, onExpandViewMode, onShowBackground, active } = props;
   const { accordionAnis, iconAnis, setupAccordion } = useAccordionSetup();
   const { playAccordion, resetAccordion } = useAccordionControls();
   const { setHoverSector } = useStore();
@@ -41,6 +42,7 @@ const SectionPortfolioList = (props: Props) => {
   });
 
   useSectorListEvents("onScrollTriggerLeave", () => {
+    console.log("onScrollTriggerLeave");
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
     onShowBackground("");
@@ -48,6 +50,7 @@ const SectionPortfolioList = (props: Props) => {
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
+      console.log("handleMouseEnter", active);
       playAccordion(index, accordionAnis, iconAnis);
       setHoverSector(true);
       onShowBackground(sector);
@@ -56,12 +59,13 @@ const SectionPortfolioList = (props: Props) => {
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (isExpandedMode) return;
-    console.log("handleMouseLeave");
+    console.log("handleMouseLeave", active);
+    if (!active) return;
+
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
     onShowBackground("");
-  }, [accordionAnis, iconAnis, isExpandedMode]);
+  }, [accordionAnis, iconAnis, active]);
 
   const { timelineRef } = useSectorListAnimation();
 
@@ -74,31 +78,33 @@ const SectionPortfolioList = (props: Props) => {
     const smoother = ScrollSmoother.get();
     smoother?.paused(true);
 
-    console.log("showExpandedectors");
+    resetAccordion(accordionAnis, iconAnis);
 
-    setIsExpandedMode(true);
-
-    resetAccordion(accordionAnis, iconAnis, () => {
-      console.log("showExpandedectors callback");
-      if (timelineRef?.current) {
-        timelineRef.current.seek(1);
-        timelineRef.current.reverse();
-        timelineRef.current.eventCallback("onReverseComplete", () => {
-          gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
-            opacity: 0,
-            duration: 0.4,
-            ease: "power4.inOut",
-          });
-          onExpandViewMode(entryIndex, sector);
+    console.log("showExpandedectors callback");
+    if (timelineRef?.current) {
+      timelineRef.current.seek(1);
+      timelineRef.current.reverse();
+      timelineRef.current.eventCallback("onReverseComplete", () => {
+        gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
+          opacity: 0,
+          duration: 0.4,
+          ease: "power4.inOut",
         });
-      }
-    });
+        onExpandViewMode(entryIndex, sector);
+      });
+    }
   };
 
   return (
     <div className="w-full relative flex flex-row items-start justify-start">
       {data.map((sector: any, index: number) => {
-        const realIndex = index * sector.entries.length;
+        const realIndex = data
+          .slice(0, index)
+          .reduce(
+            (sum: number, prevSector: any) => sum + prevSector.entries.length,
+            0
+          );
+
         return (
           <div
             key={index}
@@ -106,12 +112,12 @@ const SectionPortfolioList = (props: Props) => {
             onMouseLeave={() => handleMouseLeave()}
           >
             <div
-              className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]  "
+              className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
               onMouseEnter={() => handleMouseEnter(index, sector.title)}
             >
               <div
                 className={clsx(
-                  "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer "
+                  "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer"
                 )}
               >
                 <div className={"font-mono text-sm"}>{sector.title}</div>
@@ -158,13 +164,15 @@ const SectionPortfolioList = (props: Props) => {
                       )}
                     >
                       <div
-                        onClick={() =>
+                        onClick={(e) => {
+                          console.log("clicked", entry.title, realIndex + ix);
+                          e.stopPropagation();
                           showExpandedectors(
                             entry.slug,
                             entry.sector,
                             realIndex + ix
-                          )
-                        }
+                          );
+                        }}
                       >
                         {entry.title}
                       </div>
