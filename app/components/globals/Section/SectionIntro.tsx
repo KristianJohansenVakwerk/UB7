@@ -7,7 +7,13 @@ import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
 
-const SectionIntro = () => {
+const SectionIntro = ({
+  inView,
+  cssSnap = false,
+}: {
+  inView: boolean;
+  cssSnap?: boolean;
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const gradientRef = useRef<SVGLinearGradientElement>(null);
@@ -136,6 +142,7 @@ const SectionIntro = () => {
   }, []);
 
   useGSAP(() => {
+    if (cssSnap) return;
     gsap.to(ref.current, {
       scrollTrigger: {
         id: "intro-trigger",
@@ -155,11 +162,34 @@ const SectionIntro = () => {
     });
   });
 
+  const fadeOutRef = useRef<any>(null);
+  useGSAP(() => {
+    if (!cssSnap) return;
+    fadeOutRef.current = gsap
+      .timeline({ paused: true })
+      .addLabel("start")
+      .to(ref.current, {
+        autoAlpha: 0,
+        duration: 0.4,
+        ease: "power4.out",
+      });
+  }, []);
+
+  useGSAP(() => {
+    if (!fadeOutRef.current) return;
+    if (!inView) {
+      fadeOutRef.current.restart();
+    } else {
+      fadeOutRef.current.pause();
+      fadeOutRef.current.seek("start");
+    }
+  }, [inView]);
+
   return (
     <Box
       ref={ref}
       id="intro"
-      className="relative intro w-screen h-screen fixed top-0 left-0 opacity-100 snap-section "
+      className="intro w-screen h-screen fixed top-0 left-0 opacity-100 snap-section "
     >
       <div
         ref={gradientContainerRef}

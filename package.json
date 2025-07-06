@@ -22,6 +22,7 @@
     "pixi.js": "^8.10.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-intersection-observer": "^9.16.0",
     "swiper": "^11.2.8",
     "tempus": "^1.0.0-dev.11",
     "three": "^0.174.0",

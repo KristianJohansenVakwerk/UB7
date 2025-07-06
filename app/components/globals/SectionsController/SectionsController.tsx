@@ -46,7 +46,7 @@ const SectionsController = () => {
                       ) : section.id === "contact" ? (
                         <SectionContact title={section.text} />
                       ) : section.id === "intro" ? (
-                        <SectionIntro />
+                        <SectionIntro inView={true} cssSnap={false} />
                       ) : (
                         <div>missing id</div>
                       )}
