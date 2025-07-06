@@ -16,7 +16,7 @@ const Section = (props: Props) => {
 
   switch (entry.id) {
     case "intro":
-      return <SectionIntro />;
+      return <SectionIntro inView={true} cssSnap={false} />;
     case "portfolio":
       return (
         <SectionPortfolio
