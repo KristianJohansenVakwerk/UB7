@@ -65,8 +65,8 @@ const Sectors = (props: SectorsProps) => {
     gsap.set(sectorsContainerRef.current, { autoAlpha: 0 });
 
     if (active) {
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
+      // const windowWidth = window.innerWidth;
+      // const windowHeight = window.innerHeight;
 
       // draggableContainers.current.forEach((container) => {
       //   gsap.set(container, {
@@ -150,10 +150,6 @@ const Sectors = (props: SectorsProps) => {
       });
     }
   }, [active, entries, entriesFrom, entriesTo]);
-
-  useGSAP(() => {
-    console.log("currentIndex", currentIndex);
-  }, [currentIndex]);
 
   // useGSAP(() => {
   //   if (active && readyToThrow.current) {
