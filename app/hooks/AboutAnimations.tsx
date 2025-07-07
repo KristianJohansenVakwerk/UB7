@@ -18,6 +18,7 @@ export const useAboutAnimations = (
         ease: "power4.out",
         delay: 0.5,
         paused: true,
+        immediateRender: false,
       });
 
       // Split text into lines

@@ -6,6 +6,7 @@ import Box from "../../ui/Box/Box";
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
+import { useStore } from "@/store/store";
 
 const SectionIntro = ({
   inView,
@@ -21,6 +22,7 @@ const SectionIntro = ({
   const [mousePosition, setMousePosition] = useState({ x: 0.5, y: 0.5 });
   const [lerpedPosition, setLerpedPosition] = useState({ x: 0.5, y: 0.5 });
   const [initDone, setInitDone] = useState(false);
+  const { setIntroStoreDone } = useStore();
 
   // Lerp function for smooth interpolation
   const lerp = (start: number, end: number, factor: number) => {
@@ -69,10 +71,15 @@ const SectionIntro = ({
   useGSAP(() => {
     if (!initDone) return;
     gsap.to(".time", {
+      id: "intro-time-opacity",
       opacity: 1,
       duration: 0.8,
       ease: "power4.out",
       stagger: 0.3,
+      onComplete: () => {
+        console.log("intro-time-opacity complete");
+        setIntroStoreDone(true);
+      },
     });
   }, [initDone]);
 
@@ -92,6 +99,7 @@ const SectionIntro = ({
 
       // Use transform instead of attr for better performance
       gsap.to(gradientRef.current, {
+        id: "intro-gradient-animation",
         attr: {
           x1: originalX + offsetX,
           y1: originalY1 + offsetY,
@@ -124,6 +132,9 @@ const SectionIntro = ({
         paused: true,
         lazy: true,
         immediateRender: false,
+        onComplete: () => {
+          console.log("intro-gradient-animation complete");
+        },
       })
       .to(gradientContainerRef.current, {
         autoAlpha: 1,
@@ -154,6 +165,7 @@ const SectionIntro = ({
   useGSAP(() => {
     if (cssSnap) return;
     gsap.to(ref.current, {
+      id: "intro-fade-out-cssSnap",
       scrollTrigger: {
         id: "intro-trigger",
         trigger: ref.current,
@@ -176,7 +188,7 @@ const SectionIntro = ({
   useGSAP(() => {
     if (!cssSnap) return;
     fadeOutRef.current = gsap
-      .timeline({ paused: true })
+      .timeline({ paused: true, id: "intro-fade-out-tl" })
       .addLabel("start")
       .to(ref.current, {
         autoAlpha: 0,
@@ -212,7 +224,7 @@ const SectionIntro = ({
           viewBox="0 0 1311 548"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          onMouseMove={handleMouseMove}
+          // onMouseMove={handleMouseMove}
           className="pointer-events-auto w-full h-auto max-w-[1200px]"
           style={{ willChange: "transform" }} // Optimize for animations
         >

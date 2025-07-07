@@ -2,7 +2,7 @@
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useStore } from "@/store/store";
 import clsx from "clsx";
 import {
@@ -28,19 +28,22 @@ type Props = {
 
 const SectionPortfolioList = (props: Props) => {
   const { data, onExpandViewMode, onShowBackground, active } = props;
-  const { accordionAnis, iconAnis, setupAccordion } = useAccordionSetup();
+  const { accordionAnis, iconAnis, setupAccordion, cleanupAccordion } =
+    useAccordionSetup();
   const { playAccordion, resetAccordion } = useAccordionControls();
   const { setHoverSector } = useStore();
 
   // Add state to track if expanded view mode is active
   const [isExpandedMode, setIsExpandedMode] = useState(false);
 
-  // Init the animation that controls the sector list and the accordions
-
+  // Single useGSAP call with proper cleanup
   useGSAP(() => {
-    console.log("setupAccordion");
     setupAccordion();
-  });
+
+    return () => {
+      cleanupAccordion();
+    };
+  }, [setupAccordion, cleanupAccordion]); // Add dependencies
 
   useSectorListEvents("onScrollTriggerLeave", () => {
     console.log("onScrollTriggerLeave");

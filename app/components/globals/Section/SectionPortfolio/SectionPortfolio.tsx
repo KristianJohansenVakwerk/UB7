@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,12 +11,14 @@ import Sectors from "../../Sectors/Sectors";
 import SectionTitle from "../SectionTitle";
 import SectionPortfolioList from "./SectionPortfolioList";
 import { useSectorListEvents } from "../../../../hooks/AnimationsHooks";
+import { cleanupGSAPAnimations } from "@/app/utils/gsapUtils";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
 const SectionPortfolio = (props: any) => {
   const { data, title } = props;
   const [activeSector, setActiveSector] = useState<string | null>(null);
+  const { introStoreDone } = useStore();
 
   const [entries, setEntries] = useState<any[]>(
     data.flatMap((sector: any, sectorIndex: number) =>
@@ -35,6 +37,13 @@ const SectionPortfolio = (props: any) => {
   const [showExpandedSectors, setShowExpandedSectors] =
     useState<boolean>(false);
   const { setHoverSector } = useStore();
+
+  // Add cleanup on unmount
+  useEffect(() => {
+    return () => {
+      cleanupGSAPAnimations();
+    };
+  }, []);
 
   // Animation of list is complete allow background to be shown on mouse enter
   useSectorListEvents("onComplete", () => {
@@ -103,21 +112,23 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "relativegap-0 w-full h-full z-10 px-3 flex flex-col items-start justify-between"
+          "relativegap-0 w-full h-full px-3 flex flex-col items-start justify-between"
         )}
       >
         <div>
-          <div className={"pt-7"}>
+          <div className={"pt-7 relative z-10"}>
             <SectionTitle title={title} id={"portfolio"} play={showTitle} />
           </div>
         </div>
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-3 ">
-          {/* <SectionPortfolioList
-            data={data}
-            onExpandViewMode={handleExpandViewMode}
-            onShowBackground={handleShowBackground}
-            active={!showExpandedSectors}
-          /> */}
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-3 z-10 ">
+          {introStoreDone && (
+            <SectionPortfolioList
+              data={data}
+              onExpandViewMode={handleExpandViewMode}
+              onShowBackground={handleShowBackground}
+              active={!showExpandedSectors}
+            />
+          )}
         </div>
       </div>
 

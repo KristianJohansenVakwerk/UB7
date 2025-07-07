@@ -74,7 +74,7 @@ const SectionTitle = ({
         id={`section-title-${id}`}
         ref={ref}
         className={clsx(
-          "section-title z-10",
+          "relative section-title mix-blend-color-dodge",
           hoverSector && "mix-blend-color-dodge"
         )}
       >

@@ -45,3 +45,24 @@ export const globalTriggers = [
   { id: "about", trigger: "about-trigger" },
   { id: "contact", trigger: "contact-trigger" },
 ];
+
+export const cleanupGSAPAnimations = () => {
+  // Kill all ScrollTriggers
+  ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+
+  // Kill all timelines
+  gsap.globalTimeline.clear();
+
+  // Kill all tweens
+  gsap.killTweensOf("*");
+};
+
+export const cleanupSpecificAnimations = (ids: string[]) => {
+  ids.forEach((id) => {
+    const timeline = gsap.getById(id);
+    if (timeline) timeline.kill();
+
+    const trigger = ScrollTrigger.getById(id);
+    if (trigger) trigger.kill();
+  });
+};

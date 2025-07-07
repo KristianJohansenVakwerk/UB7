@@ -39,6 +39,9 @@ const SectionsSnapCSS = () => {
       let sectionsContainers = gsap.utils.toArray(".section-container");
       let scrollDirection = 1;
       const tl = gsap.timeline({
+        id: "sections-snap-css-timeline",
+        paused: true,
+        immediateRender: false,
         scrollTrigger: {
           trigger: container.current,
           toggleActions: "restart none reverse none",

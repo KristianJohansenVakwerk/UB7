@@ -60,8 +60,10 @@ const SectionContact = (props: Props) => {
   useGSAP(
     () => {
       const tl = gsap.timeline({
+        id: "contact-trigger",
+        paused: true,
+        immediateRender: false,
         scrollTrigger: {
-          id: "contact-trigger",
           trigger: container.current,
           start: "top top+=100px",
           end: "bottom bottom",

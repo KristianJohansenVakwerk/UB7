@@ -23,7 +23,8 @@ const Sector = (props: Props) => {
   useGSAP(() => {
     if (currentIndex === null) {
       gsap.set(draggableRef.current, {
-        y: "-200%",
+        id: `sector-card-reset-${index}`,
+        y: "-100vh",
         x: 0,
         scale: 0.9,
         autoAlpha: 1,
@@ -31,27 +32,23 @@ const Sector = (props: Props) => {
       });
     } else {
       if (index < currentIndex) {
-        gsap.set(draggableRef.current, {
-          y: "-200%",
-          x: 0,
-          scale: 0.9,
-          autoAlpha: 0,
-          rotation: 0,
-        });
         return;
       }
 
       gsap.to(draggableRef.current, {
+        id: `sector-card-${index}`,
         y: getTranslation(index, currentIndex || 0),
         scale: getScale(index, currentIndex || 0),
         autoAlpha: 1,
         rotation: 0,
         duration: 0.4,
-        delay: (index - currentIndex) * 0.2,
-        ease: "power1.inOut",
+        delay: (index - currentIndex) * 0.1,
+        ease: "power2.inOut",
       });
     }
   }, [currentIndex]);
+
+  const dragDirRef = useRef<number>(1);
 
   useGSAP(() => {
     if (typeof window !== "undefined") {
@@ -64,6 +61,10 @@ const Sector = (props: Props) => {
             const vx = InertiaPlugin.getVelocity(el, "x");
             const vy = InertiaPlugin.getVelocity(el, "y");
 
+            const directionX = vx > 0 ? 1 : vx < 0 ? -1 : 1;
+
+            dragDirRef.current = directionX;
+
             gsap.to(el, {
               rotation: vx * 0.01,
               duration: 0.5,
@@ -73,33 +74,21 @@ const Sector = (props: Props) => {
             });
           }
         },
-        onDragEnd: (self) => {
+        onDragEnd: () => {
           const el = draggableRef.current;
 
           if (!el) return;
 
-          // const ww = window.innerWidth;
-          // const wh = window.innerHeight;
           const rect = el.getBoundingClientRect();
 
-          // const isOutSide =
-          //   rect.left > ww ||
-          //   rect.right < 0 ||
-          //   rect.top + rect.height > wh ||
-          //   rect.bottom + rect.height < 0;
-          console.log("inside: ", index);
           gsap.to(el, {
-            x: "400%",
+            x: dragDirRef.current === 1 ? rect.x + 1000 : rect.x - 1000,
             duration: 0.5,
             ease: "power2.out",
             onComplete: () => {
               onDagged(index);
             },
           });
-          // if (isOutSide) {
-          //   console.log("outside: ", index, "outside");
-          //   onDagged(index);
-          // }
         },
       });
     }
@@ -107,7 +96,7 @@ const Sector = (props: Props) => {
 
   return (
     <div
-      className="sector-draggable-container absolute inset-0  flex items-center justify-center  "
+      className="sector-draggable-container absolute inset-0  flex items-center justify-center "
       style={{
         perspective: "1000px",
         zIndex: getZIndex(index),
@@ -116,7 +105,7 @@ const Sector = (props: Props) => {
     >
       <div
         ref={draggableRef}
-        className="sector-draggable h-[80vh] w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pointer-events-auto "
+        className="sector-draggable h-[80vh] w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pointer-events-auto"
         data-lenis-prevent
         style={{
           transformStyle: "preserve-3d",
@@ -214,7 +203,7 @@ export default Sector;
 
 /// Draggable config
 export const draggableConfig = {
-  type: "x,y" as const,
+  type: "x" as const,
   edgeResistance: 0.65,
   inertia: true,
   allowNativeTouchScrolling: true,

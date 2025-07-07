@@ -34,6 +34,8 @@ const Sections = (props: Props) => {
 
   useGSAP(() => {
     const tl = gsap.timeline({
+      id: "sections-timeline",
+      paused: true,
       scrollTrigger: {
         trigger: container.current,
         start: "top top",

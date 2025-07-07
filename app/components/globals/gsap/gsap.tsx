@@ -2,8 +2,11 @@
 
 import gsap from "gsap";
 import { useLayoutEffect } from "react";
+import ScrollTrigger from "gsap/ScrollTrigger";
 import Tempus from "tempus";
 import { ScrollTriggerConfig } from "./scroll-trigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export function GSAP({ scrollTrigger = false }) {
   useLayoutEffect(() => {
@@ -22,7 +25,7 @@ export function GSAP({ scrollTrigger = false }) {
 
   if (process.env.NODE_ENV === "development") {
     gsap.ticker.add(() => {
-      if (gsap.globalTimeline.getChildren().length > 50) {
+      if (gsap.globalTimeline.getChildren().length > 100) {
         console.warn(
           "Too many active animations:",
           gsap.globalTimeline.getChildren().length

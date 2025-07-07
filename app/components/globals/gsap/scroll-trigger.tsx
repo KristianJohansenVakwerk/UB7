@@ -8,17 +8,17 @@ import { useEffect, useLayoutEffect } from "react";
 export function ScrollTriggerConfig() {
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
-    ScrollTrigger.clearScrollMemory("manual");
+    // ScrollTrigger.clearScrollMemory("manual");
     ScrollTrigger.defaults({
       markers: false,
     });
   }, []);
 
-  const lenis = useLenis(ScrollTrigger.update);
+  // const lenis = useLenis(ScrollTrigger.update);
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-  useEffect(() => {
-    ScrollTrigger.refresh();
-  }, [lenis]);
+  // useEffect(() => {
+  //   ScrollTrigger.refresh();
+  // }, [lenis]);
 
   return null;
 }

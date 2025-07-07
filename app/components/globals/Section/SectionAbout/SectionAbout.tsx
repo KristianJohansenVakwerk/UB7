@@ -69,6 +69,7 @@ const SectionAbout = (props: any) => {
             }, 100);
 
             gsap.to(textRef.current, {
+              id: "about-text-enter",
               autoAlpha: 1,
               duration: 0.3,
               delay: 0.9,
@@ -76,6 +77,7 @@ const SectionAbout = (props: any) => {
             });
             gsap.killTweensOf(items);
             gsap.to(items, {
+              id: "about-items-enter",
               autoAlpha: 1,
               duration: 0.2,
               stagger: 0.1,
@@ -89,6 +91,7 @@ const SectionAbout = (props: any) => {
             }, 100);
 
             gsap.to(textRef.current, {
+              id: "about-text-enter-back",
               autoAlpha: 1,
               duration: 0.3,
               delay: 0.4,
@@ -113,6 +116,8 @@ const SectionAbout = (props: any) => {
 
             gsap.killTweensOf(items);
             gsap.to(items, {
+              id: "about-items-leave-back",
+
               autoAlpha: 0,
               duration: 0.3,
               stagger: -0.2,
@@ -121,6 +126,8 @@ const SectionAbout = (props: any) => {
             });
 
             gsap.to(textRef.current, {
+              id: "about-text-leave-back",
+
               autoAlpha: 0,
               duration: 0.3,
               delay: 0.4,

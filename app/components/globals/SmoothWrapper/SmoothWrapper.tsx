@@ -4,7 +4,8 @@ import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useStore } from "@/store/store";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, ScrollSmoother);
 
@@ -17,6 +18,7 @@ const SmoothWrapper = (props: Props) => {
   const directionRef = useRef<number>(0);
   const [scrolling, setScrolling] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { introStoreDone } = useStore();
 
   const handleSmootherStop = useCallback((self: ScrollSmoother) => {
     const freeContainerScroller = ScrollTrigger.getById(
@@ -36,6 +38,7 @@ const SmoothWrapper = (props: Props) => {
           currentScroll < freeContainerScroller.end
         ) {
           gsap.to(smootherRef.current, {
+            id: "smooth-wrapper-scroll-top",
             scrollTop: freeContainerScroller.start + window.innerHeight,
             duration: 0.4,
             ease: "power2.inOut",
@@ -48,6 +51,7 @@ const SmoothWrapper = (props: Props) => {
           currentScroll > freeContainerScroller.start
         ) {
           gsap.to(smootherRef.current, {
+            id: "smooth-wrapper-scroll-bottom",
             scrollTop: freeContainerScroller.start,
             duration: 0.4,
             ease: "power2.inOut",
@@ -78,6 +82,7 @@ const SmoothWrapper = (props: Props) => {
       normalizeScroll: true,
       smoothTouch: 0.2,
       onStop: handleSmootherStop,
+
       onUpdate: () => {
         setScrolling(true);
 
@@ -92,6 +97,8 @@ const SmoothWrapper = (props: Props) => {
       },
     });
 
+    // smootherRef?.current?.paused(true);
+
     // Cleanup function
     return () => {
       if (smootherRef.current) {
@@ -104,8 +111,18 @@ const SmoothWrapper = (props: Props) => {
     };
   }, [handleSmootherStop]);
 
+  useEffect(() => {
+    if (introStoreDone) {
+      smootherRef?.current?.paused(false);
+    } else {
+      smootherRef?.current?.paused(true);
+    }
+  }, [introStoreDone]);
+
   useGSAP(() => {
     const snapContainers = gsap.utils.toArray(".snap-container");
+
+    console.log("creating snap containers triggers");
 
     snapContainers.forEach((container: any, index) => {
       if (!container) return;

@@ -207,6 +207,19 @@ export const useSectorListAnimation = () => {
     timelineRef.current = tl;
   }, []);
 
+  // Add cleanup function
+  useGSAP(() => {
+    return () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+      }
+      const trigger = ScrollTrigger.getById("portfolio-trigger");
+      if (trigger) {
+        trigger.kill();
+      }
+    };
+  }, []);
+
   return { timelineRef };
 };
 

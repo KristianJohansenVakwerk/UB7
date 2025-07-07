@@ -5,11 +5,13 @@ import { useRef, useEffect } from "react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import clsx from "clsx";
 import { globalTriggers } from "@/app/utils/gsapUtils";
+import { useStore } from "@/store/store";
 gsap.registerPlugin(ScrollTrigger);
 
 const Progress = () => {
   const progressRef = useRef<HTMLDivElement>(null);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const { introStoreDone } = useStore();
 
   useGSAP(() => {
     // Kill existing ScrollTrigger
@@ -51,6 +53,7 @@ const Progress = () => {
               const sectionProgress = trigger.progress;
 
               gsap.set(progressBar, {
+                id: `${section.id}-progress`,
                 width: `${sectionProgress * 100}%`,
               });
             }
@@ -76,20 +79,23 @@ const Progress = () => {
     <div
       id={"progress"}
       ref={progressRef}
-      className="fixed top-2 left-3 right-3 flex flex-row z-50 gap-1 opacity-100"
+      className={clsx(
+        "fixed top-2 left-3 right-3 flex flex-row z-50 gap-1 opacity-0 transition-opacity duration-300 ease-in-out",
+        introStoreDone && "opacity-100"
+      )}
     >
       {globalTriggers.map((section: any, index: number) => {
         return (
           <div
             key={index}
             className={clsx(
-              "w-1/3 bg-blue-500/40 backdrop-blur-sm  h-[5px]",
+              "w-1/3 bg-white/40 backdrop-blur-sm  h-[5px]",
               section.id === "intro" && "hidden"
             )}
           >
             <div
               id={`${section.id}-progress`}
-              className="h-full bg-red-500/80 rounded-progress-bar w-0"
+              className="h-full bg-white/80 rounded-progress-bar w-0"
             />
           </div>
         );

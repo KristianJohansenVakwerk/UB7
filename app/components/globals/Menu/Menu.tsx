@@ -6,6 +6,8 @@ import { useRef } from "react";
 import { ScrollSmoother } from "gsap/ScrollSmoother";
 
 import { globalTriggers } from "@/app/utils/gsapUtils";
+import { useStore } from "@/store/store";
+import clsx from "clsx";
 
 gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 
@@ -22,6 +24,7 @@ const Menu = ({ data }: MenuProps) => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { introStoreDone } = useStore();
 
   useGSAP(() => {
     const smoother = ScrollSmoother.get();
@@ -33,16 +36,15 @@ const Menu = ({ data }: MenuProps) => {
 
       if (!targetElement || !targetElementMenu || !smoother) return;
 
-      // smoother?.scrollTo(id === "intro" ? 0 : targetElement);
-      console.log(targetElement, targetElementMenu);
-
       gsap.to(smoother, {
+        id: `${id}-smooter-scroll-top`,
         scrollTop: smoother?.offset(targetElement),
         duration: 1,
         ease: "power4.inOut",
       });
 
       gsap.to(menuProgressRef.current, {
+        id: `${id}-progress-x`,
         width: targetElementMenu.offsetWidth,
         x: targetElementMenu.offsetLeft,
         duration: 0.2,
@@ -65,6 +67,8 @@ const Menu = ({ data }: MenuProps) => {
           end: trigger?.end,
           onEnter: () => {
             gsap.to(menuProgressRef.current, {
+              id: `${section.id}-progress-enter`,
+              paused: true,
               width: targetElementMenu?.offsetWidth,
               x: targetElementMenu?.offsetLeft,
               duration: 0.2,
@@ -73,6 +77,8 @@ const Menu = ({ data }: MenuProps) => {
           },
           onEnterBack: () => {
             gsap.to(menuProgressRef.current, {
+              id: `${section.id}-progress-enter-back`,
+              paused: true,
               width: targetElementMenu?.offsetWidth,
               x: targetElementMenu?.offsetLeft,
               duration: 0.2,
@@ -103,7 +109,10 @@ const Menu = ({ data }: MenuProps) => {
   return (
     <div
       ref={menuRef}
-      className="fixed bottom-3 left-3 z-10 opacity-100"
+      className={clsx(
+        "fixed bottom-3 left-3 z-10 opacity-0 transition-opacity duration-300 ease-in-out",
+        introStoreDone && "opacity-100"
+      )}
       id={"menu"}
     >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">

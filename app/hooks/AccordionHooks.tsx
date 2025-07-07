@@ -7,8 +7,26 @@ export const useAccordionSetup = () => {
   const iconAnis = useRef<any>(null);
 
   const setupAccordion = useCallback(() => {
+    console.log("setupAccordion called - cleaning up existing animations");
+
+    // Kill existing animations first
+    if (accordionAnis.current) {
+      console.log(
+        "Killing existing accordion animations:",
+        accordionAnis.current.length
+      );
+      accordionAnis.current.forEach((anim: any) => {
+        if (anim) anim.kill();
+      });
+    }
+    if (iconAnis.current) {
+      console.log("Killing existing icon animations:", iconAnis.current.length);
+      iconAnis.current.forEach((anim: any) => {
+        if (anim) anim.kill();
+      });
+    }
+
     const sectors = gsap.utils.toArray(".sector-item-content");
-    console.log("sectors", sectors);
 
     const sectorContentBackgrounds = gsap.utils.toArray(
       ".sector-item-content-background"
@@ -16,7 +34,7 @@ export const useAccordionSetup = () => {
 
     accordionAnis.current = sectors.map((sector: any, index: number) => {
       return gsap
-        .timeline({ paused: true })
+        .timeline({ paused: true, id: `accordion-${index}` })
         .to(sectorContentBackgrounds[index] as HTMLElement, {
           height: 100,
           duration: 0.2,
@@ -38,7 +56,7 @@ export const useAccordionSetup = () => {
 
     iconAnis.current = sectors.map((sector: any, index: number) => {
       return gsap
-        .timeline({ paused: true })
+        .timeline({ paused: true, id: `icon-${index}` })
         .to(`.sector-icon-${index} path:first-child`, {
           rotation: 90,
           duration: 0.2,
@@ -48,10 +66,27 @@ export const useAccordionSetup = () => {
     });
   }, []);
 
+  // Add cleanup function
+  const cleanupAccordion = useCallback(() => {
+    if (accordionAnis.current) {
+      accordionAnis.current.forEach((anim: any) => {
+        if (anim) anim.kill();
+      });
+      accordionAnis.current = null;
+    }
+    if (iconAnis.current) {
+      iconAnis.current.forEach((anim: any) => {
+        if (anim) anim.kill();
+      });
+      iconAnis.current = null;
+    }
+  }, []);
+
   return {
     accordionAnis: accordionAnis.current,
     iconAnis: iconAnis.current,
     setupAccordion,
+    cleanupAccordion,
   };
 };
 
