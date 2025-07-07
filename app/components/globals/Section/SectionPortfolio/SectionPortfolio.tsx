@@ -112,12 +112,12 @@ const SectionPortfolio = (props: any) => {
           </div>
         </div>
         <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-3 ">
-          <SectionPortfolioList
+          {/* <SectionPortfolioList
             data={data}
             onExpandViewMode={handleExpandViewMode}
             onShowBackground={handleShowBackground}
             active={!showExpandedSectors}
-          />
+          /> */}
         </div>
       </div>
 

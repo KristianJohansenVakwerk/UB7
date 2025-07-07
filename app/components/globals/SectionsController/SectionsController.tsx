@@ -28,7 +28,7 @@ const SectionsController = () => {
                     <div
                       id={section.id}
                       className={clsx(
-                        "relative section flex flex-col items-start justify-start w-screen border-2 border-red-500",
+                        "relative section flex flex-col items-start justify-start w-screen",
                         ` section-${index + 1}`,
                         `section-${section.id}`,
                         section.id === "about" && "h-[auto] px-0",

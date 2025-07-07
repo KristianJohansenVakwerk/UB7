@@ -109,7 +109,6 @@ const SectionIntro = ({
   useGSAP(() => {
     if (!gradientRef.current) return;
 
-    // Set initial state - gradient starts from bottom
     gsap.set(gradientRef.current, {
       attr: {
         x1: 631.295,
@@ -119,26 +118,37 @@ const SectionIntro = ({
       },
     });
 
-    gsap.to(gradientContainerRef.current, {
-      autoAlpha: 1,
-      duration: 1,
-      ease: "power2.out",
-      delay: 0.5,
-    });
+    const tl = gsap
+      .timeline({
+        id: "intro-gradient-animation",
+        paused: true,
+        lazy: true,
+        immediateRender: false,
+      })
+      .to(gradientContainerRef.current, {
+        autoAlpha: 1,
+        duration: 1,
+        delay: 1,
+        ease: "power2.out",
+      })
+      .to(
+        gradientRef.current,
+        {
+          attr: {
+            y1: -180.542, // Animate to original top position
+            y2: 660.071, // Animate to original bottom position
+          },
+          duration: 1,
 
-    // Animate gradient growing from bottom
-    gsap.to(gradientRef.current, {
-      attr: {
-        y1: -180.542, // Animate to original top position
-        y2: 660.071, // Animate to original bottom position
-      },
-      duration: 1,
-      ease: "power4.out",
-      delay: 0.5,
-      onComplete: () => {
-        setInitDone(true);
-      },
-    });
+          ease: "power4.out",
+
+          onComplete: () => {
+            setInitDone(true);
+          },
+        },
+        "<"
+      );
+    tl.play();
   }, []);
 
   useGSAP(() => {

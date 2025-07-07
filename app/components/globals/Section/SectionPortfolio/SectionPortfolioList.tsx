@@ -36,8 +36,9 @@ const SectionPortfolioList = (props: Props) => {
   const [isExpandedMode, setIsExpandedMode] = useState(false);
 
   // Init the animation that controls the sector list and the accordions
-  useSectorListAnimation();
+
   useGSAP(() => {
+    console.log("setupAccordion");
     setupAccordion();
   });
 
@@ -165,7 +166,6 @@ const SectionPortfolioList = (props: Props) => {
                     >
                       <div
                         onClick={(e) => {
-                          console.log("clicked", entry.title, realIndex + ix);
                           e.stopPropagation();
                           showExpandedectors(
                             entry.slug,

@@ -48,6 +48,10 @@ const SectionAbout = (props: any) => {
     // Create a single timeline for all animations
     const tl = gsap
       .timeline({
+        id: "about-trigger",
+        paused: true,
+        lazy: true,
+        immediateRender: false,
         scrollTrigger: {
           id: "about-trigger",
           trigger: aboutTriggerOneRef.current,

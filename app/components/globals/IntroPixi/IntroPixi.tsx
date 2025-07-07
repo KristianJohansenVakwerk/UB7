@@ -149,7 +149,14 @@ const IntroPixi = () => {
   useGSAP(() => {
     if (filter) {
       // Animate from grey to big colors
-      gsap.to(filter.resources.timeUniforms.uniforms.uColor1, {
+      const tl = gsap.timeline({
+        id: "intro-pixi-animation",
+        paused: true,
+        lazy: true,
+        immediateRender: false,
+      });
+
+      tl.to(filter.resources.timeUniforms.uniforms.uColor1, {
         0: colorSchemes.big.color1[0],
         1: colorSchemes.big.color1[1],
         2: colorSchemes.big.color1[2],
@@ -157,104 +164,190 @@ const IntroPixi = () => {
         ease: "power4.out",
       });
 
-      gsap.to(filter.resources.timeUniforms.uniforms.uColor2, {
-        0: colorSchemes.big.color2[0],
-        1: colorSchemes.big.color2[1],
-        2: colorSchemes.big.color2[2],
-        duration: 2,
-        ease: "power4.out",
-      });
+      tl.to(
+        filter.resources.timeUniforms.uniforms.uColor2,
+        {
+          0: colorSchemes.big.color2[0],
+          1: colorSchemes.big.color2[1],
+          2: colorSchemes.big.color2[2],
+          duration: 2,
+          ease: "power4.out",
+        },
+        "<"
+      );
 
-      gsap.to(filter.resources.timeUniforms.uniforms.uColor3, {
-        0: colorSchemes.big.color3[0],
-        1: colorSchemes.big.color3[1],
-        2: colorSchemes.big.color3[2],
-        duration: 2,
-        ease: "power4.out",
-      });
+      tl.to(
+        filter.resources.timeUniforms.uniforms.uColor3,
+        {
+          0: colorSchemes.big.color3[0],
+          1: colorSchemes.big.color3[1],
+          2: colorSchemes.big.color3[2],
+          duration: 2,
+          ease: "power4.out",
+        },
+        "<"
+      );
 
-      gsap.to(filter.resources.timeUniforms.uniforms.uColor4, {
-        0: colorSchemes.big.color4[0],
-        1: colorSchemes.big.color4[1],
-        2: colorSchemes.big.color4[2],
-        duration: 2,
-        ease: "power4.out",
-      });
+      tl.to(
+        filter.resources.timeUniforms.uniforms.uColor4,
+        {
+          0: colorSchemes.big.color4[0],
+          1: colorSchemes.big.color4[1],
+          2: colorSchemes.big.color4[2],
+          duration: 2,
+          ease: "power4.out",
+        },
+        "<"
+      );
+
+      tl.play();
     }
   }, [filter]);
 
   // Step 3: Scroll trigger to go from big to bottom colorscheme
+  // useGSAP(() => {
+  //   const introElement = document.getElementById("intro");
+  //   ScrollTrigger.create({
+  //     trigger: introElement,
+  //     id: "intro-pixi-trigger",
+  //     start: "top top",
+  //     end: "+=100%",
+  //     scrub: true,
+  //     markers: false,
+  //     onUpdate: (self) => {
+  //       const progress = self.progress;
+  //       if (filter) {
+  //         // Interpolate between big and bottom color schemes
+  //         const bigScheme = colorSchemes.big;
+  //         const bottomScheme = colorSchemes.bottom;
+
+  //         // Helper function to interpolate between two colors
+  //         const interpolateColor = (
+  //           color1: number[],
+  //           color2: number[],
+  //           t: number
+  //         ) => {
+  //           return [
+  //             color1[0] + (color2[0] - color1[0]) * t,
+  //             color1[1] + (color2[1] - color1[1]) * t,
+  //             color1[2] + (color2[2] - color1[2]) * t,
+  //           ];
+  //         };
+
+  //         // Calculate interpolated colors
+  //         const interpolatedColors = {
+  //           color1: interpolateColor(
+  //             bigScheme.color1,
+  //             bottomScheme.color1,
+  //             progress
+  //           ),
+  //           color2: interpolateColor(
+  //             bigScheme.color2,
+  //             bottomScheme.color2,
+  //             progress
+  //           ),
+  //           color3: interpolateColor(
+  //             bigScheme.color3,
+  //             bottomScheme.color3,
+  //             progress
+  //           ),
+  //           color4: interpolateColor(
+  //             bigScheme.color4,
+  //             bottomScheme.color4,
+  //             progress
+  //           ),
+  //         };
+
+  //         // Update the shader uniforms directly
+  //         const tweenColor = (uniformKey: string, targetColor: number[]) => {
+  //           const colorArray =
+  //             filter.resources.timeUniforms.uniforms[uniformKey];
+  //           gsap.set(colorArray, {
+  //             0: targetColor[0],
+  //             1: targetColor[1],
+  //             2: targetColor[2],
+  //           });
+  //         };
+
+  //         tweenColor("uColor1", interpolatedColors.color1);
+  //         tweenColor("uColor2", interpolatedColors.color2);
+  //         tweenColor("uColor3", interpolatedColors.color3);
+  //         tweenColor("uColor4", interpolatedColors.color4);
+  //       }
+  //     },
+  //   });
+  // }, [filter]);
+
   useGSAP(() => {
     const introElement = document.getElementById("intro");
-    ScrollTrigger.create({
-      trigger: introElement,
-      id: "intro-pixi-trigger",
-      start: "top top",
-      end: "+=100%",
-      scrub: true,
-      markers: false,
-      onUpdate: (self) => {
-        const progress = self.progress;
-        if (filter) {
-          // Interpolate between big and bottom color schemes
-          const bigScheme = colorSchemes.big;
-          const bottomScheme = colorSchemes.bottom;
 
-          // Helper function to interpolate between two colors
-          const interpolateColor = (
-            color1: number[],
-            color2: number[],
-            t: number
-          ) => {
-            return [
-              color1[0] + (color2[0] - color1[0]) * t,
-              color1[1] + (color2[1] - color1[1]) * t,
-              color1[2] + (color2[2] - color1[2]) * t,
-            ];
-          };
-
-          // Calculate interpolated colors
-          const interpolatedColors = {
-            color1: interpolateColor(
-              bigScheme.color1,
-              bottomScheme.color1,
-              progress
-            ),
-            color2: interpolateColor(
-              bigScheme.color2,
-              bottomScheme.color2,
-              progress
-            ),
-            color3: interpolateColor(
-              bigScheme.color3,
-              bottomScheme.color3,
-              progress
-            ),
-            color4: interpolateColor(
-              bigScheme.color4,
-              bottomScheme.color4,
-              progress
-            ),
-          };
-
-          // Update the shader uniforms directly
-          const tweenColor = (uniformKey: string, targetColor: number[]) => {
-            const colorArray =
-              filter.resources.timeUniforms.uniforms[uniformKey];
-            gsap.set(colorArray, {
-              0: targetColor[0],
-              1: targetColor[1],
-              2: targetColor[2],
-            });
-          };
-
-          tweenColor("uColor1", interpolatedColors.color1);
-          tweenColor("uColor2", interpolatedColors.color2);
-          tweenColor("uColor3", interpolatedColors.color3);
-          tweenColor("uColor4", interpolatedColors.color4);
-        }
-      },
+    // Create timeline for the color transition
+    const colorTransitionTl = gsap.timeline({
+      id: "intro-pixi-color-transition",
+      paused: true,
     });
+
+    if (filter) {
+      // Add color transitions to timeline
+      colorTransitionTl.to(filter.resources.timeUniforms.uniforms.uColor1, {
+        0: colorSchemes.bottom.color1[0],
+        1: colorSchemes.bottom.color1[1],
+        2: colorSchemes.bottom.color1[2],
+        duration: 1,
+        ease: "power2.inOut",
+      });
+
+      colorTransitionTl.to(
+        filter.resources.timeUniforms.uniforms.uColor2,
+        {
+          0: colorSchemes.bottom.color2[0],
+          1: colorSchemes.bottom.color2[1],
+          2: colorSchemes.bottom.color2[2],
+          duration: 1,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+
+      colorTransitionTl.to(
+        filter.resources.timeUniforms.uniforms.uColor3,
+        {
+          0: colorSchemes.bottom.color3[0],
+          1: colorSchemes.bottom.color3[1],
+          2: colorSchemes.bottom.color3[2],
+          duration: 1,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+
+      colorTransitionTl.to(
+        filter.resources.timeUniforms.uniforms.uColor4,
+        {
+          0: colorSchemes.bottom.color4[0],
+          1: colorSchemes.bottom.color4[1],
+          2: colorSchemes.bottom.color4[2],
+          duration: 1,
+          ease: "power2.inOut",
+        },
+        "<"
+      );
+
+      // Create scroll trigger that plays the timeline
+      ScrollTrigger.create({
+        trigger: introElement,
+        id: "intro-pixi-trigger",
+        start: "top center",
+        end: "bottom center",
+        markers: false,
+        onEnterBack: () => {
+          colorTransitionTl.reverse();
+        },
+        onLeave: () => {
+          colorTransitionTl.play();
+        },
+      });
+    }
   }, [filter]);
 
   return (

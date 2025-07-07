@@ -94,6 +94,9 @@ export const useSectorListAnimation = () => {
 
     const tl = gsap.timeline({
       id: "sector-list-animation",
+      paused: true,
+      lazy: true,
+      immediateRender: false,
       onComplete: () => {
         eventManager.triggerCallbacks("sector-list-animation", "onComplete");
       },
