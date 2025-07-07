@@ -12,10 +12,14 @@ import gsap from "gsap";
 import { Draggable } from "gsap/Draggable";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
 import { useGSAP } from "@gsap/react";
-import { useSectorListAnimation } from "@/app/hooks/AnimationsHooks";
+import {
+  getTimeline,
+  useSectorListAnimation,
+} from "@/app/hooks/AnimationsHooks";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Register the Draggable plugin
-gsap.registerPlugin(Draggable, InertiaPlugin);
+gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
 type SectorsProps = {
   entries: any;
   entriesFrom: number;
@@ -76,7 +80,7 @@ const Sectors = (props: SectorsProps) => {
       if (direction === "next") {
         gsap.to(draggableContainers.current[currentIndexRef.current], {
           id: "sectors-draggable-next",
-          x: "300%",
+          x: window.innerWidth,
           y: "-20%",
           rotation: Math.random() * 360,
           duration: 0.5,
@@ -125,22 +129,32 @@ const Sectors = (props: SectorsProps) => {
       ease: "power4.inOut",
       onComplete: () => {
         if (timelineRef?.current) {
-          onClose();
+          // timelineRef.current.seek(1);
+          // timelineRef.current.reverse();
+          console.log(
+            "close expanded sectors",
+            timelineRef.current,
+            timelineRef.current.progress()
+          );
 
           timelineRef.current.seek(0);
-          timelineRef.current.play();
+
+          timelineRef.current.play(0);
+
           setCurrentIndex(null);
+
+          onClose();
         }
       },
     });
   }, [onClose]);
 
-  const handleDagged = useCallback((index: number) => {
+  const handleDragged = useCallback((index: number) => {
     setTimeout(() => {
       console.log("we are handle dragged here", index);
       setCurrentIndex(index + 1);
       currentIndexRef.current = index + 1;
-    }, 500);
+    }, 800);
   }, []);
 
   useEffect(() => {
@@ -228,7 +242,10 @@ const Sectors = (props: SectorsProps) => {
         </svg>
       </div>
 
-      <div ref={containerRef} className="relative w-full h-full">
+      <div
+        ref={containerRef}
+        className="relative w-full h-full overflow-hidden"
+      >
         {entries.map((entry: any, index: number) => (
           <Sector
             key={index}
@@ -236,7 +253,7 @@ const Sectors = (props: SectorsProps) => {
             index={index}
             currentIndex={currentIndex}
             active={active}
-            onDagged={handleDagged}
+            onDragged={handleDragged}
           />
         ))}
       </div>

@@ -48,7 +48,7 @@ const SectionAbout = (props: any) => {
     // Create a single timeline for all animations
     const tl = gsap
       .timeline({
-        id: "about-trigger",
+        id: "about-timeline",
         paused: true,
         lazy: true,
         immediateRender: false,
@@ -117,7 +117,6 @@ const SectionAbout = (props: any) => {
             gsap.killTweensOf(items);
             gsap.to(items, {
               id: "about-items-leave-back",
-
               autoAlpha: 0,
               duration: 0.3,
               stagger: -0.2,
@@ -136,7 +135,7 @@ const SectionAbout = (props: any) => {
           },
         },
       })
-
+      .addLabel("startScroll")
       .to(
         itemsContainerSlider.current,
         {
@@ -179,6 +178,9 @@ const SectionAbout = (props: any) => {
     const handleClick = (state: boolean) => {
       const smoother = ScrollSmoother.get();
 
+      console.log("About:click on video", state);
+      const tl = gsap.getById("about-timeline") as gsap.core.Timeline;
+
       isScaled = state;
       const image = imageRef.current;
       const imageWidth = image?.offsetWidth as number;
@@ -198,42 +200,59 @@ const SectionAbout = (props: any) => {
       if (state) {
         smoother?.paused(true);
 
+        tl?.tweenTo("startScroll", {
+          duration: 0.8, // Animation duration
+          ease: "power2.inOut",
+          onComplete: () => {
+            console.log("ABOUT: ready scale the video");
+          },
+        });
+
         gsap.to(
           [
             "#progress",
             "#menu",
             "#section-title-about",
             ".text-about",
-            ".item",
+            ".item-team-member",
           ],
           {
             autoAlpha: 0,
             duration: 0.4,
+            delay: 0.5,
             ease: "power2.inOut",
             onComplete: () => {
               setShowClose(true);
-              // gsap.to(imageContainerRef.current, {
-              //   opacity: 1,
-              //   duration: 0.8,
-              //   ease: "power4.inOut",
-              // });
-              // gsap.to(image, {
-              //   scale: scale,
-              //   y: 112 - padding.top,
-              //   transformOrigin: "left bottom",
-              //   willChange: "transform",
-              //   duration: 0.8,
-              //   ease: "power4.inOut",
-              //   onComplete: () => {
-              //     setShowClose(true);
-              //   },
-              // });
+              gsap.to(imageContainerRef.current, {
+                opacity: 1,
+                duration: 0.8,
+                ease: "power4.inOut",
+              });
+              gsap.to(image, {
+                scale: scale,
+                y: 112 - padding.top,
+                transformOrigin: "left bottom",
+                willChange: "transform",
+                duration: 0.8,
+                ease: "power4.inOut",
+                onComplete: () => {
+                  setShowClose(true);
+                },
+              });
             },
           }
         );
       } else {
         setShowClose(false);
         smoother?.paused(false);
+
+        if (smoother) {
+          gsap.to(smoother, {
+            scrollTop: smoother?.offset(document.getElementById("about")),
+            duration: 0,
+            ease: "none",
+          });
+        }
 
         gsap.to(
           [
@@ -250,16 +269,14 @@ const SectionAbout = (props: any) => {
             ease: "power2.inOut",
           }
         );
-        // gsap.to(imageRef.current, {
-        //   scale: 1,
-        //   y: 0,
-        //   transformOrigin: "left bottom",
-        //   duration: 0.8,
-        //   ease: "power4.inOut",
-        //   onComplete: () => {
-
-        //   },
-        // });
+        gsap.to(imageRef.current, {
+          scale: 1,
+          y: 0,
+          transformOrigin: "left bottom",
+          duration: 0.8,
+          ease: "power4.inOut",
+          onComplete: () => {},
+        });
       }
     };
 
@@ -285,21 +302,6 @@ const SectionAbout = (props: any) => {
       ref={aboutTriggerOneRef}
       className="relative w-full h-screen flex flex-col items-start justify-between"
     >
-      <div
-        className={clsx(
-          "absolute top-2 bottom-3 left-3 right-7  z-20 rounded-2xl overflow-hidden  flex items-start justify-start pointer-events-none  opacity-0 transition-all duration-300 ease",
-          showClose && "opacity-100"
-        )}
-      >
-        <img
-          ref={imageRef}
-          src="/Reel.jpg"
-          width={"693"}
-          height={"376"}
-          className="w-full h-full object-contain object-top-left"
-        />
-      </div>
-
       <div
         ref={clickCloseRef}
         className={clsx(
@@ -344,7 +346,7 @@ const SectionAbout = (props: any) => {
 
       <div
         ref={itemsContainer}
-        className="relative w-full pb-7 overflow-hidden will-change-transform relative"
+        className="relative w-full pb-7  will-change-transform relative"
       >
         <div
           ref={itemsContainerSlider}

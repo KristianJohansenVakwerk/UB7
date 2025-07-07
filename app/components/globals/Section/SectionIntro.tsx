@@ -149,10 +149,8 @@ const SectionIntro = ({
             y1: -180.542, // Animate to original top position
             y2: 660.071, // Animate to original bottom position
           },
-          duration: 1,
-
+          duration: 0.5,
           ease: "power4.out",
-
           onComplete: () => {
             setInitDone(true);
           },

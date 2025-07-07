@@ -95,8 +95,8 @@ export const useSectorListAnimation = () => {
     const tl = gsap.timeline({
       id: "sector-list-animation",
       paused: true,
-      lazy: true,
-      immediateRender: false,
+      // lazy: true,
+      // immediateRender: false,
       onComplete: () => {
         eventManager.triggerCallbacks("sector-list-animation", "onComplete");
       },
@@ -108,13 +108,9 @@ export const useSectorListAnimation = () => {
           "sector-list-animation",
           "onReverseComplete"
         );
-        // gsap.to(".sector-item-trigger", {
-        //   width: "53px",
-        //   duration: 0.2,
-        // });
       },
       scrollTrigger: {
-        id: "portfolio-trigger",
+        id: "portfolio-trigger-sector-list",
         trigger: ".section-portfolio",
         start: "top top+=10px",
         end: `bottom top`,
@@ -205,17 +201,11 @@ export const useSectorListAnimation = () => {
       "<"
     );
     timelineRef.current = tl;
-  }, []);
 
-  // Add cleanup function
-  useGSAP(() => {
     return () => {
       if (timelineRef.current) {
+        console.log("timeline unmounted kill it!");
         timelineRef.current.kill();
-      }
-      const trigger = ScrollTrigger.getById("portfolio-trigger");
-      if (trigger) {
-        trigger.kill();
       }
     };
   }, []);

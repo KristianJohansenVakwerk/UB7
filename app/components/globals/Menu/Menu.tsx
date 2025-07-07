@@ -34,6 +34,8 @@ const Menu = ({ data }: MenuProps) => {
       const targetElement = document.getElementById(id);
       const targetElementMenu = document.getElementById(`${id}-menu`);
 
+      console.log("Menu:click on menu", id, targetElement, targetElementMenu);
+
       if (!targetElement || !targetElementMenu || !smoother) return;
 
       gsap.to(smoother, {

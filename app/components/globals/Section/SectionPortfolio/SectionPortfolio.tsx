@@ -12,6 +12,7 @@ import SectionTitle from "../SectionTitle";
 import SectionPortfolioList from "./SectionPortfolioList";
 import { useSectorListEvents } from "../../../../hooks/AnimationsHooks";
 import { cleanupGSAPAnimations } from "@/app/utils/gsapUtils";
+import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
@@ -38,9 +39,16 @@ const SectionPortfolio = (props: any) => {
     useState<boolean>(false);
   const { setHoverSector } = useStore();
 
-  // Add cleanup on unmount
-  useEffect(() => {
+  useGSAP(() => {
+    ScrollTrigger.create({
+      id: "portfolio-trigger",
+      trigger: ".section-portfolio",
+      start: "top top+=100px",
+      end: "bottom bottom",
+      toggleActions: "play none none reverse",
+    });
     return () => {
+      console.log("call: cleanupGSAPAnimations");
       cleanupGSAPAnimations();
     };
   }, []);
@@ -112,7 +120,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "relativegap-0 w-full h-full px-3 flex flex-col items-start justify-between"
+          "relative gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
         )}
       >
         <div>

@@ -33,23 +33,25 @@ const SectionPortfolioList = (props: Props) => {
   const { playAccordion, resetAccordion } = useAccordionControls();
   const { setHoverSector } = useStore();
 
-  // Add state to track if expanded view mode is active
-  const [isExpandedMode, setIsExpandedMode] = useState(false);
-
   // Single useGSAP call with proper cleanup
   useGSAP(() => {
     setupAccordion();
 
     return () => {
+      console.log("cleaning up accordion");
       cleanupAccordion();
     };
   }, [setupAccordion, cleanupAccordion]); // Add dependencies
 
   useSectorListEvents("onScrollTriggerLeave", () => {
     console.log("onScrollTriggerLeave");
-    resetAccordion(accordionAnis, iconAnis);
-    setHoverSector(false);
-    onShowBackground("");
+    // resetAccordion(accordionAnis, iconAnis);
+    // setHoverSector(false);
+    // onShowBackground("");
+  });
+
+  useSectorListEvents("onScrollTriggerLeaveBack", () => {
+    console.log("onScrollTriggerLeaveBack");
   });
 
   const handleMouseEnter = useCallback(
@@ -73,11 +75,39 @@ const SectionPortfolioList = (props: Props) => {
 
   const { timelineRef } = useSectorListAnimation();
 
+  const pendingExpansionRef = useRef<{
+    entryIndex: number;
+    sector: string;
+  } | null>(null);
+
+  useSectorListEvents("onReverseComplete", () => {
+    console.log("onReverseComplete");
+    if (!pendingExpansionRef.current) return;
+    gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
+      opacity: 0,
+      duration: 0.4,
+      ease: "power4.inOut",
+    });
+
+    onExpandViewMode(
+      pendingExpansionRef.current.entryIndex,
+      pendingExpansionRef.current.sector
+    );
+    pendingExpansionRef.current = null;
+  });
+
   const showExpandedectors = (
     slug: string,
     sector: string,
     entryIndex: number
   ) => {
+    if (!active) {
+      console.log("showExpandedectors blocked - component not active");
+      return;
+    }
+
+    pendingExpansionRef.current = { entryIndex, sector };
+
     // Pause smooth scroll when opening sectors
     const smoother = ScrollSmoother.get();
     smoother?.paused(true);
@@ -86,16 +116,13 @@ const SectionPortfolioList = (props: Props) => {
 
     console.log("showExpandedectors callback");
     if (timelineRef?.current) {
+      console.log(
+        "Timeline progress before reverse: ",
+        timelineRef.current.progress()
+      );
       timelineRef.current.seek(1);
       timelineRef.current.reverse();
-      timelineRef.current.eventCallback("onReverseComplete", () => {
-        gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
-          opacity: 0,
-          duration: 0.4,
-          ease: "power4.inOut",
-        });
-        onExpandViewMode(entryIndex, sector);
-      });
+      // timelineRef.current.eventCallback("onReverseComplete", () => {});
     }
   };
 

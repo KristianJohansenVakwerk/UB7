@@ -26,6 +26,7 @@ const Progress = () => {
         const triggerEl = document.getElementById(section.id);
         const progressBar = document.getElementById(`${section.id}-progress`);
         const trigger = ScrollTrigger.getById(section.trigger);
+
         return triggerEl && progressBar && trigger;
       });
 
@@ -37,7 +38,7 @@ const Progress = () => {
       // Create a single ScrollTrigger that handles all progress bars
       scrollTriggerRef.current = ScrollTrigger.create({
         id: "progress-master-trigger",
-        trigger: "body", // Use body as trigger
+        trigger: ".smooth-content", // Use body as trigger
         start: "top top",
         end: "bottom bottom",
         onUpdate: (self) => {

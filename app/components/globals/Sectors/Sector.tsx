@@ -14,10 +14,10 @@ type Props = {
   index: number;
   currentIndex: number | null;
   active: boolean;
-  onDagged: (index: number) => void;
+  onDragged: (index: number) => void;
 };
 const Sector = (props: Props) => {
-  const { data, index, currentIndex, active, onDagged } = props;
+  const { data, index, currentIndex, active, onDragged } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
@@ -82,11 +82,13 @@ const Sector = (props: Props) => {
           const rect = el.getBoundingClientRect();
 
           gsap.to(el, {
-            x: dragDirRef.current === 1 ? rect.x + 1000 : rect.x - 1000,
+            x:
+              dragDirRef.current === 1 ? window.innerWidth : -window.innerWidth,
             duration: 0.5,
+            delay: 0.5,
             ease: "power2.out",
             onComplete: () => {
-              onDagged(index);
+              onDragged(index);
             },
           });
         },
