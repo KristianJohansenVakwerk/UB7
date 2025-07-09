@@ -209,7 +209,7 @@ const SectionIntro = ({
     <Box
       ref={ref}
       id="intro"
-      className="intro w-screen h-screen fixed top-0 left-0 opacity-100 snap-section "
+      className="intro section w-screen h-screen opacity-100 relative"
     >
       <div
         ref={gradientContainerRef}

@@ -300,7 +300,7 @@ const SectionAbout = (props: any) => {
   return (
     <div
       ref={aboutTriggerOneRef}
-      className="relative w-full h-screen flex flex-col items-start justify-between"
+      className="section relative w-full h-screen flex flex-col items-start justify-between bg-red-300"
     >
       <div
         ref={clickCloseRef}

@@ -9,6 +9,10 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
+import SectionContact from "../components/globals/Section/SectionContact/SectionContact";
+import SectionAbout from "../components/globals/Section/SectionAbout/SectionAbout";
+import SectionPortfolio from "../components/globals/Section/SectionPortfolio/SectionPortfolio";
+import { portfolioData } from "../utils/data";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
@@ -50,7 +54,7 @@ export default function Home() {
       content: ".smooth-content",
       smooth: 0.7,
       effects: false,
-      normalizeScroll: true,
+      normalizeScroll: false,
       smoothTouch: 0.2,
     });
 
@@ -61,6 +65,7 @@ export default function Home() {
         id: `sections`,
         trigger: section as HTMLElement,
         start: "top top",
+        end: "bottom center",
         markers: true,
       });
     });
@@ -72,31 +77,25 @@ export default function Home() {
       trigger: ".smooth-content",
       scroller: ".smooth-wrapper",
       start: "top top",
-      markers: true,
-      onUpdate: (self) => {
-        console.log(self.progress);
-      },
+      markers: false,
+      onUpdate: (self) => {},
+
       snap: {
         snapTo: (progress, self) => {
           let panelStarts = tops.map((st: any) => st.start);
           let panelEnds = tops.map((st: any) => st.end);
 
+          console.log("panelStarts: ", panelStarts, panelEnds);
+
           const snapScrollStart = gsap.utils.snap(
             panelStarts,
             self?.scroll() || 0
           );
-          const snapScrollEnd = gsap.utils.snap(panelEnds, self?.scroll() || 0);
 
           const normalizedStartValue = gsap.utils.normalize(
             self?.start as number,
             self?.end as number,
             snapScrollStart
-          );
-
-          const normalizedEndValue = gsap.utils.normalize(
-            self?.start as number,
-            self?.end as number,
-            snapScrollEnd
           );
 
           const currentScroll = self?.scroll() || 0;
@@ -143,8 +142,6 @@ export default function Home() {
               currentSectionIndex = 2; // Switch to contact section
             }
           }
-
-          console.log("currentSectionIndex: ", currentSectionIndex);
 
           // Snap to the start of the intro and portfolio
           if (currentSectionIndex <= 1) {
@@ -199,21 +196,56 @@ export default function Home() {
         ease: "power4.inOut",
       },
     });
+
+    // ScrollTrigger.normalizeScroll(true);
   }, []);
 
   return (
     <>
-      <div className="smooth-wrapper">
+      <div className="smooth-wrapper z-10">
         <div className="smooth-content">
           {sections.map((section, index) => {
-            return (
-              <Section
-                key={section.id}
-                id={section.id}
-                title={section.title}
-                background={section.background}
-              />
-            );
+            switch (section.id) {
+              // case "intro":
+              //   return <SectionIntro key={section.id} inView={true} />;
+              //   break;
+
+              // case "portfolio":
+              //   return (
+              //     <div
+              //       key={section.id}
+              //       className="portfolio-wrapper relative h-[100svh] lg:h-screen w-full"
+              //     >
+              //       <SectionPortfolio
+              //         data={portfolioData}
+              //         title={"section.title"}
+              //       />
+              //     </div>
+              //   );
+              //   break;
+
+              // case "about":
+              //   return (
+              //     <SectionAbout key={section.id} title={"section.title"} />
+              //   );
+              //   break;
+
+              case "contact":
+                return (
+                  <SectionContact key={section.id} title={"section.title"} />
+                );
+                break;
+
+              default:
+                return (
+                  <Section
+                    key={section.id}
+                    id={section.id}
+                    title={section.title}
+                    background={section.background}
+                  />
+                );
+            }
           })}
         </div>
       </div>
@@ -234,13 +266,13 @@ const Section = ({
   return (
     <section
       className={clsx(
-        "section flex items-center justify-center",
-        background,
-        id === "about" ? "h-[300vh]" : "h-screen"
+        "section flex items-center justify-center border-2 border-red-500 ",
+
+        id === "about" ? "h-[300vh]" : "h-[100svh] lg:h-screen"
       )}
       id={id}
     >
-      <h1 className="test text-4xl font-bold rotate-0 opacity-0">{`Section ${title}`}</h1>
+      <h1 className="test text-4xl font-bold  opacity-100">{`Section ${title}`}</h1>
     </section>
   );
 };

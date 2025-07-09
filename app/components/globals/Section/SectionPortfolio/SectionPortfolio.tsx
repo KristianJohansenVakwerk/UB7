@@ -120,7 +120,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "relative gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
+          "portfolio relative section h-[100svh] lg:h-screen  gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
         )}
       >
         <div>
@@ -138,24 +138,24 @@ const SectionPortfolio = (props: any) => {
             />
           )}
         </div>
-      </div>
 
-      <SectionPortfolioBackground
-        activeSector={activeSector}
-        data={data}
-        active={showUI}
-      />
-
-      {showUI && (
-        <Sectors
-          entries={entries}
-          entriesFrom={entriesFrom}
-          entriesTo={entriesTo}
-          active={showExpandedSectors}
-          updateCurrentSector={handleUpdateSector}
-          onClose={handleClose}
+        <SectionPortfolioBackground
+          activeSector={activeSector}
+          data={data}
+          active={showUI}
         />
-      )}
+
+        {showUI && (
+          <Sectors
+            entries={entries}
+            entriesFrom={entriesFrom}
+            entriesTo={entriesTo}
+            active={showExpandedSectors}
+            updateCurrentSector={handleUpdateSector}
+            onClose={handleClose}
+          />
+        )}
+      </div>
     </>
   );
 };

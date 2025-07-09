@@ -65,7 +65,7 @@ const SectionContact = (props: Props) => {
         immediateRender: false,
         scrollTrigger: {
           trigger: container.current,
-          start: "top top+=100px",
+          start: "top top",
           end: "bottom bottom",
           markers: false,
           toggleActions: "play none none reverse",
@@ -73,13 +73,13 @@ const SectionContact = (props: Props) => {
             setShowTitle(true);
           },
           onEnterBack: () => {
-            setShowTitle(true);
+            // setShowTitle(true);
           },
           onLeave: () => {
             // setShowTitle(false);
           },
           onLeaveBack: () => {
-            setShowTitle(false);
+            // setShowTitle(false);
           },
         },
       });
@@ -137,17 +137,17 @@ const SectionContact = (props: Props) => {
   return (
     <Box
       ref={container}
-      className="section w-full h-full flex flex-col gap-0 items-start justify-start px-3"
+      className="section w-full h-screen flex flex-col gap-0 items-start justify-start px-3"
     >
       <div className={"text-title font-sans pt-7  mb-[100px] lg:mb-[250px]"}>
         <SectionTitle title={title} id={"contact"} play={showTitle} />
       </div>
-      <Box className="grid grid-cols-16 w-full">
+      <Box className="grid grid-cols-16 w-full gap-3 lg:gap-0">
         {info.map((item, index) => {
           return (
             <Box
               key={index}
-              className="col-span-3 info-item flex flex-col opacity-100 gap-0"
+              className="col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
             >
               <Box
                 ref={(el) => {
