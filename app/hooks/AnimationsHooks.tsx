@@ -111,7 +111,7 @@ export const useSectorListAnimation = () => {
       },
       scrollTrigger: {
         id: "portfolio-trigger-sector-list",
-        trigger: ".section-portfolio",
+        trigger: "#portfolio",
         start: "top top+=10px",
         end: `bottom top`,
         toggleActions: "play none none reverse",

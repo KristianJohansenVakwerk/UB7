@@ -394,11 +394,11 @@ const PixiGradient = ({
   const application = useApplication();
 
   // Step 2: Subtle movement animation
-  useTick((ticker) => {
-    if (filter) {
-      filter.resources.timeUniforms.uniforms.uTime += 0.03 * ticker.deltaTime;
-    }
-  });
+  // useTick((ticker) => {
+  //   if (filter) {
+  //     filter.resources.timeUniforms.uniforms.uTime += 0.03 * ticker.deltaTime;
+  //   }
+  // });
 
   useEffect(() => {
     if (ref.current) {

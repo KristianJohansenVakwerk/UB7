@@ -209,11 +209,12 @@ const SectionIntro = ({
     <Box
       ref={ref}
       id="intro"
-      className="intro section w-screen h-screen opacity-100 relative"
+      className="intro w-screen h-screen opacity-100 relative"
     >
       <div
         ref={gradientContainerRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none  flex flex-col items-center justify-center px-3 lg:px-12 opacity-0"
+        data-speed="0.1"
       >
         <svg
           ref={svgRef}
@@ -223,7 +224,7 @@ const SectionIntro = ({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           // onMouseMove={handleMouseMove}
-          className="pointer-events-auto w-full h-auto max-w-[1200px]"
+          className=" w-full h-auto max-w-[1200px]"
           style={{ willChange: "transform" }} // Optimize for animations
         >
           <mask

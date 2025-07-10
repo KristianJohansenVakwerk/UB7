@@ -137,7 +137,7 @@ const SectionContact = (props: Props) => {
   return (
     <Box
       ref={container}
-      className="section w-full h-screen flex flex-col gap-0 items-start justify-start px-3"
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-3"
     >
       <div className={"text-title font-sans pt-7  mb-[100px] lg:mb-[250px]"}>
         <SectionTitle title={title} id={"contact"} play={showTitle} />

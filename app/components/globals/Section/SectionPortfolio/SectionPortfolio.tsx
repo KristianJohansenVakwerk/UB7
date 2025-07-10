@@ -60,6 +60,7 @@ const SectionPortfolio = (props: any) => {
 
   useSectorListEvents("onScrollTriggerEnter", () => {
     setShowTitle(true);
+    console.log("SECTION PORTFOLIO: onScrollTriggerEnter");
   });
 
   useSectorListEvents("onScrollTriggerLeave", () => {
@@ -120,7 +121,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "portfolio relative section h-[100svh] lg:h-screen  gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
+          "portfolio relative h-full gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
         )}
       >
         <div>

@@ -90,13 +90,13 @@ const SectionAbout = (props: any) => {
               setShowTitle(true);
             }, 100);
 
-            gsap.to(textRef.current, {
-              id: "about-text-enter-back",
-              autoAlpha: 1,
-              duration: 0.3,
-              delay: 0.4,
-              ease: "power2.inOut",
-            });
+            // gsap.to(textRef.current, {
+            //   id: "about-text-enter-back",
+            //   autoAlpha: 1,
+            //   duration: 0.3,
+            //   delay: 0.4,
+            //   ease: "power2.inOut",
+            // });
           },
           onLeave: () => {
             // setTimeout(() => {
@@ -115,14 +115,14 @@ const SectionAbout = (props: any) => {
             }, 100);
 
             gsap.killTweensOf(items);
-            gsap.to(items, {
-              id: "about-items-leave-back",
-              autoAlpha: 0,
-              duration: 0.3,
-              stagger: -0.2,
-              delay: 0.8,
-              ease: "power2.inOut",
-            });
+            // gsap.to(items, {
+            //   id: "about-items-leave-back",
+            //   autoAlpha: 0,
+            //   duration: 0.3,
+            //   stagger: -0.2,
+            //   delay: 0.8,
+            //   ease: "power2.inOut",
+            // });
 
             gsap.to(textRef.current, {
               id: "about-text-leave-back",
@@ -300,7 +300,7 @@ const SectionAbout = (props: any) => {
   return (
     <div
       ref={aboutTriggerOneRef}
-      className="section relative w-full h-screen flex flex-col items-start justify-between bg-red-300"
+      className="relative w-full h-screen flex flex-col items-start justify-between"
     >
       <div
         ref={clickCloseRef}

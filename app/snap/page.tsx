@@ -12,35 +12,20 @@ import clsx from "clsx";
 import SectionContact from "../components/globals/Section/SectionContact/SectionContact";
 import SectionAbout from "../components/globals/Section/SectionAbout/SectionAbout";
 import SectionPortfolio from "../components/globals/Section/SectionPortfolio/SectionPortfolio";
-import { portfolioData } from "../utils/data";
+import { portfolioData, sectionsData } from "../utils/data";
+import { useStore } from "@/store/store";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
-const sections = [
-  {
-    id: "intro",
-    title: "Intro",
-    background: "bg-red-500",
-  },
-  {
-    id: "portfolio",
-    title: "Portfolio",
-    background: "bg-blue-500",
-  },
-  {
-    id: "about",
-    title: "About",
-    background: "bg-green-500",
-  },
-  {
-    id: "contact",
-    title: "Contact",
-    background: "bg-yellow-500",
-  },
-];
+const sections = sectionsData;
+
+console.log("sections: ", sections);
 
 export default function Home() {
   const smootherRef = useRef<ScrollSmoother | null>(null);
+  const [scrolling, setScrolling] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const { introStoreDone } = useStore();
 
   // Create ScrollSmoother
   useGSAP(() => {
@@ -53,20 +38,32 @@ export default function Home() {
       wrapper: ".smooth-wrapper",
       content: ".smooth-content",
       smooth: 0.7,
-      effects: false,
+      effects: true,
       normalizeScroll: false,
       smoothTouch: 0.2,
+      onUpdate: () => {
+        setScrolling(true);
+
+        // // Clear existing timeout before setting a new one
+        // if (timerRef.current) {
+        //   clearTimeout(timerRef.current);
+        // }
+
+        // timerRef.current = setTimeout(() => {
+        //   setScrolling(false);
+        // }, 100);
+      },
     });
 
     const sections = gsap.utils.toArray(".section");
 
-    const tops = sections.map((section, index) => {
+    const tops = sections.map((section: any, index: number) => {
       return ScrollTrigger.create({
-        id: `sections`,
+        id: `section-${section?.id}`,
         trigger: section as HTMLElement,
         start: "top top",
         end: "bottom center",
-        markers: true,
+        markers: false,
       });
     });
 
@@ -79,13 +76,13 @@ export default function Home() {
       start: "top top",
       markers: false,
       onUpdate: (self) => {},
-
+      onSnapComplete: () => {
+        setScrolling(false);
+      },
       snap: {
         snapTo: (progress, self) => {
           let panelStarts = tops.map((st: any) => st.start);
           let panelEnds = tops.map((st: any) => st.end);
-
-          console.log("panelStarts: ", panelStarts, panelEnds);
 
           const snapScrollStart = gsap.utils.snap(
             panelStarts,
@@ -185,7 +182,6 @@ export default function Home() {
 
           // Last section (contact) - snap normally
           if (currentSectionIndex === 3) {
-            console.log("contact section - snapping to end");
             return normalizedStartValue;
           }
           // Default fallback
@@ -197,54 +193,81 @@ export default function Home() {
       },
     });
 
-    // ScrollTrigger.normalizeScroll(true);
+    ScrollTrigger.normalizeScroll(true);
   }, []);
+
+  useEffect(() => {
+    if (introStoreDone) {
+      smootherRef?.current?.paused(false);
+    } else {
+      smootherRef?.current?.paused(true);
+    }
+  }, [introStoreDone]);
 
   return (
     <>
-      <div className="smooth-wrapper z-10">
+      <div
+        className={clsx(
+          "smooth-wrapper z-10",
+          scrolling ? "pointer-events-none" : "pointer-events-auto"
+        )}
+      >
         <div className="smooth-content">
           {sections.map((section, index) => {
             switch (section.id) {
-              // case "intro":
-              //   return <SectionIntro key={section.id} inView={true} />;
-              //   break;
-
-              // case "portfolio":
-              //   return (
-              //     <div
-              //       key={section.id}
-              //       className="portfolio-wrapper relative h-[100svh] lg:h-screen w-full"
-              //     >
-              //       <SectionPortfolio
-              //         data={portfolioData}
-              //         title={"section.title"}
-              //       />
-              //     </div>
-              //   );
-              //   break;
-
-              // case "about":
-              //   return (
-              //     <SectionAbout key={section.id} title={"section.title"} />
-              //   );
-              //   break;
-
-              case "contact":
+              case "intro":
                 return (
-                  <SectionContact key={section.id} title={"section.title"} />
+                  <div
+                    id="intro"
+                    key={section.id}
+                    className="section h-[100svh] lg:h-screen w-full"
+                  >
+                    <SectionIntro inView={true} />
+                  </div>
                 );
                 break;
 
-              default:
+              case "portfolio":
                 return (
-                  <Section
+                  <div
+                    id="portfolio"
+                    key={section.id}
+                    className="section relative h-[100svh] lg:h-screen w-full"
+                  >
+                    <SectionPortfolio
+                      data={portfolioData}
+                      title={section.text}
+                    />
+                  </div>
+                );
+                break;
+
+              case "about":
+                return (
+                  <div
+                    id="about"
+                    key={section.id}
+                    className="section h-[auto] w-full"
+                  >
+                    <SectionAbout title={section.text} />
+                  </div>
+                );
+                break;
+
+              case "contact":
+                return (
+                  <div
                     key={section.id}
                     id={section.id}
-                    title={section.title}
-                    background={section.background}
-                  />
+                    className="section h-[100svh] lg:h-screen w-full"
+                  >
+                    <SectionContact
+                      key={section.id}
+                      title={section?.text || ""}
+                    />
+                  </div>
                 );
+                break;
             }
           })}
         </div>
@@ -253,26 +276,3 @@ export default function Home() {
     </>
   );
 }
-
-const Section = ({
-  id,
-  title,
-  background,
-}: {
-  id: string;
-  title: string;
-  background: string;
-}) => {
-  return (
-    <section
-      className={clsx(
-        "section flex items-center justify-center border-2 border-red-500 ",
-
-        id === "about" ? "h-[300vh]" : "h-[100svh] lg:h-screen"
-      )}
-      id={id}
-    >
-      <h1 className="test text-4xl font-bold  opacity-100">{`Section ${title}`}</h1>
-    </section>
-  );
-};
