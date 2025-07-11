@@ -12,29 +12,12 @@ import clsx from "clsx";
 import { portfolioData } from "../utils/data";
 import SectionPortfolio from "../components/globals/Section/SectionPortfolio/SectionPortfolio";
 import SectionAbout from "../components/globals/Section/SectionAbout/SectionAbout";
+import { sectionsData } from "../utils/data";
 
 gsap.registerPlugin(Observer, ScrollTrigger, ScrollToPlugin);
 
-const sectionsData = [
-  {
-    id: "intro",
-    title: "Intro",
-  },
-  {
-    id: "portfolio",
-    title: "Portfolio",
-  },
-  {
-    id: "about",
-    title: "About",
-  },
-  {
-    id: "contact",
-    title: "Contact",
-  },
-];
-
 export default function ObserverPage() {
+  const [globalCurrentIndex, setGlobalCurrentIndex] = useState(0);
   useGSAP(() => {
     let allowScroll = true;
     let isAnimating = false;
@@ -156,8 +139,6 @@ export default function ObserverPage() {
       if (nextTargetX > maxX) {
         targetX = maxX;
 
-        console.log("isAtMax", isAtMax, "edgeAttempt", edgeAttempt);
-
         if (!isAtMax) {
           edgeAttempt++;
           if (edgeAttempt >= 20) {
@@ -218,17 +199,18 @@ export default function ObserverPage() {
         ease: "expo.inOut",
       });
       currentIndex = index;
+      setGlobalCurrentIndex(index);
     };
 
     // Pin sections
     ScrollTrigger.create({
+      id: "swipe-section",
       trigger: ".swipe-section",
-      markers: true,
+      markers: false,
       pin: true,
       start: "top top",
       end: "+=200", // just needs to be enough to not risk vibration where a user's fast-scroll shoots way past the end
       onEnter: (self) => {
-        console.log("onEnter");
         if (intentRef.isEnabled) {
           return;
         } // in case the native scroll jumped past the end and then we force it back to where it should be.
@@ -243,36 +225,6 @@ export default function ObserverPage() {
         intentRef.enable(); // STOP native scrolling
       },
     });
-
-    // ScrollTrigger.create({
-    //   id: "about",
-    //   trigger: ".about-container",
-    //   start: "top top",
-    //   pin: true,
-    //   end: "+=100%",
-    //   markers: { indent: 400 },
-    //   onEnter: (self) => {},
-    //   onEnterBack: (self) => {
-    //     console.log("onEnterBack about");
-    //   },
-    // });
-
-    // ScrollTrigger.create({
-    //   id: "contact",
-    //   trigger: ".contact",
-    //   start: "top center",
-    //   snap: {
-    //     snapTo: 1,
-    //     duration: 0.75,
-    //     ease: "expo.inOut",
-    //     delay: 0.1,
-    //   },
-    //   markers: { indent: 400 },
-    //   onEnter: (self) => {},
-    //   onEnterBack: (self) => {
-    //     console.log("onEnterBack about");
-    //   },
-    // });
   }, []);
 
   return (
@@ -319,21 +271,104 @@ export default function ObserverPage() {
           </div>
         </div>
       </div>
-
+      <SectionTitles currentIndex={globalCurrentIndex} />
       <IntroPixi />
     </>
   );
 }
 
-const Section = ({ id, title }: { id: string; title: string }) => {
+import { SplitText } from "gsap/SplitText";
+gsap.registerPlugin(SplitText);
+
+export const SectionTitles = ({ currentIndex }: { currentIndex: number }) => {
+  const [prevIndex, setPrevIndex] = useState(currentIndex);
+  const splitRef = useRef<any>(null);
+  const textRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    console.log("currentIndex", currentIndex);
+  }, [currentIndex]);
+
+  useGSAP(() => {
+    // Initial setup
+    gsap.set(".section-title", { opacity: 1 });
+
+    // Only create SplitText if there's actual text content
+    if (sectionsData[currentIndex]?.text) {
+      splitRef.current = SplitText.create(".splitText", {
+        type: "words",
+      });
+
+      // Initial animation on mount
+      gsap.from(splitRef.current.words, {
+        opacity: 0,
+        duration: 1,
+        stagger: 0.1,
+        delay: 4,
+        ease: "sine.out",
+      });
+    }
+  }, []);
+
+  useGSAP(() => {
+    // Only run this when currentIndex changes (not on initial mount)
+    if (prevIndex !== currentIndex) {
+      // If there's existing split text, animate it out
+      if (splitRef.current) {
+        gsap.to(splitRef.current.words, {
+          opacity: 0,
+          duration: 0.5,
+          stagger: 0.05,
+          ease: "power2.in",
+          onComplete: () => {
+            // Revert the old split text
+            splitRef.current.revert();
+            splitRef.current = null;
+
+            // Update the previous index
+            setPrevIndex(currentIndex);
+
+            // If the new section has text, create new split text and animate in
+            if (sectionsData[currentIndex]?.text) {
+              splitRef.current = SplitText.create(".splitText", {
+                type: "words",
+              });
+
+              gsap.from(splitRef.current.words, {
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: "power2.out",
+              });
+            }
+          },
+        });
+      } else {
+        // No previous text to animate out, just update index
+        setPrevIndex(currentIndex);
+
+        // If the new section has text, create split text and animate in
+        if (sectionsData[currentIndex]?.text) {
+          splitRef.current = SplitText.create(".splitText", {
+            type: "words",
+          });
+
+          gsap.from(splitRef.current.words, {
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: "power2.out",
+          });
+        }
+      }
+    }
+  }, [currentIndex, prevIndex]);
+
   return (
-    <section
-      id={id}
-      className={clsx(
-        "swipe-section relative w-screen h-screen overflow-hidden border-2 border-red-500  flex items-center justify-center"
-      )}
-    >
-      <h1 className="test text-4xl font-bold  opacity-100">{`Section ${title}`}</h1>
-    </section>
+    <div className="section-title fixed top-7 left-3 z-20 opacity-0">
+      <h1 className="splitText text-sm lg:text-title">
+        {sectionsData[currentIndex].text}
+      </h1>
+    </div>
   );
 };
