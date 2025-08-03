@@ -338,7 +338,7 @@ export default function ObserverPage() {
       />
 
       {/* <IntroPixi /> */}
-      <Progress currentIndex={globalCurrentIndex} />
+      <ProgressBars currentIndex={globalCurrentIndex} />
       <Menu
         setCurrentIndex={handleMenuClick}
         currentIndex={globalCurrentIndex}
@@ -357,7 +357,7 @@ export default function ObserverPage() {
 // PROGRESS
 ////////////////////////////////////////////////////////////
 
-export const Progress = ({ currentIndex }: { currentIndex: number }) => {
+export const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
   return (
     <div
       id={"progress"}
