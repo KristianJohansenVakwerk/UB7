@@ -24,14 +24,16 @@ type Props = {
   onExpandViewMode: (entryIndex: number, sector: string) => void;
   onShowBackground: (sector: string) => void;
   active: boolean;
+  currentIndex: number;
 };
 
 const SectionPortfolioList = (props: Props) => {
-  const { data, onExpandViewMode, onShowBackground, active } = props;
+  const { data, onExpandViewMode, onShowBackground, active, currentIndex } =
+    props;
   const { accordionAnis, iconAnis, setupAccordion, cleanupAccordion } =
     useAccordionSetup();
   const { playAccordion, resetAccordion } = useAccordionControls();
-  const { setHoverSector } = useStore();
+  const { setHoverSector, setDisableScroll } = useStore();
 
   // Single useGSAP call with proper cleanup
   useGSAP(() => {
@@ -48,10 +50,6 @@ const SectionPortfolioList = (props: Props) => {
     // resetAccordion(accordionAnis, iconAnis);
     // setHoverSector(false);
     // onShowBackground("");
-  });
-
-  useSectorListEvents("onScrollTriggerLeaveBack", () => {
-    console.log("onScrollTriggerLeaveBack");
   });
 
   const handleMouseEnter = useCallback(
@@ -73,7 +71,7 @@ const SectionPortfolioList = (props: Props) => {
     onShowBackground("");
   }, [accordionAnis, iconAnis, active]);
 
-  const { timelineRef } = useSectorListAnimation();
+  const { timelineRef } = useSectorListAnimation(currentIndex);
 
   const pendingExpansionRef = useRef<{
     entryIndex: number;
@@ -83,11 +81,14 @@ const SectionPortfolioList = (props: Props) => {
   useSectorListEvents("onReverseComplete", () => {
     console.log("onReverseComplete");
     if (!pendingExpansionRef.current) return;
-    gsap.to(["#progress", "#section-title-portfolio", "#menu"], {
-      opacity: 0,
-      duration: 0.4,
-      ease: "power4.inOut",
-    });
+    gsap.to(
+      ["#progress", "#section-title-portfolio", "#menu", ".section-title"],
+      {
+        opacity: 0,
+        duration: 0.4,
+        ease: "power4.inOut",
+      }
+    );
 
     onExpandViewMode(
       pendingExpansionRef.current.entryIndex,
@@ -109,8 +110,8 @@ const SectionPortfolioList = (props: Props) => {
     pendingExpansionRef.current = { entryIndex, sector };
 
     // Pause smooth scroll when opening sectors
-    const smoother = ScrollSmoother.get();
-    smoother?.paused(true);
+    // const smoother = ScrollSmoother.get();
+    // smoother?.paused(true);
 
     resetAccordion(accordionAnis, iconAnis);
 
@@ -124,6 +125,8 @@ const SectionPortfolioList = (props: Props) => {
       timelineRef.current.reverse();
       // timelineRef.current.eventCallback("onReverseComplete", () => {});
     }
+
+    setDisableScroll(true);
   };
 
   return (
@@ -195,6 +198,7 @@ const SectionPortfolioList = (props: Props) => {
                       )}
                     >
                       <div
+                        className={"flex row justify-between items-center"}
                         onClick={(e) => {
                           e.stopPropagation();
                           showExpandedectors(
@@ -205,6 +209,30 @@ const SectionPortfolioList = (props: Props) => {
                         }}
                       >
                         {entry.title}
+                        <div>
+                          <svg
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M5 12H19"
+                              stroke="currentColor"
+                              strokeWidth="1"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M12 5L19 12L12 19"
+                              stroke="currentColor"
+                              strokeWidth="1"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </div>
                       </div>
                     </div>
                   );

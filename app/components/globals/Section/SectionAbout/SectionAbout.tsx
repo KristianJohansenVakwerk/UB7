@@ -89,40 +89,14 @@ const SectionAbout = (props: any) => {
             setTimeout(() => {
               setShowTitle(true);
             }, 100);
+          },
 
-            // gsap.to(textRef.current, {
-            //   id: "about-text-enter-back",
-            //   autoAlpha: 1,
-            //   duration: 0.3,
-            //   delay: 0.4,
-            //   ease: "power2.inOut",
-            // });
-          },
-          onLeave: () => {
-            // setTimeout(() => {
-            //   setShowTitle(false);
-            // }, 100);
-            // gsap.to(textRef.current, {
-            //   autoAlpha: 0,
-            //   duration: 0.3,
-            //   delay: 0.4,
-            //   ease: "power2.inOut",
-            // });
-          },
           onLeaveBack: () => {
             setTimeout(() => {
               setShowTitle(false);
             }, 100);
 
             gsap.killTweensOf(items);
-            // gsap.to(items, {
-            //   id: "about-items-leave-back",
-            //   autoAlpha: 0,
-            //   duration: 0.3,
-            //   stagger: -0.2,
-            //   delay: 0.8,
-            //   ease: "power2.inOut",
-            // });
 
             gsap.to(textRef.current, {
               id: "about-text-leave-back",
@@ -130,7 +104,7 @@ const SectionAbout = (props: any) => {
               autoAlpha: 0,
               duration: 0.3,
               delay: 0.4,
-              ease: "power2.inOut",
+              ease: "expo.inOut",
             });
           },
         },

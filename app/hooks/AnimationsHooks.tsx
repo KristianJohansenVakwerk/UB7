@@ -86,7 +86,7 @@ class TimelineEventManager {
 
 export const eventManager = TimelineEventManager.getInstance();
 
-export const useSectorListAnimation = () => {
+export const useSectorListAnimation = (currentIndex: number) => {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useGSAP(() => {
@@ -108,53 +108,6 @@ export const useSectorListAnimation = () => {
           "sector-list-animation",
           "onReverseComplete"
         );
-      },
-      scrollTrigger: {
-        id: "portfolio-trigger-sector-list",
-        trigger: "#portfolio",
-        start: "top top+=10px",
-        end: `bottom top`,
-        toggleActions: "play none none reverse",
-        markers: false,
-        scrub: false,
-        pin: false,
-        pinSpacing: false,
-        onEnter: () => {
-          eventManager.triggerCallbacks(
-            "sector-list-animation",
-            "onScrollTriggerEnter"
-          );
-        },
-        onLeave: () => {
-          gsap.to(".sector-item", {
-            opacity: 0,
-            stagger: 0.2,
-            onComplete: () => {
-              eventManager.triggerCallbacks(
-                "sector-list-animation",
-                "onScrollTriggerLeave"
-              );
-            },
-          });
-        },
-        onEnterBack: () => {
-          gsap.to(".sector-item", {
-            opacity: 1,
-            stagger: 0.2,
-            onComplete: () => {
-              eventManager.triggerCallbacks(
-                "sector-list-animation",
-                "onScrollTriggerEnterBack"
-              );
-            },
-          });
-        },
-        onLeaveBack: () => {
-          eventManager.triggerCallbacks(
-            "sector-list-animation",
-            "onScrollTriggerLeaveBack"
-          );
-        },
       },
     });
 
@@ -209,6 +162,14 @@ export const useSectorListAnimation = () => {
       }
     };
   }, []);
+
+  useGSAP(() => {
+    if (currentIndex === 1) {
+      gsap.delayedCall(1, () => {
+        timelineRef.current?.play();
+      });
+    }
+  }, [currentIndex]);
 
   return { timelineRef };
 };

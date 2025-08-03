@@ -112,9 +112,10 @@ const Menu = ({ data }: MenuProps) => {
     <div
       ref={menuRef}
       className={clsx(
-        "fixed bottom-3 left-3 z-10 opacity-0 transition-opacity duration-300 ease-in-out",
+        "fixed bottom-3 left-3  opacity-0 transition-opacity duration-300 ease-in-out",
         introStoreDone && "opacity-100"
       )}
+      style={{ zIndex: 9999 }}
       id={"menu"}
     >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">

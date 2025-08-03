@@ -17,6 +17,7 @@ import {
   useSectorListAnimation,
 } from "@/app/hooks/AnimationsHooks";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useStore } from "@/store/store";
 
 // Register the Draggable plugin
 gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
@@ -46,6 +47,7 @@ const Sectors = (props: SectorsProps) => {
   const clickNextRef = useRef<any>(null);
   const clickPrevRef = useRef<any>(null);
   const draggableContainers = useRef<HTMLElement[]>([]);
+  const { setDisableScroll } = useStore();
 
   useGSAP(() => {
     draggableContainers.current = gsap.utils.toArray(
@@ -119,7 +121,7 @@ const Sectors = (props: SectorsProps) => {
     };
   }, []);
 
-  const { timelineRef } = useSectorListAnimation();
+  const { timelineRef } = useSectorListAnimation(0);
 
   const handleClose = useCallback(() => {
     gsap.to(sectorsContainerRef.current, {
@@ -142,7 +144,7 @@ const Sectors = (props: SectorsProps) => {
           timelineRef.current.play(0);
 
           setCurrentIndex(null);
-
+          setDisableScroll(false);
           onClose();
         }
       },
