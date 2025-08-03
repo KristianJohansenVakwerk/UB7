@@ -357,7 +357,7 @@ export default function ObserverPage() {
 // PROGRESS
 ////////////////////////////////////////////////////////////
 
-export const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
+const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
   return (
     <div
       id={"progress"}
@@ -418,7 +418,7 @@ interface MenuProps {
   currentIndex: number;
   setCurrentIndex: (index: number) => void;
 }
-export const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
+const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -483,7 +483,7 @@ gsap.registerPlugin(SplitText);
 // SECTION TITLES
 ////////////////////////////////////////////////////////////
 
-export const SectionTitles = ({
+const SectionTitles = ({
   currentIndex,
   scrollingDown,
 }: {
@@ -631,7 +631,7 @@ const info = [
   },
 ];
 
-export const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
+const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
   const container = useRef<HTMLDivElement>(null);
   const tlRef = useRef<any>(null);
 
@@ -754,7 +754,7 @@ export const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
 import { teamMembers } from "../utils/data";
 import { TeamMembers } from "../components/globals/Section/SectionAbout/SectionAbout";
 
-export const SectionAbout = ({
+const SectionAbout = ({
   currentIndex,
   scrollingDown,
 }: {
