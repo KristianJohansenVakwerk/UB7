@@ -5,7 +5,7 @@ import { Observer } from "gsap/Observer";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import IntroPixi from "./components/globals/IntroPixi/IntroPixi";
 import SectionIntro from "./components/globals/Section/SectionIntro";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { RefObject, use, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
@@ -91,6 +91,7 @@ export default function ObserverPage() {
     let currentX = 0;
     let targetX = 0;
     let animating = false;
+    const isTouchDevice = ScrollTrigger.isTouch;
 
     // const box = gsap.utils.toArray(".about-box");
     const box = document.querySelector(".about-box") as HTMLElement;
@@ -101,7 +102,7 @@ export default function ObserverPage() {
     const setW = gsap.quickSetter(aboutProgress, "width", "%");
 
     const boxWidth = box?.offsetWidth;
-    const gap = 48;
+    const gap = isTouchDevice ? 20 : 48;
     const minX = -(boxWidth - window.innerWidth + gap * 2);
     const maxX = 0;
 
@@ -124,8 +125,6 @@ export default function ObserverPage() {
       isAtMax = false;
       edgeAttempt = 0;
     };
-
-    const isTouchDevice = ScrollTrigger.isTouch;
 
     let edgeAttempt = 0;
     let isAtMin = false;
@@ -229,9 +228,10 @@ export default function ObserverPage() {
     clicked?: boolean | undefined
   ) => {
     // For menu make sure it always animates
-    console.log("clicked", clicked, isScrollingDown);
+
     if (clicked) {
       intentRef.current.enable();
+
       gsap.to(sectionsContainer?.current, {
         yPercent: -100 * index,
         duration: 0.75,
@@ -239,6 +239,7 @@ export default function ObserverPage() {
         delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
         ease: "expo.inOut",
       });
+
       setGlobalCurrentIndex(index);
       setGlobalScrollDirection(isScrollingDown);
       currentIndex.current = index;
@@ -267,6 +268,7 @@ export default function ObserverPage() {
       delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
       ease: "expo.inOut",
     });
+
     setGlobalCurrentIndex(index);
     setCurrentStoreIndex(index);
     setGlobalScrollDirection(isScrollingDown);
@@ -339,6 +341,7 @@ export default function ObserverPage() {
 
       {/* <IntroPixi /> */}
       <ProgressBars currentIndex={globalCurrentIndex} />
+
       <Menu
         setCurrentIndex={handleMenuClick}
         currentIndex={globalCurrentIndex}
@@ -408,6 +411,7 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
 ////////////////////////////////////////////////////////////
 // MENU
 ////////////////////////////////////////////////////////////
+
 interface MenuItem {
   title: string;
   id?: string;
@@ -447,7 +451,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
     <div
       ref={menuRef}
       className={clsx(
-        "fixed bottom-3 left-3  opacity-0 transition-opacity duration-300 ease-in-out",
+        "fixed bottom-2 lg:bottom-3 left-2 lg:left-3  opacity-0 transition-opacity duration-300 ease-in-out",
         introStoreDone && "opacity-100"
       )}
       style={{ zIndex: 9999 }}
@@ -459,7 +463,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
             <div
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="font-sans text-sm text-dark-grey min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-menu`}
             >
               <span>{item.title}</span>
@@ -565,11 +569,11 @@ const SectionTitles = ({
   return (
     <div
       className={clsx(
-        "section-title fixed top-5 left-3 z-20  pointer-events-none opacity-0",
+        "section-title fixed top-4 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     >
-      <h1 className="text-sm lg:text-title">
+      <h1 className="text-title">
         {sectionsData.map((section) => (
           <div
             key={section.id}
@@ -707,7 +711,7 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
   return (
     <div
       ref={container}
-      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]"
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-20 lg:mt-[40vw]"
     >
       <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
         {info.map((item, index) => {
@@ -752,7 +756,6 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
 ////////////////////////////////////////////////////////////
 
 import { teamMembers } from "./utils/data";
-import { TeamMembers } from "./components/globals/Section/SectionAbout/SectionAbout";
 
 const SectionAbout = ({
   currentIndex,
@@ -845,18 +848,27 @@ const SectionAbout = ({
       gsap.to(image, {
         scale: scale,
         duration: 0.3,
-        ease: "power2.inOut",
+        ease: "expo.inOut",
       });
     };
 
     const handleClick = (state: boolean) => {
+      const isTouch = ScrollTrigger.isTouch;
       isScaled = state;
       const image = imageRef.current;
+
+      if (!image || !image.complete) {
+        console.warn("Image not ready, retrying...");
+        setTimeout(() => handleClick(state), 100);
+        return;
+      }
       const imageWidth = image?.offsetWidth as number;
       const imageHeight = image?.offsetHeight as number;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const padding = { top: 48, left: 48, button: 48, right: 102 };
+      const padding = !isTouch
+        ? { top: 48, left: 48, button: 48, right: 102 }
+        : { top: 20, left: 20, button: 20, right: 20 };
 
       setAboutVideoExpanded(state);
 
@@ -894,15 +906,15 @@ const SectionAbout = ({
                   gsap.to(imageContainerRef.current, {
                     opacity: 1,
                     duration: 0.8,
-                    ease: "power4.inOut",
+                    ease: "expo.inOut",
                   });
                   gsap.to(image, {
                     scale: scale,
-                    y: 112 - padding.top,
+                    y: !isTouch ? 112 - padding.top : 90 - padding.top,
                     transformOrigin: "left bottom",
                     willChange: "transform",
                     duration: 0.8,
-                    ease: "power4.inOut",
+                    ease: "expo.inOut",
                     onComplete: () => {
                       setShowClose(true);
                     },
@@ -963,7 +975,7 @@ const SectionAbout = ({
     <div className="about-section w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]">
       <div
         ref={textRef}
-        className="text-about absolute top-6 right-3 w-1/3 text-light-grey text-base/none"
+        className="text-about absolute top-12 lg:top-6 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey text-base/none"
       >
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -974,7 +986,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-8 left-3 left-0  flex justify-center items-center gap-4 will-change-transform opacity-100">
+      <div className="about-box absolute bottom-9 lg:bottom-8 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
         <TeamMembers
           items={items}
           imageContainerRef={imageContainerRef}
@@ -1007,4 +1019,87 @@ const SectionAbout = ({
       </div>
     </div>
   );
+};
+
+////////////////////////////////////////////////////////////
+// SECTION ABOUT ~ TEAM MEMBERS
+////////////////////////////////////////////////////////////
+import { TeamMember } from "@/app/utils/data";
+
+const TeamMembers = ({
+  items,
+  imageContainerRef,
+  imageRef,
+}: {
+  items: (TeamMember | { type: string })[];
+  imageContainerRef: RefObject<HTMLDivElement | null>;
+  imageRef: RefObject<HTMLImageElement | null>;
+}) => {
+  return items.map((m, index: number) => {
+    // @ts-ignore
+    if (m.type === "box") {
+      return (
+        <div
+          ref={imageContainerRef}
+          key={index}
+          className="item item-box aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] min-w-[75vw] lg:min-w-[768px] rounded-2xl opacity-0 will-change-opacity cursor-pointer "
+        >
+          <img
+            ref={imageRef}
+            src="/Reel.jpg"
+            width={"693"}
+            height={"376"}
+            className="w-full h-full object-cover object-center rounded-2xl"
+          />
+        </div>
+      );
+    }
+
+    if ("name" in m) {
+      return (
+        <div
+          key={index}
+          className="item item-team-member relative bg-white rounded-2xl aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] min-w-[75vw]  lg:min-w-[768px] opacity-0 will-change-opacity"
+        >
+          <div className="px-2 lg:px-3 py-2 lg:py-3 flex flex-col gap-1 h-full">
+            <div className="team-member-name text-light-grey text-base/none opacity-100">
+              {m.name}
+            </div>
+            <div className="flex flex-col lg:flex-row items-stretch justify-start gap-2 h-full">
+              <div className="team-member-image aspect-[266/312]  h-full opacity-100 flex items-center justify-center flex-1 w-1/2">
+                <img
+                  src={m.image}
+                  width={267}
+                  height={312}
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+              <div className="text-light-grey  flex-2 mr-3 h-full">
+                <div className="flex flex-col gap-2 h-full justify-between">
+                  <div className="team-member-text text-base opacity-100">
+                    {m.text}
+                  </div>
+
+                  <div className="flex flex-row items-center justify-between gap-1 w-full">
+                    {m.socials.map((s, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-center font-mono text-sm text-light-grey bg-gray-100 rounded-2xl py-1 flex-1"
+                      >
+                        <span className="team-member-social opacity-100">
+                          <a href="https://google.dk" target="_blank">
+                            {s.platform}
+                          </a>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  });
 };

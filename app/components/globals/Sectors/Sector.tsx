@@ -115,27 +115,27 @@ const Sector = (props: Props) => {
           transformOrigin: "center center",
         }}
       >
-        <div className="h-auto w-full py-2  flex flex-col gap-8">
+        <div className="h-auto w-full py-2  flex flex-col gap-4">
           <div className={"font-mono text-sm px-2"}>
             Category: {data.sector}
           </div>
           <div className={"flex flex-col gap-4"}>
             <div className={"font-sans text-md px-2"}>{data.title}</div>
 
-            <div className={"flex flex-col gap-2 px-2"}>
-              <div className={"font-sans text-sm"}>Details</div>
-              <div>
+            <div className={"flex flex-col gap-1 px-2"}>
+              <div className={"font-sans text-base"}>Details</div>
+              <div className={"flex flex-col gap-[0.2rem]"}>
                 {data?.details &&
                   data.details.length > 0 &&
                   data.details.map((detail: any, index: number) => (
                     <div
                       key={index}
-                      className={"flex flex-row items-start justify-between "}
+                      className={"flex flex-row items-start justify-between"}
                     >
-                      <span className="font-sans text-sm flex-1">
+                      <span className="font-sans text-base flex-1">
                         {detail.title}
                       </span>
-                      <span className={"font-mono text-sm flex-1"}>
+                      <span className={"font-mono text-base flex-1"}>
                         {detail.value}
                       </span>
                     </div>

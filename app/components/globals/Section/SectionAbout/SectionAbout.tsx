@@ -355,14 +355,14 @@ export const TeamMembers = ({
         <Box
           ref={imageContainerRef}
           key={index}
-          className="item item-box rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity cursor-pointer"
+          className="item item-box rounded-2xl w-[80vw] lg:w-[30vw] lg:min-w-[768px] h-[420px] opacity-0 will-change-opacity cursor-pointer"
         >
           <img
             ref={imageRef}
             src="/Reel.jpg"
             width={"693"}
             height={"376"}
-            className="w-full h-full object-cover object-center"
+            className="w-full h-full object-cover object-center rounded-2xl"
           />
         </Box>
       );

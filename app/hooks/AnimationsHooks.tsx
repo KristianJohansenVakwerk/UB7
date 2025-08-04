@@ -112,7 +112,7 @@ export const useSectorListAnimation = (currentIndex: number) => {
     });
 
     tl.to(".sector-item", {
-      width: "25%",
+      width: ScrollTrigger.isTouch ? "100%" : "25%",
       opacity: 1,
       stagger: 0.1,
       duration: 0.2,

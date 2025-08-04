@@ -7,31 +7,32 @@ import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
 import { useStore } from "@/store/store";
+import clsx from "clsx";
 
 const textSettings = [
   // Light Gray
   {
     offset: 0.1875,
     "stop-color": "#D9D9D9",
-    delay: 2,
+    delay: 0,
   },
   // Light Yellow/Cream
   {
     offset: 0.307692,
     "stop-color": "#FEFFC2",
-    delay: 2,
+    delay: 0,
   },
   // Bright Lime Green
   {
     offset: 0.639423,
     "stop-color": "#7EFA50",
-    delay: 2.2,
+    delay: 0.2,
   },
   // Dark Green
   {
     offset: 0.913462,
     "stop-color": "#09603D",
-    delay: 2.4,
+    delay: 0.4,
   },
 ];
 
@@ -39,22 +40,22 @@ const bgSettings = [
   // Dark green
   {
     offset: 0.1,
-    delay: 2.4,
+    delay: 0.4,
   },
   // Bright lime green
   {
     offset: 0.538462,
-    delay: 2.2,
+    delay: 0.2,
   },
   // Light yellow/cream
   {
     offset: 0.817308,
-    delay: 2,
+    delay: 0,
   },
   // Light gray
   {
     offset: 1,
-    delay: 2,
+    delay: 0,
   },
 ];
 
@@ -64,12 +65,48 @@ const IntroSVG = () => {
   const gradientRef = useRef<SVGLinearGradientElement>(null);
   const bgGradientRef = useRef<SVGRadialGradientElement>(null);
   const gradientContainerRef = useRef<HTMLDivElement>(null);
+  const loaderRef = useRef<HTMLSpanElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const { setIntroStoreDone, currentStoreIndex } = useStore();
 
+  useGSAP(() => {
+    if (!loaderRef.current) return;
+
+    const handleLoad = () => {
+      gsap.to(loaderRef.current, {
+        duration: 2,
+        ease: "expo.inOut",
+        onUpdate: function () {
+          const pct = Math.round(this.progress() * 100);
+
+          if (loaderRef.current) {
+            loaderRef.current.textContent = `${pct}%`;
+          }
+        },
+        onComplete: () => {
+          setIsLoading(false);
+          gsap.to(loaderRef.current, {
+            duration: 1,
+            ease: "expo.inOut",
+            opacity: 0,
+          });
+        },
+      });
+    };
+
+    if (document.readyState === "complete") {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+    }
+
+    return () => window.removeEventListener("load", handleLoad);
+  }, []);
+
   // Initial gradient animation - grow from bottom
   useGSAP(() => {
-    if (!gradientRef.current || !bgGradientRef.current) return;
+    if (!gradientRef.current || !bgGradientRef.current || isLoading) return;
 
     gsap.set(gradientContainerRef.current, {
       opacity: 1,
@@ -106,7 +143,6 @@ const IntroSVG = () => {
     gsap.set(stopsBG, {
       attr: {
         offset: 0,
-        // "stop-color": "#e5e5e5",
       },
     });
 
@@ -120,11 +156,12 @@ const IntroSVG = () => {
         delay: setting.delay,
       });
     });
-  }, []);
+  }, [isLoading]);
 
   useGSAP(() => {
-    const dur = 1.5;
-    const delay = 0.3;
+    if (isLoading) return;
+    const dur = 0.75;
+    const delay = 0.5;
     if (!bgGradientRef.current) return;
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
     if (currentStoreIndex > 0) {
@@ -181,10 +218,17 @@ const IntroSVG = () => {
         ease: "expo.inOut",
       });
     }
-  }, [currentStoreIndex]);
+  }, [currentStoreIndex, isLoading]);
 
   return (
     <>
+      <div
+        className={clsx([
+          "fixed top-0 left-0 w-full h-full flex items-center justify-center text-mono z-[9999] pointer-events-none",
+        ])}
+      >
+        <span ref={loaderRef}>0%</span>
+      </div>
       <div
         ref={gradientContainerRef}
         className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center px-3 lg:px-12 opacity-0"
@@ -303,11 +347,11 @@ const IntroSVG = () => {
 
       <div
         id={"clocks"}
-        className="fixed bottom-0 left-0 w-full h-auto pointer-events-none  hidden lg:flex flex-col items-center justify-end p-3"
+        className="fixed bottom-14 lg:bottom-0  left-0 w-full h-auto pointer-events-none  lg:flex flex-col items-center justify-center lg:justify-end p-0 lg:p-3"
       >
         <div
           className={
-            "flex flex-row gap-10 text-dark-green text-sm font-mono leading-1.1"
+            "flex flex-row gap-6 justify-center  lg:gap-10 text-dark-green text-sm font-mono leading-1.1"
           }
         >
           <div className="flex flex-col items-center time ">

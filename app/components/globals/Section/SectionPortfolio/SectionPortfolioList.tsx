@@ -54,7 +54,6 @@ const SectionPortfolioList = (props: Props) => {
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
-      console.log("handleMouseEnter", active);
       playAccordion(index, accordionAnis, iconAnis);
       setHoverSector(true);
       onShowBackground(sector);
@@ -130,7 +129,7 @@ const SectionPortfolioList = (props: Props) => {
   };
 
   return (
-    <div className="w-full relative flex flex-row items-start justify-start">
+    <div className="w-full relative flex flex-col lg:flex-row items-start justify-start">
       {data.map((sector: any, index: number) => {
         const realIndex = data
           .slice(0, index)
@@ -146,7 +145,7 @@ const SectionPortfolioList = (props: Props) => {
             onMouseLeave={() => handleMouseLeave()}
           >
             <div
-              className="absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
+              className="relative lg:absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
               onMouseEnter={() => handleMouseEnter(index, sector.title)}
             >
               <div
