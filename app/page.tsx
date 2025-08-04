@@ -135,7 +135,7 @@ export default function ObserverPage() {
 
       const direction = deltaY > 0 ? -1 : 1;
       const baseSpeed = isTouchDevice ? 250 : 180;
-      const maxDistance = isTouchDevice ? 150 : 58;
+      const maxDistance = isTouchDevice ? 100 : 58;
 
       const distance = Math.min(Math.abs(velocityY * baseSpeed), maxDistance); // Feel free to tweak
       targetX -= direction * distance;
@@ -188,7 +188,7 @@ export default function ObserverPage() {
       animating = true;
 
       const update = () => {
-        currentX = lerp(currentX, targetX, 0.1); // 0.1 = smoothing factor
+        currentX = lerp(currentX, targetX, 0.07); // 0.1 = smoothing factor
         const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
 
         setX(currentX, minX);

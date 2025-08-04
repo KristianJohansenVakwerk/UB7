@@ -66,6 +66,7 @@ const IntroSVG = () => {
   const bgGradientRef = useRef<SVGRadialGradientElement>(null);
   const gradientContainerRef = useRef<HTMLDivElement>(null);
   const loaderRef = useRef<HTMLSpanElement>(null);
+  const loaderRefPct = useRef<HTMLSpanElement>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const { setIntroStoreDone, currentStoreIndex } = useStore();
@@ -81,15 +82,17 @@ const IntroSVG = () => {
           const pct = Math.round(this.progress() * 100);
 
           if (loaderRef.current) {
-            loaderRef.current.textContent = `${pct}%`;
+            loaderRefPct.current.textContent = `${pct}%`;
           }
         },
         onComplete: () => {
-          setIsLoading(false);
           gsap.to(loaderRef.current, {
             duration: 1,
             ease: "expo.inOut",
             opacity: 0,
+            onComplete: () => {
+              setIsLoading(false);
+            },
           });
         },
       });
@@ -227,7 +230,9 @@ const IntroSVG = () => {
           "fixed top-0 left-0 w-full h-full flex items-center justify-center text-mono z-[9999] pointer-events-none",
         ])}
       >
-        <span ref={loaderRef}>0%</span>
+        <span ref={loaderRef} className="font-mono text-sm">
+          Start scrolling once loaded... <span ref={loaderRefPct}>0%</span>
+        </span>
       </div>
       <div
         ref={gradientContainerRef}
