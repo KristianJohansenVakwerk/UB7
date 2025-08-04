@@ -134,14 +134,11 @@ export default function ObserverPage() {
       if (!box || aboutVideoExpandedHackRef.current) return;
 
       const direction = deltaY > 0 ? -1 : 1;
-      const baseSpeed = isTouchDevice ? 160 : 180;
-      const maxDistance = isTouchDevice ? 60 : 58;
+      const baseSpeed = isTouchDevice ? 250 : 180;
+      const maxDistance = isTouchDevice ? 150 : 58;
 
       const distance = Math.min(Math.abs(velocityY * baseSpeed), maxDistance); // Feel free to tweak
       targetX -= direction * distance;
-
-      const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
-      // setGlobalProgressAbout(pct);
 
       const newTargetX = targetX - direction * distance;
       const nextTargetX = newTargetX + direction * distance;
@@ -152,7 +149,8 @@ export default function ObserverPage() {
 
         if (!isAtMin) {
           edgeAttempt++;
-          if (edgeAttempt >= 40) {
+          const limit = isTouchDevice ? 10 : 40;
+          if (edgeAttempt >= limit) {
             isAtMin = true;
             isAtMax = false;
             edgeAttempt = 0;
@@ -168,7 +166,8 @@ export default function ObserverPage() {
 
         if (!isAtMax) {
           edgeAttempt++;
-          if (edgeAttempt >= 40) {
+          const limit = isTouchDevice ? 10 : 40;
+          if (edgeAttempt >= limit) {
             isAtMax = true;
             isAtMin = false;
             edgeAttempt = 0;
@@ -711,7 +710,7 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
   return (
     <div
       ref={container}
-      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-20 lg:mt-[40vw]"
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-0 lg:mt-[40vw]"
     >
       <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
         {info.map((item, index) => {
