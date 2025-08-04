@@ -238,7 +238,7 @@ const IntroSVG = () => {
           viewBox="0 0 1921 1080"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-screen h-screen block"
+          className="w-screen h-[100svh] lg:h-screen block"
           style={{ willChange: "transform" }}
         >
           {/* Background gradient with blur filter */}

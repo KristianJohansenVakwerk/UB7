@@ -284,16 +284,16 @@ export default function ObserverPage() {
       <div className={clsx("relative z-20")}>
         <div
           className={
-            "swipe-section  relative w-screen h-[100svh] lg:h-screen overflow-hidden "
+            "swipe-section  relative w-screen h-[100svh] lg:h-screen overflow-hidden"
           }
         >
           <div
             ref={sectionsContainer}
-            className="swipe-section-inner w-screen h-screen "
+            className="swipe-section-inner w-screen h-[100svh] lg:h-screen "
           >
             <section
               className={
-                "panel intro absolute w-full h-full  flex justify-center items-center "
+                "panel intro absolute w-full h-full  flex justify-center items-center  "
               }
             >
               <SectionIntro inView={true} />
@@ -365,7 +365,7 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
     <div
       id={"progress"}
       className={clsx(
-        "fixed top-2 left-3 right-3 h-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
+        "fixed top-1 lg:top-2 left-2 lg:left-3 right-2 lg:right-3 h-[2px] lgh-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
         currentIndex === 0 ? "opacity-0" : "opacity-100"
       )}
     >
@@ -569,7 +569,7 @@ const SectionTitles = ({
   return (
     <div
       className={clsx(
-        "section-title fixed top-4 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
+        "section-title fixed top-3 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     >
@@ -975,7 +975,7 @@ const SectionAbout = ({
     <div className="about-section w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]">
       <div
         ref={textRef}
-        className="text-about absolute top-12 lg:top-6 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey text-base/none"
+        className="text-about absolute top-11 lg:top-6 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey text-base/none"
       >
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -986,7 +986,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-9 lg:bottom-8 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
+      <div className="about-box absolute bottom-7 lg:bottom-8 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
         <TeamMembers
           items={items}
           imageContainerRef={imageContainerRef}
@@ -1042,7 +1042,7 @@ const TeamMembers = ({
         <div
           ref={imageContainerRef}
           key={index}
-          className="item item-box aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] min-w-[75vw] lg:min-w-[768px] rounded-2xl opacity-0 will-change-opacity cursor-pointer "
+          className="item item-box aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] min-h-[54vh] max-h-[54vh] w-auto lg:min-h-none lg:max-h-none lg:min-w-[768px] rounded-2xl opacity-0 will-change-opacity cursor-pointer "
         >
           <img
             ref={imageRef}
@@ -1059,7 +1059,7 @@ const TeamMembers = ({
       return (
         <div
           key={index}
-          className="item item-team-member relative bg-white rounded-2xl aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] min-w-[75vw]  lg:min-w-[768px] opacity-0 will-change-opacity"
+          className="item item-team-member relative bg-white rounded-2xl lg:aspect-[var(--aspect-ratio-box-lg)] min-w-[90vw]  max-h-[54vh] lg:max-h-none w-auto lg:min-w-[768px] opacity-0 will-change-opacity"
         >
           <div className="px-2 lg:px-3 py-2 lg:py-3 flex flex-col gap-1 h-full">
             <div className="team-member-name text-light-grey text-base/none opacity-100">
