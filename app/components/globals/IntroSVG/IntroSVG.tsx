@@ -81,15 +81,15 @@ const IntroSVG = () => {
         onUpdate: function () {
           const pct = Math.round(this.progress() * 100);
 
-          if (loaderRef.current) {
-            loaderRefPct.current.textContent = `${pct}%`;
-          }
+          if (!loaderRefPct.current) return;
+          loaderRefPct.current.textContent = `${pct}%`;
         },
         onComplete: () => {
           gsap.to(loaderRef.current, {
             duration: 1,
             ease: "expo.inOut",
             opacity: 0,
+            delay: 0.5,
             onComplete: () => {
               setIsLoading(false);
             },
