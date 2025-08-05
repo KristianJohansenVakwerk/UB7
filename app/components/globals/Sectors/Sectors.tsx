@@ -78,7 +78,6 @@ const Sectors = (props: SectorsProps) => {
 
   useGSAP(() => {
     const handleClick = (direction: "next" | "prev") => {
-      console.log("handleClick: ", direction);
       if (direction === "next") {
         gsap.to(draggableContainers.current[currentIndexRef.current], {
           id: "sectors-draggable-next",
@@ -156,7 +155,7 @@ const Sectors = (props: SectorsProps) => {
       console.log("we are handle dragged here", index);
       setCurrentIndex(index + 1);
       currentIndexRef.current = index + 1;
-    }, 800);
+    }, 500);
   }, []);
 
   useEffect(() => {
@@ -175,7 +174,7 @@ const Sectors = (props: SectorsProps) => {
       className={"absolute top-0 left-0 w-full h-full z-50 opacity-0"}
     >
       <div
-        className="absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer"
+        className=" absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md flex items-center justify-center text-dark-grey cursor-pointer"
         onClick={handleClose}
       >
         <svg
@@ -197,7 +196,7 @@ const Sectors = (props: SectorsProps) => {
 
       <div
         ref={clickPrevRef}
-        className="absolute top-1/2 -translate-y-1/2 left-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
+        className="hidden lg:flex absolute top-1/2 -translate-y-1/2 left-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
         style={{
           pointerEvents: currentIndex === 0 ? "none" : "auto",
           opacity: currentIndex === 0 ? 0.5 : 1,
@@ -221,7 +220,7 @@ const Sectors = (props: SectorsProps) => {
       </div>
       <div
         ref={clickNextRef}
-        className="absolute top-1/2 -translate-y-1/2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
+        className="hidden lg:flex  absolute top-1/2 -translate-y-1/2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
         style={{
           pointerEvents: currentIndex === entries.length - 1 ? "none" : "auto",
           opacity: currentIndex === entries.length ? 0.5 : 1,

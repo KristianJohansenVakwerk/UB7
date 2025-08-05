@@ -107,7 +107,7 @@ const Sector = (props: Props) => {
     >
       <div
         ref={draggableRef}
-        className="sector-draggable h-[80vh] w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="sector-draggable h-[80vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         data-lenis-prevent
         style={{
           transformStyle: "preserve-3d",
