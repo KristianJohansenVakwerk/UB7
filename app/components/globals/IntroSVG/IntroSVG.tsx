@@ -353,7 +353,7 @@ const IntroSVG = () => {
 
       <div
         id={"clocks"}
-        className="fixed bottom-14 lg:bottom-0  left-0 w-full h-auto pointer-events-none  lg:flex flex-col items-center justify-center lg:justify-end p-0 lg:p-3"
+        className="fixed bottom-10 lg:bottom-0  left-0 w-full h-auto pointer-events-none  lg:flex flex-col items-center justify-center lg:justify-end p-0 lg:p-3"
       >
         <div
           className={
