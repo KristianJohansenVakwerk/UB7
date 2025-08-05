@@ -188,7 +188,23 @@ export default function ObserverPage() {
       animating = true;
 
       const update = () => {
-        currentX = lerp(currentX, targetX, 0.07); // 0.1 = smoothing factor
+        // Normalize lerp factor based on device type and frame rate
+        const frameRate = 60; // Assuming 60fps
+        const targetFPS = 60;
+        const frameTime = 1000 / frameRate;
+
+        const baseSmoothing = isTouchDevice ? 0.08 : 0.06; // Touch needs slightly more smoothing
+        const normalizedSmoothing =
+          baseSmoothing * (frameTime / (1000 / targetFPS));
+
+        // Apply additional smoothing for very small movements
+        const distanceToTarget = Math.abs(currentX - targetX);
+        const adaptiveSmoothing =
+          distanceToTarget < 10
+            ? normalizedSmoothing * 0.7
+            : normalizedSmoothing;
+        currentX = lerp(currentX, targetX, adaptiveSmoothing); // 0.1 = smoothing factor
+
         const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
 
         setX(currentX, minX);
@@ -240,6 +256,7 @@ export default function ObserverPage() {
       });
 
       setGlobalCurrentIndex(index);
+      setCurrentStoreIndex(index);
       setGlobalScrollDirection(isScrollingDown);
       currentIndex.current = index;
       return;
@@ -788,16 +805,17 @@ const SectionAbout = ({
 
     const splitText = new SplitText(textRef.current, {
       type: "lines",
-      linesClass: "split-line text-base",
+      linesClass: "split-line text-base-2",
+      // wordsClass: "text-base-2",
+      tag: "span",
     });
 
     tlAboutTextRef.current.add(
       gsap.from(splitText.lines, {
         opacity: 0,
-        duration: 0.5,
-        stagger: 0.05,
+        duration: 0.3,
+        stagger: 0.1,
         ease: "sine.inOut",
-        className: "text-md",
       })
     );
 
@@ -973,9 +991,9 @@ const SectionAbout = ({
 
   return (
     <div className="about-section w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]">
-      <p
+      <div
         ref={textRef}
-        className="text-about absolute hidden lg:block lg:top-6 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey text-base"
+        className="text-about absolute hidden lg:block lg:top-7 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey"
       >
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -984,7 +1002,7 @@ const SectionAbout = ({
         velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
         occaecat cupidatat non proident, sunt in culpa qui officia deserunt
         mollit anim id est laborum.
-      </p>
+      </div>
 
       <div className="about-box absolute bottom-7 h-[62vh] lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
         <TeamMembers

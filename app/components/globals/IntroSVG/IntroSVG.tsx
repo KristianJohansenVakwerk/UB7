@@ -167,6 +167,7 @@ const IntroSVG = () => {
     const delay = 0.5;
     if (!bgGradientRef.current) return;
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
+
     if (currentStoreIndex > 0) {
       gsap.to("#clocks", {
         autoAlpha: 0,
