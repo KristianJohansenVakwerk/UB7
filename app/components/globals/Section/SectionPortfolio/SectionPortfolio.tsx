@@ -101,10 +101,10 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "portfolio relative h-full gap-0 w-full h-full px-3 flex flex-col items-start justify-between overflow-hidden"
+          "portfolio relative h-full gap-0 w-full h-full px-2 lg:px-3 flex flex-col items-start justify-between overflow-hidden"
         )}
       >
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-3 z-10 ">
+        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-2 lg:px-3 z-10">
           {introStoreDone && (
             <SectionPortfolioList
               data={data}

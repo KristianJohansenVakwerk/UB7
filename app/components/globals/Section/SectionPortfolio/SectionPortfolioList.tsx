@@ -34,6 +34,11 @@ const SectionPortfolioList = (props: Props) => {
     useAccordionSetup();
   const { playAccordion, resetAccordion } = useAccordionControls();
   const { setHoverSector, setDisableScroll } = useStore();
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   // Single useGSAP call with proper cleanup
   useGSAP(() => {
@@ -44,13 +49,6 @@ const SectionPortfolioList = (props: Props) => {
       cleanupAccordion();
     };
   }, [setupAccordion, cleanupAccordion]); // Add dependencies
-
-  useSectorListEvents("onScrollTriggerLeave", () => {
-    console.log("onScrollTriggerLeave");
-    // resetAccordion(accordionAnis, iconAnis);
-    // setHoverSector(false);
-    // onShowBackground("");
-  });
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
@@ -108,13 +106,8 @@ const SectionPortfolioList = (props: Props) => {
 
     pendingExpansionRef.current = { entryIndex, sector };
 
-    // Pause smooth scroll when opening sectors
-    // const smoother = ScrollSmoother.get();
-    // smoother?.paused(true);
-
     resetAccordion(accordionAnis, iconAnis);
 
-    console.log("showExpandedectors callback");
     if (timelineRef?.current) {
       console.log(
         "Timeline progress before reverse: ",
@@ -142,11 +135,25 @@ const SectionPortfolioList = (props: Props) => {
           <div
             key={index}
             className="sector-item relative w-[53px] opacity-0"
-            onMouseLeave={() => handleMouseLeave()}
+            {...(!isTouchDevice && {
+              onMouseLeave: () => {
+                return handleMouseLeave();
+              },
+            })}
           >
             <div
               className="relative lg:absolute left-0 sector-item-trigger w-[100%] h-[53px] rounded-[30px] border-2 border-[rgba(255,255,255,0.7)] z-10 bg-[rgba(255,255,255,0)]"
-              onMouseEnter={() => handleMouseEnter(index, sector.title)}
+              {...(isTouchDevice
+                ? {
+                    onTouchStart: () => {
+                      return handleMouseEnter(index, sector.title);
+                    },
+                  }
+                : {
+                    onMouseEnter: () => {
+                      return handleMouseEnter(index, sector.title);
+                    },
+                  })}
             >
               <div
                 className={clsx(

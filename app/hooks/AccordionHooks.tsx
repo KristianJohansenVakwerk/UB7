@@ -1,6 +1,9 @@
 "use client";
 import { useCallback, useRef } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import gsap from "gsap";
+
+gsap.registerPlugin(ScrollTrigger);
 
 export const useAccordionSetup = () => {
   const accordionAnis = useRef<any>(null);
@@ -35,23 +38,27 @@ export const useAccordionSetup = () => {
     accordionAnis.current = sectors.map((sector: any, index: number) => {
       return gsap
         .timeline({ paused: true, id: `accordion-${index}` })
+
         .to(sectorContentBackgrounds[index] as HTMLElement, {
           height: 100,
-          duration: 0.2,
-          ease: "power2.inOut",
+          duration: ScrollTrigger.isTouch ? 0.5 : 0.2,
+          ease: "expo.inOut",
         })
+        .addLabel("backgroundComplete", "+=0")
         .to(sector, {
           opacity: 1,
           duration: 0.2,
-          ease: "power2.inOut",
+          ease: "expo.inOut",
         })
+        .addLabel("sectorVisible", "+=0")
         .to(sector.querySelectorAll(".sector-item-content-entry"), {
           opacity: 1,
           y: 0,
           duration: 0.2,
           stagger: 0.1,
-          ease: "power2.inOut",
-        });
+          ease: "expo.inOut",
+        })
+        .addLabel("sectorComplete", "+=0");
     });
 
     iconAnis.current = sectors.map((sector: any, index: number) => {
@@ -61,7 +68,7 @@ export const useAccordionSetup = () => {
           rotation: 90,
           duration: 0.2,
           transformOrigin: "center center",
-          ease: "power2.inOut",
+          ease: "expo.inOut",
         });
     });
   }, []);
@@ -91,41 +98,101 @@ export const useAccordionSetup = () => {
 };
 
 export const useAccordionControls = () => {
-  const activeIndexRef = useRef<number | null>(null);
+  const previousIndexRef = useRef<number | null>(null);
 
   const playAccordion = useCallback(
     (index: number, accordionAnis: any[], iconAnis: any[]) => {
-      // If hovering over the same accordion, do nothing
-      console.log("playAccordion: ", index);
-      // gsap.killTweensOf(accordionAnis, iconAnis);
+      if (previousIndexRef.current === index && !ScrollTrigger.isTouch) return;
+
+      const isTouch = ScrollTrigger.isTouch;
+      const items = gsap.utils.toArray(".sector-item");
 
       const sectors = gsap.utils.toArray(
         ".sector-item-content"
       ) as HTMLElement[];
+
+      // get height for selected sector
       const sectorHeight = sectors[index].scrollHeight;
+      // set height for selected sector
       accordionAnis[index].getChildren()[0].vars.height = sectorHeight + 53;
 
-      if (activeIndexRef.current === index) return;
+      // Mobile specific behaviour
+      if (isTouch) {
+        // get all sector items
+
+        // if the active index is the same as the index, close all sectors
+        if (previousIndexRef.current === index) {
+          accordionAnis[index]?.reverse();
+          iconAnis[index]?.reverse();
+
+          items.forEach((item: any, ix: number) => {
+            gsap.to(item, {
+              y: 0,
+              duration: 0.5,
+              ease: "expo.inOut",
+              delay: 0.6, // Based on the duration of the accordionToClose timeline
+            });
+          });
+
+          // accordionToClose.eventCallback("onReverseComplete", () => {
+
+          // });
+
+          previousIndexRef.current = null;
+          return;
+        }
+
+        // Expand the touched sector and close the rest
+      }
 
       // If there's an active accordion, reset it while playing the new one
-      if (activeIndexRef.current !== null) {
-        const currentAccordion = accordionAnis[activeIndexRef.current];
-        const currentIcon = iconAnis[activeIndexRef.current];
+      if (previousIndexRef.current !== null) {
+        const previousAccordion = accordionAnis[previousIndexRef.current];
+        const previousIcon = iconAnis[previousIndexRef.current];
 
         // Reset the current accordion (no await)
-        if (currentAccordion && currentAccordion.progress() > 0) {
-          currentAccordion.reverse();
+        if (previousAccordion && previousAccordion.progress() > 0) {
+          previousAccordion.reverse();
+
+          if (isTouch) {
+            previousAccordion.eventCallback("onReverseComplete", () => {
+              //   console.log("onReverseComplete triggered - executing callback");
+
+              items.forEach((item: any, ix: number) => {
+                gsap.to(item, {
+                  y: ix > index ? sectorHeight : 0,
+                  duration: 0.5,
+                  ease: "expo.inOut",
+                });
+              });
+              iconAnis[index]?.play();
+              accordionAnis[index].play();
+            });
+          }
         }
-        if (currentIcon && currentIcon.progress() > 0) {
-          currentIcon.reverse();
+        if (previousIcon && previousIcon.progress() > 0) {
+          previousIcon.reverse();
+        }
+      } else {
+        if (isTouch) {
+          items.forEach((item: any, ix: number) => {
+            gsap.to(item, {
+              y: ix > index ? sectorHeight : 0,
+              duration: 0.5,
+              ease: "expo.inOut",
+            });
+          });
+          iconAnis[index]?.play();
+          accordionAnis[index].play();
         }
       }
 
+      console.log("Play the new accordion immediately (in sync with reset)");
       // Play the new accordion immediately (in sync with reset)
-      iconAnis[index]?.play();
-      accordionAnis[index].play();
+      !isTouch && iconAnis[index]?.play();
+      !isTouch && accordionAnis[index].play();
 
-      activeIndexRef.current = index;
+      previousIndexRef.current = index;
     },
     []
   );
@@ -134,16 +201,16 @@ export const useAccordionControls = () => {
     (accordionAnis: any[], iconAnis: any[], cb?: () => void) => {
       console.log(
         "resetAccordion called with activeIndex:",
-        activeIndexRef.current,
+        previousIndexRef.current,
         "callback:",
         !!cb
       );
 
       // gsap.killTweensOf(accordionAnis, iconAnis);
 
-      if (activeIndexRef.current !== null) {
-        const currentAccordion = accordionAnis[activeIndexRef.current];
-        const currentIcon = iconAnis[activeIndexRef.current];
+      if (previousIndexRef.current !== null) {
+        const currentAccordion = accordionAnis[previousIndexRef.current];
+        const currentIcon = iconAnis[previousIndexRef.current];
 
         // Clear any existing callbacks FIRST, before reversing
         console.log("Clearing existing callback");
@@ -172,7 +239,7 @@ export const useAccordionControls = () => {
           currentIcon.reverse();
         }
 
-        activeIndexRef.current = null;
+        previousIndexRef.current = null;
       } else {
         console.log("No active index - nothing to reset");
       }
