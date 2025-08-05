@@ -5,9 +5,10 @@ import Slider from "../../shared/Slider/Slider";
 import gsap from "gsap";
 import Draggable from "gsap/Draggable";
 import InertiaPlugin from "gsap/InertiaPlugin";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useGSAP } from "@gsap/react";
-gsap.registerPlugin(Draggable, InertiaPlugin);
+gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
 
 type Props = {
   data: any;
@@ -19,6 +20,19 @@ type Props = {
 const Sector = (props: Props) => {
   const { data, index, currentIndex, active, onDragged } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
+
+  // Add utility function to check if element is out of bounds
+  const isElementOutOfBounds = (element: HTMLElement): boolean => {
+    const rect = element.getBoundingClientRect();
+    const windowWidth = window.innerWidth;
+    const margin = 150; // 150px margin on each side
+
+    // Check if element is out of bounds
+    return (
+      rect.right < margin || // Element is completely to the left
+      rect.left > windowWidth - margin // Element is completely to the right
+    );
+  };
 
   useGSAP(() => {
     if (currentIndex === null) {
@@ -79,14 +93,33 @@ const Sector = (props: Props) => {
 
           if (!el) return;
 
-          const rect = el.getBoundingClientRect();
+          if (ScrollTrigger.isTouch) {
+            const isOutOfBounds = isElementOutOfBounds(el);
+
+            if (isOutOfBounds) {
+              gsap.to(el, {
+                x:
+                  dragDirRef.current === 1
+                    ? window.innerWidth * 3
+                    : -window.innerWidth * 3,
+                duration: 0.5,
+                delay: 0.2,
+                ease: "expo.out",
+                onComplete: () => {
+                  onDragged(index);
+                },
+              });
+            }
+
+            return;
+          }
 
           gsap.to(el, {
             x:
               dragDirRef.current === 1 ? window.innerWidth : -window.innerWidth,
             duration: 0.5,
             delay: 0.5,
-            ease: "power2.out",
+            ease: "expo.out",
             onComplete: () => {
               onDragged(index);
             },
@@ -212,6 +245,8 @@ export const draggableConfig = {
   cursor: "grab",
   activeCursor: "grabbing",
   dragClickables: false,
+  minimumMovement: ScrollTrigger.isTouch ? 30 : 0,
+  lockAxis: ScrollTrigger.isTouch ? true : false,
   clickableTest: (el: Element) => {
     if (el instanceof HTMLImageElement) {
       return true;
