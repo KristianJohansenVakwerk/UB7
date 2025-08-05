@@ -242,7 +242,7 @@ const IntroSVG = () => {
         <svg
           ref={svgRef}
           viewBox="0 0 1921 1080"
-          preserveAspectRatio="xMidYMid meet"
+          preserveAspectRatio="xMidYMid slice"
           xmlns="http://www.w3.org/2000/svg"
           className="w-screen h-[100svh] lg:h-screen block"
           style={{ willChange: "transform" }}
