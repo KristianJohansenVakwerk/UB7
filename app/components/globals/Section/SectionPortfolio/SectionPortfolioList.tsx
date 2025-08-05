@@ -193,14 +193,14 @@ const SectionPortfolioList = (props: Props) => {
 
             <div className="absolute top-0 left-0 w-full h-[53px] sector-item-content-background bg-[rgba(255,255,255,0)] rounded-[27px] z-0" />
 
-            <div className="absolute top-[53px] left-0 w-full h-fit sector-item-content opacity-0  rounded-[27px] overflow-hidden z-20">
-              <div className="sector-item-content-inner w-full pt-2 px-2 pb-1">
+            <div className="absolute top-[53px] left-0 w-full h-fit sector-item-content opacity-0  rounded-[27px] overflow-hidden z-20 pointer-events-none lg:pointer-events-auto">
+              <div className="sector-item-content-inner w-full pt-2 px-2 pb-1  flex flex-col gap-0.5 lg:gap-0">
                 {sector.entries.map((entry: any, ix: number) => {
                   return (
                     <div
                       key={index + ix}
                       className={clsx(
-                        "sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer"
+                        "sector-item-content-entry opacity-0 translate-y-[-5px] hover:text-light-grey hover:pl-1 transition-all duration-400 cursor-pointer "
                       )}
                     >
                       <div
@@ -214,7 +214,7 @@ const SectionPortfolioList = (props: Props) => {
                           );
                         }}
                       >
-                        {entry.title}
+                        <span className="text-base">{entry.title}</span>
                         <div>
                           <svg
                             width="18"

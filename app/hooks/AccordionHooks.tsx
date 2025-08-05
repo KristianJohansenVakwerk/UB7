@@ -38,11 +38,15 @@ export const useAccordionSetup = () => {
     accordionAnis.current = sectors.map((sector: any, index: number) => {
       return gsap
         .timeline({ paused: true, id: `accordion-${index}` })
-
         .to(sectorContentBackgrounds[index] as HTMLElement, {
           height: 100,
           duration: ScrollTrigger.isTouch ? 0.5 : 0.2,
           ease: "expo.inOut",
+          onReverseComplete: () => {
+            gsap.set(sectors[index] as HTMLElement, {
+              pointerEvents: "none",
+            });
+          },
         })
         .addLabel("backgroundComplete", "+=0")
         .to(sector, {
@@ -57,6 +61,11 @@ export const useAccordionSetup = () => {
           duration: 0.2,
           stagger: 0.1,
           ease: "expo.inOut",
+          onComplete: () => {
+            gsap.set(sectors[index] as HTMLElement, {
+              pointerEvents: "auto",
+            });
+          },
         })
         .addLabel("sectorComplete", "+=0");
     });
@@ -122,6 +131,7 @@ export const useAccordionControls = () => {
 
         // if the active index is the same as the index, close all sectors
         if (previousIndexRef.current === index) {
+          console.log("we clicked the same sector close all");
           accordionAnis[index]?.reverse();
           iconAnis[index]?.reverse();
 
@@ -147,6 +157,9 @@ export const useAccordionControls = () => {
 
       // If there's an active accordion, reset it while playing the new one
       if (previousIndexRef.current !== null) {
+        console.log(
+          "we clicked a different sector open the new one and close the previous"
+        );
         const previousAccordion = accordionAnis[previousIndexRef.current];
         const previousIcon = iconAnis[previousIndexRef.current];
 
@@ -175,6 +188,7 @@ export const useAccordionControls = () => {
         }
       } else {
         if (isTouch) {
+          console.log("sectorHeight: ", sectors[index], sectorHeight);
           items.forEach((item: any, ix: number) => {
             gsap.to(item, {
               y: ix > index ? sectorHeight : 0,
