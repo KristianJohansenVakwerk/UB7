@@ -25,7 +25,7 @@ const Sector = (props: Props) => {
   const isElementOutOfBounds = (element: HTMLElement): boolean => {
     const rect = element.getBoundingClientRect();
     const windowWidth = window.innerWidth;
-    const margin = 150; // 150px margin on each side
+    const margin = 300; // 150px margin on each side
 
     // Check if element is out of bounds
     return (
@@ -83,8 +83,6 @@ const Sector = (props: Props) => {
               rotation: vx * 0.01,
               duration: 0.5,
               ease: "power2.out",
-
-              onComplete: () => {},
             });
           }
         },
@@ -94,17 +92,21 @@ const Sector = (props: Props) => {
 
             if (!el) return;
 
-            gsap.to(el, {
-              x:
-                dragDirRef.current === 1
-                  ? window.innerWidth * 3
-                  : -window.innerWidth * 3,
-              duration: 2,
-              delay: 0.2,
-              ease: "expo.out",
-              onComplete: () => {},
-            });
-            onDragged(index);
+            const isOutOfBounds = isElementOutOfBounds(el);
+
+            if (isOutOfBounds) {
+              gsap.to(el, {
+                x:
+                  dragDirRef.current === 1
+                    ? window.innerWidth * 3
+                    : -window.innerWidth * 3,
+                duration: 2,
+                delay: 0.2,
+                ease: "expo.out",
+                onComplete: () => {},
+              });
+              onDragged(index);
+            }
           }
         },
         onDragEnd: () => {
