@@ -88,31 +88,51 @@ const Sector = (props: Props) => {
             });
           }
         },
+        onRelease: () => {
+          if (ScrollTrigger.isTouch) {
+            const el = draggableRef.current;
+
+            if (!el) return;
+
+            gsap.to(el, {
+              x:
+                dragDirRef.current === 1
+                  ? window.innerWidth * 3
+                  : -window.innerWidth * 3,
+              duration: 2,
+              delay: 0.2,
+              ease: "expo.out",
+              onComplete: () => {},
+            });
+            onDragged(index);
+          }
+        },
         onDragEnd: () => {
           const el = draggableRef.current;
 
           if (!el) return;
 
-          if (ScrollTrigger.isTouch) {
-            const isOutOfBounds = isElementOutOfBounds(el);
+          // if (ScrollTrigger.isTouch) {
+          //   const isOutOfBounds = isElementOutOfBounds(el);
 
-            if (isOutOfBounds) {
-              gsap.to(el, {
-                x:
-                  dragDirRef.current === 1
-                    ? window.innerWidth * 3
-                    : -window.innerWidth * 3,
-                duration: 0.5,
-                delay: 0.2,
-                ease: "expo.out",
-                onComplete: () => {
-                  onDragged(index);
-                },
-              });
-            }
+          //   if (isOutOfBounds) {
+          //     console.log("isOutOfBounds");
+          //     gsap.to(el, {
+          //       x:
+          //         dragDirRef.current === 1
+          //           ? window.innerWidth * 3
+          //           : -window.innerWidth * 3,
+          //       duration: 0.5,
+          //       delay: 0.2,
+          //       ease: "expo.out",
+          //       onComplete: () => {
+          //         onDragged(index);
+          //       },
+          //     });
+          //   }
 
-            return;
-          }
+          //   return;
+          // }
 
           gsap.to(el, {
             x:
@@ -140,7 +160,7 @@ const Sector = (props: Props) => {
     >
       <div
         ref={draggableRef}
-        className="sector-draggable h-[90vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="sector-draggable h-[80vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         data-lenis-prevent
         style={{
           transformStyle: "preserve-3d",
