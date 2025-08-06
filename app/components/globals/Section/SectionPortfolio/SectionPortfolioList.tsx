@@ -194,7 +194,7 @@ const SectionPortfolioList = (props: Props) => {
             <div className="absolute top-0 left-0 w-full h-[53px] sector-item-content-background bg-[rgba(255,255,255,0)] rounded-[27px] z-0" />
 
             <div className="absolute top-[53px] left-0 w-full h-fit sector-item-content opacity-0  rounded-[27px] overflow-hidden z-20 pointer-events-none lg:pointer-events-auto">
-              <div className="sector-item-content-inner w-full pt-2 px-2 pb-2 lg:pb-1  flex flex-col gap-0.5 lg:gap-0">
+              <div className="sector-item-content-inner w-full pt-2 px-2 pb-2 lg:pb-2  flex flex-col gap-0.5 lg:gap-0.5">
                 {sector.entries.map((entry: any, ix: number) => {
                   return (
                     <div

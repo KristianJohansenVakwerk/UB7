@@ -13,24 +13,8 @@
     url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff2")
       format("woff2");
 }
-:root {
-  --background: #d9d9d9;
-  --foreground: #3f3f3f;
-  --dark-grey: #3f3f3f;
-  --dark-green: rgba(4, 80, 49, 1);
-  --font-size: 16px;
-  --spacing: 0.625rem;
-  --font-rm-neue: "RM Neue";
 
-  --font-gt-america-mono: "GT America Mono";
-
-  @media (max-width: 1440px) {
-    --font-size: 14px;
-    --spacing: 0.7142rem;
-  }
-}
-
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --background-light-grey: var(--background);
@@ -50,12 +34,34 @@
   --text-lg: 5.125rem;
   --text-lg--line-height: 1.02;
   --text-title: clamp(25px, 3.5vw, 82px);
-  --text-title--line-height: 0.9;
+  --text-title--line-height: 1;
+
   --radius-menu: 35px;
   --radius-progress-bar: 20px;
   --aspect-ratio-box: 342/558;
   --aspect-ratio-box-lg: 769/411;
 }
+
+:root {
+  --background: #d9d9d9;
+  --foreground: #3f3f3f;
+  --dark-grey: #3f3f3f;
+  --dark-green: rgba(4, 80, 49, 1);
+  --font-size: 16px;
+  --spacing: 0.625rem;
+  --font-rm-neue: "RM Neue";
+  --font-gt-america-mono: "GT America Mono";
+
+  @media (max-width: 1440px) {
+    --font-size: 14px;
+    --spacing: 0.7142rem;
+  }
+
+  @media (max-width: 768px) {
+    --text-title--line-height: 1.05;
+  }
+}
+
 /* 
 @media (prefers-color-scheme: dark) {
   :root {

@@ -59,6 +59,29 @@ const bgSettings = [
   },
 ];
 
+const bgSettingsMin = [
+  // Dark green
+  {
+    offset: 0.01,
+    delay: 0.4,
+  },
+  // Bright lime green
+  {
+    offset: 0.2,
+    delay: 0.2,
+  },
+  // Light yellow/cream
+  {
+    offset: 0.3,
+    delay: 0,
+  },
+  // Light gray
+  {
+    offset: 1,
+    delay: 0,
+  },
+];
+
 const IntroSVG = () => {
   const ref = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -69,7 +92,7 @@ const IntroSVG = () => {
   const loaderRefPct = useRef<HTMLSpanElement>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { setIntroStoreDone, currentStoreIndex } = useStore();
+  const { setIntroStoreDone, introStoreDone, currentStoreIndex } = useStore();
 
   useGSAP(() => {
     if (!loaderRef.current) return;
@@ -135,7 +158,7 @@ const IntroSVG = () => {
             setIntroStoreDone(true);
           }
         },
-        duration: 3,
+        duration: 2,
         ease: "expo.inOut",
         delay: setting.delay,
       });
@@ -154,7 +177,7 @@ const IntroSVG = () => {
         attr: {
           offset: setting.offset,
         },
-        duration: 3,
+        duration: 2,
         ease: "expo.inOut",
         delay: setting.delay,
       });
@@ -162,6 +185,7 @@ const IntroSVG = () => {
   }, [isLoading]);
 
   useGSAP(() => {
+    console.log("isLoading", isLoading, introStoreDone);
     if (isLoading) return;
     const dur = 0.75;
     const delay = 0.5;
@@ -174,18 +198,15 @@ const IntroSVG = () => {
         duration: dur,
         ease: "expo.inOut",
       });
-      gsap.to(stopsBG[2], {
-        attr: {
-          "stop-color": "#7EFA50",
-        },
-        duration: dur,
-        ease: "expo.inOut",
-      });
 
-      gsap.to(bgGradientRef.current, {
-        yPercent: 70,
-        duration: dur,
-        ease: "expo.inOut",
+      bgSettingsMin.forEach((setting, index) => {
+        gsap.to(stopsBG[index], {
+          attr: {
+            offset: setting.offset,
+          },
+          duration: dur,
+          ease: "expo.inOut",
+        });
       });
 
       gsap.to(".intro-text-svg", {
@@ -194,22 +215,10 @@ const IntroSVG = () => {
         ease: "expo.inOut",
       });
     } else {
+      console.log("ding dong");
+
       gsap.to("#clocks", {
         autoAlpha: 1,
-        duration: dur,
-        delay: delay,
-        ease: "expo.inOut",
-      });
-      gsap.to(stopsBG[2], {
-        attr: {
-          "stop-color": "#FEFFC2",
-        },
-        duration: dur,
-        delay: delay,
-        ease: "expo.inOut",
-      });
-      gsap.to(bgGradientRef.current, {
-        yPercent: 0,
         duration: dur,
         delay: delay,
         ease: "expo.inOut",
@@ -221,8 +230,37 @@ const IntroSVG = () => {
         delay: delay,
         ease: "expo.inOut",
       });
+
+      if (introStoreDone) {
+        bgSettings.forEach((setting, index) => {
+          gsap.to(stopsBG[index], {
+            attr: {
+              offset: setting.offset,
+            },
+            duration: dur,
+            delay: delay,
+            ease: "expo.inOut",
+          });
+        });
+      }
+
+      // gsap.to(stopsBG[2], {
+      //   attr: {
+      //     "stop-color": "#FEFFC2",
+      //   },
+      //   duration: dur,
+      //   delay: delay,
+      //   ease: "expo.inOut",
+      // });
+
+      // gsap.to(bgGradientRef.current, {
+      //   yPercent: 0,
+      //   duration: dur,
+      //   delay: delay,
+      //   ease: "expo.inOut",
+      // });
     }
-  }, [currentStoreIndex, isLoading]);
+  }, [currentStoreIndex, isLoading, introStoreDone]);
 
   return (
     <>
