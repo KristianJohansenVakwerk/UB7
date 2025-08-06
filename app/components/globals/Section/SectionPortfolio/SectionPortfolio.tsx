@@ -1,6 +1,6 @@
 "use client";
 import clsx from "clsx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import gsap from "gsap";
 
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,8 +11,6 @@ import Sectors from "../../Sectors/Sectors";
 import SectionTitle from "../SectionTitle";
 import SectionPortfolioList from "./SectionPortfolioList";
 import { useSectorListEvents } from "../../../../hooks/AnimationsHooks";
-import { cleanupGSAPAnimations } from "@/app/utils/gsapUtils";
-import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,14 +33,6 @@ const SectionPortfolio = (props: any) => {
   const [entriesTo, setEntriesTo] = useState<number>(entries.length);
   const [showUI, setShowUI] = useState<boolean>(false);
 
-  const [test, setTest] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (currentIndex === 1) {
-      setTest(true);
-    }
-  }, [currentIndex]);
-
   const [showExpandedSectors, setShowExpandedSectors] =
     useState<boolean>(false);
   const { setHoverSector } = useStore();
@@ -57,9 +47,6 @@ const SectionPortfolio = (props: any) => {
   };
 
   const handleClose = () => {
-    // const smoother = ScrollSmoother.get();
-    // smoother?.paused(false);
-
     setActiveSector("");
     setHoverSector(false);
 
@@ -69,7 +56,7 @@ const SectionPortfolio = (props: any) => {
       opacity: 1,
       stagger: 0.1,
       duration: 0.2,
-      ease: "power2.inOut",
+      ease: "expo.inOut",
       onComplete: () => {
         gsap.to(
           ["#progress", "#section-title-portfolio", "#menu", ".section-title"],

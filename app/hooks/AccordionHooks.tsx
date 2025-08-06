@@ -84,6 +84,8 @@ export const useAccordionSetup = () => {
 
   // Add cleanup function
   const cleanupAccordion = useCallback(() => {
+    console.log("cleaning up on unmount!");
+
     if (accordionAnis.current) {
       accordionAnis.current.forEach((anim: any) => {
         if (anim) anim.kill();
@@ -211,6 +213,22 @@ export const useAccordionControls = () => {
     []
   );
 
+  const resetAccordionMobile = useCallback(() => {
+    if (ScrollTrigger.isTouch) {
+      const items = gsap.utils.toArray(".sector-item");
+
+      items.forEach((item: any, ix: number) => {
+        gsap.to(item, {
+          y: 0,
+          duration: 0.5,
+          ease: "expo.inOut",
+        });
+      });
+
+      console.log("resetAccordionMobile called");
+    }
+  }, []);
+
   const resetAccordion = useCallback(
     (accordionAnis: any[], iconAnis: any[], cb?: () => void) => {
       console.log(
@@ -219,8 +237,6 @@ export const useAccordionControls = () => {
         "callback:",
         !!cb
       );
-
-      // gsap.killTweensOf(accordionAnis, iconAnis);
 
       if (previousIndexRef.current !== null) {
         const currentAccordion = accordionAnis[previousIndexRef.current];
@@ -264,6 +280,7 @@ export const useAccordionControls = () => {
   return {
     playAccordion,
     resetAccordion,
+    resetAccordionMobile,
     // activeIndexRef: activeIndexRef.current,
   };
 };

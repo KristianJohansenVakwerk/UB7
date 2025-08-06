@@ -18,6 +18,7 @@ import {
 } from "@/app/hooks/AnimationsHooks";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useStore } from "@/store/store";
+import { useAccordionControls } from "@/app/hooks/AccordionHooks";
 
 // Register the Draggable plugin
 gsap.registerPlugin(Draggable, InertiaPlugin, ScrollTrigger);
@@ -48,6 +49,7 @@ const Sectors = (props: SectorsProps) => {
   const clickPrevRef = useRef<any>(null);
   const draggableContainers = useRef<HTMLElement[]>([]);
   const { setDisableScroll } = useStore();
+  const { resetAccordionMobile } = useAccordionControls();
 
   useGSAP(() => {
     draggableContainers.current = gsap.utils.toArray(
@@ -123,6 +125,9 @@ const Sectors = (props: SectorsProps) => {
   const { timelineRef } = useSectorListAnimation(0);
 
   const handleClose = useCallback(() => {
+    // reset for mobile
+    resetAccordionMobile();
+
     gsap.to(sectorsContainerRef.current, {
       id: "sectors-container-close",
       autoAlpha: 0,
@@ -139,7 +144,6 @@ const Sectors = (props: SectorsProps) => {
           );
 
           timelineRef.current.seek(0);
-
           timelineRef.current.play(0);
 
           setCurrentIndex(null);

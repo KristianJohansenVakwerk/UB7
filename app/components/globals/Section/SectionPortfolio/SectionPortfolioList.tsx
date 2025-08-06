@@ -32,7 +32,8 @@ const SectionPortfolioList = (props: Props) => {
     props;
   const { accordionAnis, iconAnis, setupAccordion, cleanupAccordion } =
     useAccordionSetup();
-  const { playAccordion, resetAccordion } = useAccordionControls();
+  const { playAccordion, resetAccordion, resetAccordionMobile } =
+    useAccordionControls();
   const { setHoverSector, setDisableScroll } = useStore();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
@@ -109,17 +110,27 @@ const SectionPortfolioList = (props: Props) => {
     resetAccordion(accordionAnis, iconAnis);
 
     if (timelineRef?.current) {
-      console.log(
-        "Timeline progress before reverse: ",
-        timelineRef.current.progress()
-      );
       timelineRef.current.seek(1);
       timelineRef.current.reverse();
-      // timelineRef.current.eventCallback("onReverseComplete", () => {});
     }
 
     setDisableScroll(true);
   };
+
+  useEffect(() => {
+    if (currentIndex !== 1) {
+      if (ScrollTrigger.isTouch) {
+        onShowBackground("");
+        setHoverSector(false);
+        resetAccordion(accordionAnis, iconAnis);
+        resetAccordionMobile();
+      }
+      if (timelineRef?.current) {
+        timelineRef.current.seek(1);
+        timelineRef.current.reverse();
+      }
+    }
+  }, [currentIndex]);
 
   return (
     <div className="w-full relative flex flex-col lg:flex-row items-start justify-start">
