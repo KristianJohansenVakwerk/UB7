@@ -2,8 +2,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Box from "../../ui/Box/Box";
-import { useRef, useState, useEffect, useMemo, useCallback } from "react";
+import { useRef, useState } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
 import { useStore } from "@/store/store";
@@ -83,7 +82,8 @@ const bgSettingsMin = [
 ];
 
 const IntroSVG = () => {
-  const ref = useRef<HTMLDivElement>(null);
+  const number7Ref = useRef<SVGSVGElement>(null);
+  const number7GradientRef = useRef<SVGLinearGradientElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const gradientRef = useRef<SVGLinearGradientElement>(null);
   const bgGradientRef = useRef<SVGRadialGradientElement>(null);
@@ -132,7 +132,46 @@ const IntroSVG = () => {
 
   // Initial gradient animation - grow from bottom
   useGSAP(() => {
-    if (!gradientRef.current || !bgGradientRef.current || isLoading) return;
+    if (
+      !gradientRef.current ||
+      !bgGradientRef.current ||
+      !number7GradientRef.current ||
+      isLoading
+    )
+      return;
+
+    /// Mobile specifics for intro
+    if (ScrollTrigger.isTouch) {
+      gsap.set(number7Ref.current, {
+        opacity: 1,
+      });
+
+      const stopsNumber7 = number7GradientRef.current.querySelectorAll("stop");
+
+      gsap.set(stopsNumber7, {
+        attr: {
+          offset: 1,
+          "stop-color": "#D9D9D9",
+        },
+      });
+
+      textSettings.forEach((setting, index) => {
+        gsap.to(stopsNumber7[index], {
+          attr: {
+            offset: setting.offset,
+            "stop-color": setting["stop-color"],
+          },
+          onComplete: () => {
+            if (index === textSettings.length - 1) {
+              setIntroStoreDone(true);
+            }
+          },
+          duration: 2,
+          ease: "expo.inOut",
+          delay: setting.delay,
+        });
+      });
+    }
 
     gsap.set(gradientContainerRef.current, {
       opacity: 1,
@@ -300,7 +339,7 @@ const IntroSVG = () => {
         </svg>
       </div>
 
-      <div className="intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center px-3 lg:px-12 opacity-0 ">
+      <div className="hidden lg:block intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center px-3 lg:px-12 opacity-0">
         <svg
           ref={svgRef}
           viewBox="0 0 1921 1080"
@@ -368,6 +407,40 @@ const IntroSVG = () => {
               {/* Bright lime green */}
               <stop offset="0.913462" stopColor="#09603D" />{" "}
               {/* Dark forest green */}
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <div className="block lg:hidden fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center px-3 lg:px-12">
+        <svg
+          ref={number7Ref}
+          width="304"
+          height="394"
+          viewBox="0 0 304 394"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full block opacity-0 px-3"
+          style={{ willChange: "transform" }}
+        >
+          <path
+            d="M279.525 96.2893C198.052 104.74 129.88 142.084 81.1173 205.343C41.9444 256.154 16.0932 324.43 9.77631 393.288H105.843C109.595 363.605 121.145 309.838 156.836 263.523C182.083 230.759 214.48 208.861 253.528 197.974L279.504 96.0801H0.415039L24.3899 0.681641H303.479L279.504 96.0801Z"
+            fill="url(#number7_gradient)"
+          />
+          <defs>
+            <linearGradient
+              ref={number7GradientRef}
+              id="number7_gradient"
+              x1="151.947"
+              y1="0.681641"
+              x2="151.947"
+              y2="433.988"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop offset="0.0409477" stopColor="#D9D9D9" />
+              <stop offset="0.231405" stopColor="#FEFFC2" />
+              <stop offset="0.446281" stopColor="#7EFA50" />
+              <stop offset="0.913462" stopColor="#09603D" />
             </linearGradient>
           </defs>
         </svg>
