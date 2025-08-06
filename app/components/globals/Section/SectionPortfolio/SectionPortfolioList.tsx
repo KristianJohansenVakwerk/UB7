@@ -82,7 +82,7 @@ const SectionPortfolioList = (props: Props) => {
     gsap.to(
       ["#progress", "#section-title-portfolio", "#menu", ".section-title"],
       {
-        opacity: 0,
+        autoAlpha: 0,
         duration: 0.4,
         ease: "power4.inOut",
       }

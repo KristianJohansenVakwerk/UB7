@@ -178,7 +178,7 @@ const Sectors = (props: SectorsProps) => {
       className={"absolute top-0 left-0 w-full h-full z-50 opacity-0"}
     >
       <div
-        className=" absolute top-2 right-2 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md flex items-center justify-center text-dark-grey cursor-pointer"
+        className=" absolute bottom-2 lg:bottom-auto lg:top-2 translate-x-1/2 lg:translate-x-0 right-1/2 lg:right-3 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md flex items-center justify-center text-dark-grey cursor-pointer"
         onClick={handleClose}
       >
         <svg

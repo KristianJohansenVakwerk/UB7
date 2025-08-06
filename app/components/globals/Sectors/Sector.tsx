@@ -96,14 +96,18 @@ const Sector = (props: Props) => {
 
             if (isOutOfBounds) {
               gsap.to(el, {
-                x:
-                  dragDirRef.current === 1
-                    ? window.innerWidth * 3
-                    : -window.innerWidth * 3,
+                x: function () {
+                  const currentX = gsap.getProperty(el, "x") as number;
+                  return (
+                    currentX +
+                    (dragDirRef.current === 1
+                      ? window.innerWidth * 3
+                      : -window.innerWidth * 3)
+                  );
+                },
                 duration: 2,
                 delay: 0.2,
                 ease: "expo.out",
-                onComplete: () => {},
               });
               onDragged(index);
             }
@@ -114,33 +118,23 @@ const Sector = (props: Props) => {
 
           if (!el) return;
 
-          // if (ScrollTrigger.isTouch) {
-          //   const isOutOfBounds = isElementOutOfBounds(el);
-
-          //   if (isOutOfBounds) {
-          //     console.log("isOutOfBounds");
-          //     gsap.to(el, {
-          //       x:
-          //         dragDirRef.current === 1
-          //           ? window.innerWidth * 3
-          //           : -window.innerWidth * 3,
-          //       duration: 0.5,
-          //       delay: 0.2,
-          //       ease: "expo.out",
-          //       onComplete: () => {
-          //         onDragged(index);
-          //       },
-          //     });
-          //   }
-
-          //   return;
-          // }
+          if (ScrollTrigger.isTouch) {
+            return;
+          }
 
           gsap.to(el, {
-            x:
-              dragDirRef.current === 1 ? window.innerWidth : -window.innerWidth,
-            duration: 0.5,
-            delay: 0.5,
+            x: function () {
+              const currentX = gsap.getProperty(el, "x") as number;
+
+              return (
+                currentX +
+                (dragDirRef.current === 1
+                  ? window.innerWidth
+                  : -window.innerWidth)
+              );
+            },
+            duration: 1.2,
+            delay: 0.4,
             ease: "expo.out",
             onComplete: () => {
               onDragged(index);
@@ -153,7 +147,7 @@ const Sector = (props: Props) => {
 
   return (
     <div
-      className="sector-draggable-container absolute inset-0  flex items-center justify-center "
+      className="sector-draggable-container absolute inset-0  flex items-start lg:items-center justify-center pt-2 lg:pt-0"
       style={{
         perspective: "1000px",
         zIndex: getZIndex(index),
@@ -162,7 +156,7 @@ const Sector = (props: Props) => {
     >
       <div
         ref={draggableRef}
-        className="sector-draggable h-[80vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        className="sector-draggable h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
         data-lenis-prevent
         style={{
           transformStyle: "preserve-3d",
