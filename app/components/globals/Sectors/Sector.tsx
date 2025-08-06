@@ -164,14 +164,14 @@ const Sector = (props: Props) => {
           transformOrigin: "center center",
         }}
       >
-        <div className="h-auto w-full py-2  flex flex-col gap-4">
-          <div className={"font-mono text-sm px-2"}>
+        <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
+          <div className={"font-mono text-sm px-2 lg:px-3"}>
             Category: {data.sector}
           </div>
-          <div className={"flex flex-col gap-4"}>
+          <div className={"flex flex-col gap-4 lg:gap-8"}>
             <div className={"font-sans text-md px-2"}>{data.title}</div>
 
-            <div className={"flex flex-col gap-1 px-2"}>
+            <div className={"flex flex-col gap-3 px-2 lg:px-3"}>
               <div className={"font-sans text-base"}>Details</div>
               <div className={"flex flex-col gap-[0.2rem]"}>
                 {data?.details &&
@@ -193,10 +193,10 @@ const Sector = (props: Props) => {
             </div>
           </div>
           <div>
-            <div className={"flex flex-col gap-1"}>
+            <div className={"flex flex-col gap-1 lg:gap-2"}>
               <div
                 className={
-                  "flex flex-row items-center justify-start gap-1 px-2"
+                  "flex flex-row items-center justify-start gap-1 px-2 lg:px-3"
                 }
               >
                 {data?.socials &&
@@ -204,7 +204,7 @@ const Sector = (props: Props) => {
                   data.socials.map((s: any, index: number) => (
                     <div
                       key={index}
-                      className="clickable font-mono text-xs text-light-grey bg-gray-100 rounded-xl px-1 py-0.5"
+                      className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
                     >
                       <a
                         href={s.url}
@@ -237,7 +237,7 @@ const Sector = (props: Props) => {
 
                 {data?.text && (
                   <div
-                    className={"font-sans text-base px-2 flex flex-col gap-2"}
+                    className={"px-2 lg:px-3 flex flex-col gap-2"}
                     dangerouslySetInnerHTML={{ __html: data.text }}
                   />
                 )}

@@ -23,13 +23,13 @@
   --font-sans: var(--font-rm-neue);
   --font-mono: var(--font-gt-america-mono);
   --text-xs: 0.938rem;
-  --text-heading: 2.5rem;
+  --text-heading: 2rem;
   --text-sm: clamp(12px, 0.85rem, 20px);
   --text-base: 1rem;
   --text-base-2: 1.125rem;
   --text-base-2--line-height: 1.2;
   --text-base--line-height: 1.2;
-  --text-md: 3.625rem;
+  --text-md: 3rem;
   --text-md--line-height: 1.02;
   --text-lg: 5.125rem;
   --text-lg--line-height: 1.02;
@@ -46,8 +46,10 @@
   --background: #d9d9d9;
   --foreground: #3f3f3f;
   --dark-grey: #3f3f3f;
+  --button-grey: #e5e5e5;
   --dark-green: rgba(4, 80, 49, 1);
-  --font-size: 16px;
+  --font-size: 17px;
+
   --spacing: 0.625rem;
   --font-rm-neue: "RM Neue";
   --font-gt-america-mono: "GT America Mono";
@@ -59,6 +61,9 @@
 
   @media (max-width: 768px) {
     --text-title--line-height: 1.05;
+    --text-md: 32px;
+    --text-heading: 28px;
+    --text-heading--line-height: 1;
   }
 }
 
@@ -182,6 +187,10 @@ body {
 
 h3 {
   @apply font-sans text-heading;
+  line-height: 1.1;
+  @media (max-width: 768px) {
+    line-height: 1;
+  }
 }
 
 p {
