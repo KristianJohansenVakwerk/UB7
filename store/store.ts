@@ -26,7 +26,7 @@ export const useStore = create<HoverState>((set) => ({
   setIntroStoreDone: (done: boolean) => set({ introStoreDone: done }),
   aboutSectionProgress: 0,
   setAboutSectionProgress: (p: number) => set({ aboutSectionProgress: p }),
-  currentStoreIndex: 0,
+  currentStoreIndex: -1,
   setCurrentStoreIndex: (index: number) => set({ currentStoreIndex: index }),
   disableScroll: false,
   setDisableScroll: (disable: boolean) => set({ disableScroll: disable }),

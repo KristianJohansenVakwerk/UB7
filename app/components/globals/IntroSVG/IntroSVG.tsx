@@ -200,6 +200,11 @@ const IntroSVG = () => {
                 duration: 0.5,
                 ease: "expo.inOut",
                 onComplete: () => {
+                  gsap.to(".intro-text-svg", {
+                    autoAlpha: 1,
+                    duration: 0.4,
+                    ease: "expo.inOut",
+                  });
                   textSettings.forEach((setting, index) => {
                     gsap.to(stopsText[index], {
                       attr: {
@@ -276,6 +281,8 @@ const IntroSVG = () => {
     if (!bgGradientRef.current) return;
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
 
+    console.log("currentStoreIndex", currentStoreIndex);
+
     if (currentStoreIndex > 0) {
       gsap.to("#clocks", {
         autoAlpha: 0,
@@ -298,7 +305,7 @@ const IntroSVG = () => {
         duration: dur,
         ease: "expo.inOut",
       });
-    } else {
+    } else if (currentStoreIndex === 0) {
       gsap.to("#clocks", {
         autoAlpha: 1,
         duration: dur,
@@ -382,7 +389,7 @@ const IntroSVG = () => {
         </svg>
       </div>
 
-      <div className="intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-start lg:justify-center px-3 lg:px-12 opacity-0">
+      <div className="intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-start lg:justify-center px-1 lg:px-12 opacity-0">
         <svg
           ref={svgRef}
           viewBox="0 0 1921 1080"
