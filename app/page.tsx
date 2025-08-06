@@ -1004,7 +1004,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-7 h-[62vh] lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
+      <div className="about-box absolute bottom-7 h-[60vh] lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
         <TeamMembers
           items={items}
           imageContainerRef={imageContainerRef}

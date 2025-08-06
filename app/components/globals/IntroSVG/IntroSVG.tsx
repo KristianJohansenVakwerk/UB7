@@ -243,22 +243,6 @@ const IntroSVG = () => {
           });
         });
       }
-
-      // gsap.to(stopsBG[2], {
-      //   attr: {
-      //     "stop-color": "#FEFFC2",
-      //   },
-      //   duration: dur,
-      //   delay: delay,
-      //   ease: "expo.inOut",
-      // });
-
-      // gsap.to(bgGradientRef.current, {
-      //   yPercent: 0,
-      //   duration: dur,
-      //   delay: delay,
-      //   ease: "expo.inOut",
-      // });
     }
   }, [currentStoreIndex, isLoading, introStoreDone]);
 
