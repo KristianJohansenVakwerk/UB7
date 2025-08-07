@@ -13,22 +13,18 @@ const sections = [
   {
     id: "intro",
     title: "intro",
-    color: "bg-red-500",
   },
   {
     id: "portfolio",
     title: "portfolio",
-    color: "bg-blue-500",
   },
   {
     id: "about",
     title: "about",
-    color: "bg-yellow-500",
   },
   {
     id: "contact",
     title: "contact",
-    color: "bg-green-500",
   },
 ];
 
@@ -38,6 +34,8 @@ const Sections = (props: Props) => {
 
   useGSAP(() => {
     const tl = gsap.timeline({
+      id: "sections-timeline",
+      paused: true,
       scrollTrigger: {
         trigger: container.current,
         start: "top top",
@@ -52,7 +50,7 @@ const Sections = (props: Props) => {
           delay: 0,
           ease: "power1.inOut",
         },
-        markers: true,
+        markers: false,
         onUpdate: (self) => {},
       },
     });
@@ -73,7 +71,7 @@ const Sections = (props: Props) => {
         return (
           <Box
             key={index}
-            className={`section h-screen  flex items-center justify-center ${entry.color} section-${entry.id}`}
+            className={`section h-screen  flex items-center justify-center  section-${entry.id}`}
           >
             {entry.title}
           </Box>

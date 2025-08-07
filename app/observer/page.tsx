@@ -3,18 +3,18 @@
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Observer } from "gsap/Observer";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import IntroPixi from "./components/globals/IntroPixi/IntroPixi";
-import SectionIntro from "./components/globals/Section/SectionIntro";
-import { RefObject, use, useEffect, useMemo, useRef, useState } from "react";
+import IntroPixi from "../components/globals/IntroPixi/IntroPixi";
+import SectionIntro from "../components/globals/Section/SectionIntro";
+import { use, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
-import { portfolioData } from "./utils/data";
-import SectionPortfolio from "./components/globals/Section/SectionPortfolio/SectionPortfolio";
+import { portfolioData } from "../utils/data";
+import SectionPortfolio from "../components/globals/Section/SectionPortfolio/SectionPortfolio";
 import { useStore } from "@/store/store";
-import IntroSVG from "./components/globals/IntroSVG/IntroSVG";
+import IntroSVG from "../components/globals/IntroSVG/IntroSVG";
 
-import { sectionsData } from "./utils/data";
+import { sectionsData } from "../utils/data";
 
 gsap.registerPlugin(Observer, ScrollTrigger, ScrollToPlugin);
 
@@ -91,7 +91,6 @@ export default function ObserverPage() {
     let currentX = 0;
     let targetX = 0;
     let animating = false;
-    const isTouchDevice = ScrollTrigger.isTouch;
 
     // const box = gsap.utils.toArray(".about-box");
     const box = document.querySelector(".about-box") as HTMLElement;
@@ -102,7 +101,7 @@ export default function ObserverPage() {
     const setW = gsap.quickSetter(aboutProgress, "width", "%");
 
     const boxWidth = box?.offsetWidth;
-    const gap = isTouchDevice ? 20 : 48;
+    const gap = 48;
     const minX = -(boxWidth - window.innerWidth + gap * 2);
     const maxX = 0;
 
@@ -126,6 +125,8 @@ export default function ObserverPage() {
       edgeAttempt = 0;
     };
 
+    const isTouchDevice = ScrollTrigger.isTouch;
+
     let edgeAttempt = 0;
     let isAtMin = false;
     let isAtMax = false;
@@ -134,11 +135,14 @@ export default function ObserverPage() {
       if (!box || aboutVideoExpandedHackRef.current) return;
 
       const direction = deltaY > 0 ? -1 : 1;
-      const baseSpeed = isTouchDevice ? 250 : 100;
-      const maxDistance = isTouchDevice ? 100 : 58;
+      const baseSpeed = isTouchDevice ? 160 : 180;
+      const maxDistance = isTouchDevice ? 60 : 58;
 
       const distance = Math.min(Math.abs(velocityY * baseSpeed), maxDistance); // Feel free to tweak
       targetX -= direction * distance;
+
+      const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
+      // setGlobalProgressAbout(pct);
 
       const newTargetX = targetX - direction * distance;
       const nextTargetX = newTargetX + direction * distance;
@@ -149,8 +153,7 @@ export default function ObserverPage() {
 
         if (!isAtMin) {
           edgeAttempt++;
-          const limit = isTouchDevice ? 10 : 40;
-          if (edgeAttempt >= limit) {
+          if (edgeAttempt >= 40) {
             isAtMin = true;
             isAtMax = false;
             edgeAttempt = 0;
@@ -166,8 +169,7 @@ export default function ObserverPage() {
 
         if (!isAtMax) {
           edgeAttempt++;
-          const limit = isTouchDevice ? 10 : 40;
-          if (edgeAttempt >= limit) {
+          if (edgeAttempt >= 40) {
             isAtMax = true;
             isAtMin = false;
             edgeAttempt = 0;
@@ -188,23 +190,7 @@ export default function ObserverPage() {
       animating = true;
 
       const update = () => {
-        // Normalize lerp factor based on device type and frame rate
-        const frameRate = 60; // Assuming 60fps
-        const targetFPS = 60;
-        const frameTime = 1000 / frameRate;
-
-        const baseSmoothing = isTouchDevice ? 0.08 : 0.1; // Touch needs slightly more smoothing
-        const normalizedSmoothing =
-          baseSmoothing * (frameTime / (1000 / targetFPS));
-
-        // Apply additional smoothing for very small movements
-        const distanceToTarget = Math.abs(currentX - targetX);
-        const adaptiveSmoothing =
-          distanceToTarget < 10
-            ? normalizedSmoothing * 0.7
-            : normalizedSmoothing;
-        currentX = lerp(currentX, targetX, adaptiveSmoothing); // 0.1 = smoothing factor
-
+        currentX = lerp(currentX, targetX, 0.1); // 0.1 = smoothing factor
         const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
 
         setX(currentX, minX);
@@ -243,10 +229,9 @@ export default function ObserverPage() {
     clicked?: boolean | undefined
   ) => {
     // For menu make sure it always animates
-
+    console.log("clicked", clicked, isScrollingDown);
     if (clicked) {
       intentRef.current.enable();
-
       gsap.to(sectionsContainer?.current, {
         yPercent: -100 * index,
         duration: 0.75,
@@ -254,9 +239,7 @@ export default function ObserverPage() {
         delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
         ease: "expo.inOut",
       });
-
       setGlobalCurrentIndex(index);
-      setCurrentStoreIndex(index);
       setGlobalScrollDirection(isScrollingDown);
       currentIndex.current = index;
       return;
@@ -284,7 +267,6 @@ export default function ObserverPage() {
       delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
       ease: "expo.inOut",
     });
-
     setGlobalCurrentIndex(index);
     setCurrentStoreIndex(index);
     setGlobalScrollDirection(isScrollingDown);
@@ -300,16 +282,16 @@ export default function ObserverPage() {
       <div className={clsx("relative z-20")}>
         <div
           className={
-            "swipe-section  relative w-screen h-[100svh] lg:h-screen overflow-hidden"
+            "swipe-section  relative w-screen h-[100svh] lg:h-screen overflow-hidden "
           }
         >
           <div
             ref={sectionsContainer}
-            className="swipe-section-inner w-screen h-[100svh] lg:h-screen "
+            className="swipe-section-inner w-screen h-screen "
           >
             <section
               className={
-                "panel intro absolute w-full h-full  flex justify-center items-center  "
+                "panel intro absolute w-full h-full  flex justify-center items-center "
               }
             >
               <SectionIntro inView={true} />
@@ -357,7 +339,6 @@ export default function ObserverPage() {
 
       {/* <IntroPixi /> */}
       <ProgressBars currentIndex={globalCurrentIndex} />
-
       <Menu
         setCurrentIndex={handleMenuClick}
         currentIndex={globalCurrentIndex}
@@ -381,7 +362,7 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
     <div
       id={"progress"}
       className={clsx(
-        "fixed top-1 lg:top-2 left-2 lg:left-3 right-2 lg:right-3 h-[2px] lgh-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
+        "fixed top-2 left-3 right-3 h-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
         currentIndex === 0 ? "opacity-0" : "opacity-100"
       )}
     >
@@ -427,7 +408,6 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
 ////////////////////////////////////////////////////////////
 // MENU
 ////////////////////////////////////////////////////////////
-
 interface MenuItem {
   title: string;
   id?: string;
@@ -467,7 +447,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
     <div
       ref={menuRef}
       className={clsx(
-        "fixed bottom-2 lg:bottom-3 left-2 lg:left-3  opacity-0 transition-opacity duration-300 ease-in-out",
+        "fixed bottom-3 left-3  opacity-0 transition-opacity duration-300 ease-in-out",
         introStoreDone && "opacity-100"
       )}
       style={{ zIndex: 9999 }}
@@ -479,7 +459,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
             <div
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-menu`}
             >
               <span>{item.title}</span>
@@ -585,11 +565,11 @@ const SectionTitles = ({
   return (
     <div
       className={clsx(
-        "section-title fixed top-3 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
+        "section-title fixed top-5 left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     >
-      <h1 className="text-title">
+      <h1 className="text-sm lg:text-title">
         {sectionsData.map((section) => (
           <div
             key={section.id}
@@ -727,7 +707,7 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
   return (
     <div
       ref={container}
-      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-0 lg:mt-[40vw]"
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]"
     >
       <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
         {info.map((item, index) => {
@@ -771,7 +751,8 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
 // SECTION ABOUT
 ////////////////////////////////////////////////////////////
 
-import { teamMembers } from "./utils/data";
+import { teamMembers } from "../utils/data";
+import { TeamMembers } from "../components/globals/Section/SectionAbout/SectionAbout";
 
 const SectionAbout = ({
   currentIndex,
@@ -805,16 +786,14 @@ const SectionAbout = ({
 
     const splitText = new SplitText(textRef.current, {
       type: "lines",
-      linesClass: "split-line text-base-2",
-      // wordsClass: "text-base-2",
-      tag: "span",
+      linesClass: "split-line",
     });
 
     tlAboutTextRef.current.add(
       gsap.from(splitText.lines, {
         opacity: 0,
-        duration: 0.3,
-        stagger: 0.1,
+        duration: 0.5,
+        stagger: 0.05,
         ease: "sine.inOut",
       })
     );
@@ -866,27 +845,18 @@ const SectionAbout = ({
       gsap.to(image, {
         scale: scale,
         duration: 0.3,
-        ease: "expo.inOut",
+        ease: "power2.inOut",
       });
     };
 
     const handleClick = (state: boolean) => {
-      const isTouch = ScrollTrigger.isTouch;
       isScaled = state;
       const image = imageRef.current;
-
-      if (!image || !image.complete) {
-        console.warn("Image not ready, retrying...");
-        setTimeout(() => handleClick(state), 100);
-        return;
-      }
       const imageWidth = image?.offsetWidth as number;
       const imageHeight = image?.offsetHeight as number;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-      const padding = !isTouch
-        ? { top: 48, left: 48, button: 48, right: 102 }
-        : { top: 20, left: 20, button: 20, right: 20 };
+      const padding = { top: 48, left: 48, button: 48, right: 102 };
 
       setAboutVideoExpanded(state);
 
@@ -924,15 +894,15 @@ const SectionAbout = ({
                   gsap.to(imageContainerRef.current, {
                     opacity: 1,
                     duration: 0.8,
-                    ease: "expo.inOut",
+                    ease: "power4.inOut",
                   });
                   gsap.to(image, {
                     scale: scale,
-                    y: !isTouch ? 112 - padding.top : 90 - padding.top,
+                    y: 112 - padding.top,
                     transformOrigin: "left bottom",
                     willChange: "transform",
                     duration: 0.8,
-                    ease: "expo.inOut",
+                    ease: "power4.inOut",
                     onComplete: () => {
                       setShowClose(true);
                     },
@@ -993,7 +963,7 @@ const SectionAbout = ({
     <div className="about-section w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]">
       <div
         ref={textRef}
-        className="text-about absolute hidden lg:block lg:top-7 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey"
+        className="text-about absolute top-6 right-3 w-1/3 text-light-grey text-base/none"
       >
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
@@ -1004,7 +974,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-7 h-[60vh] lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100">
+      <div className="about-box absolute bottom-8 left-3 left-0  flex justify-center items-center gap-4 will-change-transform opacity-100">
         <TeamMembers
           items={items}
           imageContainerRef={imageContainerRef}
@@ -1037,87 +1007,4 @@ const SectionAbout = ({
       </div>
     </div>
   );
-};
-
-////////////////////////////////////////////////////////////
-// SECTION ABOUT ~ TEAM MEMBERS
-////////////////////////////////////////////////////////////
-import { TeamMember } from "@/app/utils/data";
-
-const TeamMembers = ({
-  items,
-  imageContainerRef,
-  imageRef,
-}: {
-  items: (TeamMember | { type: string })[];
-  imageContainerRef: RefObject<HTMLDivElement | null>;
-  imageRef: RefObject<HTMLImageElement | null>;
-}) => {
-  return items.map((m, index: number) => {
-    // @ts-ignore
-    if (m.type === "box") {
-      return (
-        <div
-          ref={imageContainerRef}
-          key={index}
-          className="item item-box aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] h-full lg:h-auto  w-auto lg:min-h-none lg:max-h-none lg:min-w-[768px] rounded-2xl opacity-0 will-change-opacity cursor-pointer "
-        >
-          <img
-            ref={imageRef}
-            src="/Reel.jpg"
-            width={"693"}
-            height={"376"}
-            className="w-full h-full object-cover object-center rounded-2xl"
-          />
-        </div>
-      );
-    }
-
-    if ("name" in m) {
-      return (
-        <div
-          key={index}
-          className="item item-team-member relative bg-white rounded-2xl  aspect-[var(--aspect-ratio-box)] h-full lg:h-auto  lg:aspect-[var(--aspect-ratio-box-lg)]  lg:max-h-none w-auto lg:min-w-[768px] opacity-0 will-change-opacity"
-        >
-          <div className="px-2 lg:px-3 py-2 lg:py-3 flex flex-col gap-1 h-full">
-            <div className="team-member-name text-light-grey text-base/none opacity-100">
-              {m.name}
-            </div>
-            <div className="flex flex-col lg:flex-row items-stretch justify-start gap-2 h-full">
-              <div className="team-member-image aspect-[266/312]  h-full opacity-100 flex items-center justify-center flex-1 w-1/2">
-                <img
-                  src={m.image}
-                  width={267}
-                  height={312}
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-              <div className="text-light-grey  flex-2 lg:mr-3 h-full">
-                <div className="flex flex-col gap-2 h-full justify-between">
-                  <div className="team-member-text text-base opacity-100">
-                    {m.text}
-                  </div>
-
-                  <div className="flex flex-row items-center justify-between gap-1 w-full">
-                    {m.socials.map((s, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center font-mono text-sm text-light-grey bg-gray-100 rounded-2xl py-1 flex-1"
-                      >
-                        <span className="team-member-social opacity-100">
-                          <a href="https://google.com" target="_blank">
-                            {s.platform}
-                          </a>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-  });
 };

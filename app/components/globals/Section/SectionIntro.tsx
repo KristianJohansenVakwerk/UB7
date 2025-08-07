@@ -1,17 +1,19 @@
-import Box from "../../ui/Box/Box";
+"use client";
 
-type Props = {
-  entry: any;
-};
+import { useRef } from "react";
 
-const SectionIntro = (props: Props) => {
-  const { entry } = props;
+const SectionIntro = ({
+  inView,
+  cssSnap = false,
+}: {
+  inView: boolean;
+  cssSnap?: boolean;
+}) => {
   return (
-    <Box className="section w-full h-full relative gradient-background">
-      <div className={"clip-path-container "}>
-        <span className={"clip-path"}></span>
-      </div>
-    </Box>
+    <div
+      id="intro"
+      className="intro w-screen h-screen opacity-100 relative"
+    ></div>
   );
 };
 

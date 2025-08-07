@@ -1,9 +1,9 @@
 "use client";
 import Box from "../../ui/Box/Box";
-import SectionAbout from "./SectionAbout";
-import SectionContact from "./SectionContact";
+import SectionAbout from "./SectionAbout/SectionAbout";
+import SectionContact from "./SectionContact/SectionContact";
 import SectionIntro from "./SectionIntro";
-import SectionPortfolio from "./SectionPortfolio";
+import SectionPortfolio from "./SectionPortfolio/SectionPortfolio";
 
 type Props = {
   entry: any;
@@ -16,7 +16,7 @@ const Section = (props: Props) => {
 
   switch (entry.id) {
     case "intro":
-      return <SectionIntro entry={entry} />;
+      return <SectionIntro inView={true} cssSnap={false} />;
     case "portfolio":
       return (
         <SectionPortfolio
@@ -27,15 +27,16 @@ const Section = (props: Props) => {
       );
     case "about":
       return (
-        <SectionAbout
-          entry={entry}
-          scroller={parent}
-          active={activeSection === "about"}
-        />
+        // <SectionAbout
+        //   entry={entry}
+        //   scroller={parent}
+        //   active={activeSection === "about"}
+        // />
+        <></>
       );
 
     case "contact":
-      return <SectionContact entry={entry} />;
+      return <SectionContact title="Contact" />;
   }
 };
 

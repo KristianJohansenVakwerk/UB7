@@ -1,18 +1,72 @@
 @import "tailwindcss";
 
-:root {
-  --background: #e5e5e5;
-  --foreground: #3f3f3f;
-  --font-size: 10px;
-  --spacing: 1rem;
+@font-face {
+  font-family: "RM Neue";
+  src: url("/fonts/RM_neue/rmneue-regular.woff") format("woff"),
+    url("/fonts/RM_neue/rmneue-regular.woff2") format("woff2");
 }
 
-@theme inline {
+@font-face {
+  font-family: "GT America Mono";
+  src: url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff")
+      format("woff"),
+    url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff2")
+      format("woff2");
+}
+
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background-light-grey: var(--background);
+  --color-light-grey: #676767;
+  --color-dark-grey: var(--dark-grey);
+  --font-sans: var(--font-rm-neue);
+  --font-mono: var(--font-gt-america-mono);
+  --text-xs: 0.938rem;
+  --text-heading: 2rem;
+  --text-sm: clamp(12px, 0.85rem, 20px);
+  --text-base: 1rem;
+  --text-base-2: 1.125rem;
+  --text-base-2--line-height: 1.2;
+  --text-base--line-height: 1.2;
+  --text-md: 3rem;
+  --text-md--line-height: 1.02;
+  --text-lg: 5.125rem;
+  --text-lg--line-height: 1.02;
+  --text-title: clamp(25px, 3.5vw, 82px);
+  --text-title--line-height: 1;
+
+  --radius-menu: 35px;
+  --radius-progress-bar: 20px;
+  --aspect-ratio-box: 342/558;
+  --aspect-ratio-box-lg: 769/411;
 }
+
+:root {
+  --background: #d9d9d9;
+  --foreground: #3f3f3f;
+  --dark-grey: #3f3f3f;
+  --button-grey: #e5e5e5;
+  --dark-green: rgba(4, 80, 49, 1);
+  --font-size: 17px;
+
+  --spacing: 0.625rem;
+  --font-rm-neue: "RM Neue";
+  --font-gt-america-mono: "GT America Mono";
+
+  @media (max-width: 1440px) {
+    --font-size: 14px;
+    --spacing: 0.7142rem;
+  }
+
+  @media (max-width: 768px) {
+    --text-title--line-height: 1.05;
+    --text-md: 32px;
+    --text-heading: 28px;
+    --text-heading--line-height: 1;
+  }
+}
+
 /* 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -21,10 +75,15 @@
   }
 } */
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--font-size);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .gradient-background {
@@ -67,4 +126,79 @@ body {
   clip-path: path(
     "M1277.45 132.743C1166.19 144.284 1073.1 195.281 1006.5 281.668C953.009 351.056 917.707 444.294 909.08 538.328H1040.27C1045.39 497.792 1061.17 424.367 1109.91 361.119C1144.38 316.376 1188.63 286.472 1241.95 271.605 M227.872 548C87.2027 548 4.95313 459.737 4.95313 315.445V182.667C4.95313 99.7759 4.18444 56.7955 0.341003 0H102.576C99.5017 55.2605 98.733 101.311 98.733 182.667V326.19C98.733 427.501 159.459 491.204 255.545 491.204C351.631 491.204 401.596 435.944 410.051 346.913C413.126 324.655 413.895 295.49 413.895 270.162C413.895 193.412 407.745 96.7059 396.984 0H455.404L454.635 309.305C453.867 459.737 369.311 548 227.872 548Z M676.018 537.255H513.825C516.9 485.064 518.437 442.851 518.437 353.821V183.434C518.437 95.1709 516.9 52.1905 513.825 0H676.018C794.396 0 864.347 44.5154 864.347 123.569C864.347 188.039 819.763 236.392 736.744 250.207C837.442 259.417 886.638 306.235 886.638 383.753C886.638 478.157 808.232 537.255 676.018 537.255ZM670.637 234.09C729.826 234.09 772.873 191.877 772.873 130.476C772.873 69.0756 733.67 36.0728 671.406 36.0728H609.911V234.09H670.637ZM672.943 499.647C747.506 499.647 791.321 455.899 791.321 382.986C791.321 310.073 746.737 271.697 676.787 271.697H609.911V499.647H672.943Z M1277.42 132.458H896.297L929.037 2.18066H1310.16L1277.42 132.458Z"
   );
+}
+
+body {
+  margin: 0;
+  /* font-family: Arial, sans-serif; */
+  /* overflow: hidden; */
+}
+
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #333;
+  padding: 1rem;
+  text-align: center;
+  z-index: 10;
+}
+
+nav button {
+  color: white;
+  background-color: #444;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+nav button:hover {
+  background-color: #555;
+}
+
+/* Lenis Scrollbar Styles */
+.lenis-scrollbar {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 8px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+body {
+  overscroll-behavior: none;
+}
+.lenis-scrollbar-thumb {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.lenis-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+  @apply font-sans text-heading;
+  line-height: 1.1;
+  @media (max-width: 768px) {
+    line-height: 1;
+  }
+}
+
+p {
+  @apply font-sans text-base;
+}
+
+.pin-spacer {
+  /* border: 2px dashed red; */
+
+  /* background-color: rgba(255, 0, 0, 0.05); */
 }
