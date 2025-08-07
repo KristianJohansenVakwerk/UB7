@@ -35,6 +35,33 @@ const textSettings = [
   },
 ];
 
+const textSettingsPortuguese = [
+  // Light Gray
+  {
+    offset: 0.1875,
+    "stop-color": "#A7A7A7",
+    delay: 0,
+  },
+  // Light Yellow/Cream
+  {
+    offset: 0.307692,
+    "stop-color": "#09603D",
+    delay: 0,
+  },
+  // Bright Lime Green
+  {
+    offset: 0.639423,
+    "stop-color": "#09603D",
+    delay: 0.2,
+  },
+  // Dark Green
+  {
+    offset: 0.913462,
+    "stop-color": "#000000",
+    delay: 0.4,
+  },
+];
+
 const textSettingsMobile = [
   // Light Gray
 
@@ -62,21 +89,25 @@ const bgSettings = [
   // Dark green
   {
     offset: 0.1,
+    "stop-color": "#03763B",
     delay: 0.4,
   },
   // Bright lime green
   {
     offset: 0.538462,
+    "stop-color": "#7EFA50",
     delay: 0.2,
   },
   // Light yellow/cream
   {
     offset: 0.817308,
+    "stop-color": "#FEFFC2",
     delay: 0,
   },
   // Light gray
   {
     offset: 1,
+    "stop-color": "#D9D9D9",
     delay: 0,
   },
 ];
@@ -104,6 +135,29 @@ const bgSettingsMin = [
   },
 ];
 
+const bgSettingsPortuguese = [
+  {
+    offset: 0.12,
+    "stop-color": "#000000",
+    delay: 0.4,
+  },
+  {
+    offset: 0.68,
+    "stop-color": "#09603D",
+    delay: 0.2,
+  },
+  {
+    offset: 0.91,
+    "stop-color": "#646464",
+    delay: 0,
+  },
+  {
+    offset: 1,
+    "stop-color": "#A7A7A7",
+    delay: 0,
+  },
+];
+
 const IntroSVG = () => {
   const number7Ref = useRef<SVGSVGElement>(null);
   const number7GradientRef = useRef<SVGLinearGradientElement>(null);
@@ -116,7 +170,8 @@ const IntroSVG = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startAnimation, setStartAnimation] = useState(false);
 
-  const { setIntroStoreDone, introStoreDone, currentStoreIndex } = useStore();
+  const { setIntroStoreDone, introStoreDone, currentStoreIndex, language } =
+    useStore();
 
   useGSAP(() => {
     if (!loaderRef.current) return;
@@ -267,7 +322,7 @@ const IntroSVG = () => {
       },
     });
 
-    bgSettings.forEach((setting, index) => {
+    bgSettingsPortuguese.forEach((setting, index) => {
       gsap.to(stopsBG[index], {
         attr: {
           offset: setting.offset,
@@ -340,6 +395,62 @@ const IntroSVG = () => {
       }
     }
   }, [currentStoreIndex, isLoading, introStoreDone]);
+
+  useGSAP(() => {
+    if (!bgGradientRef.current || !gradientRef.current) return;
+    const stopsBG = bgGradientRef.current.querySelectorAll("stop");
+    const stopsText = gradientRef.current.querySelectorAll("stop");
+
+    switch (language) {
+      case "pt":
+        bgSettingsPortuguese.forEach((setting, index) => {
+          gsap.to(stopsBG[index], {
+            attr: {
+              offset: setting.offset,
+              "stop-color": setting["stop-color"],
+            },
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        });
+
+        textSettingsPortuguese.forEach((setting, index) => {
+          gsap.to(stopsText[index], {
+            attr: {
+              offset: setting.offset,
+              "stop-color": setting["stop-color"],
+            },
+
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        });
+        break;
+      default:
+        bgSettings.forEach((setting, index) => {
+          gsap.to(stopsBG[index], {
+            attr: {
+              offset: setting.offset,
+              "stop-color": setting["stop-color"],
+            },
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        });
+
+        textSettings.forEach((setting, index) => {
+          gsap.to(stopsText[index], {
+            attr: {
+              offset: setting.offset,
+              "stop-color": setting["stop-color"],
+            },
+
+            duration: 0.8,
+            ease: "expo.inOut",
+          });
+        });
+    }
+  }, [language]);
 
   // useGSAP(() => {
   //   if (!startAnimation) return;

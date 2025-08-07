@@ -15,6 +15,8 @@ interface HoverState {
   setDisableScroll: (disable: boolean) => void;
   aboutVideoExpanded: boolean;
   setAboutVideoExpanded: (expanded: boolean) => void;
+  language: "en" | "pt";
+  setLanguage: (language: "en" | "pt") => void;
 }
 
 export const useStore = create<HoverState>((set) => ({
@@ -33,4 +35,6 @@ export const useStore = create<HoverState>((set) => ({
   aboutVideoExpanded: false,
   setAboutVideoExpanded: (expanded: boolean) =>
     set({ aboutVideoExpanded: expanded }),
+  language: "en",
+  setLanguage: (language: "en" | "pt") => set({ language }),
 }));

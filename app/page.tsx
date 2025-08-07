@@ -368,6 +368,8 @@ export default function ObserverPage() {
           { title: "Contact", id: "contact" },
         ]}
       />
+
+      <LanguageSwitcher />
     </>
   );
 }
@@ -467,7 +469,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
     <div
       ref={menuRef}
       className={clsx(
-        "fixed bottom-2 lg:bottom-3 left-2 lg:left-3  opacity-0 transition-opacity duration-300 ease-in-out",
+        "fixed bottom-2 lg:bottom-3 left-2 lg:left-3  opacity-0 transition-opacity duration-600 ease-in-out",
         introStoreDone && "opacity-100"
       )}
       style={{ zIndex: 9999 }}
@@ -489,6 +491,71 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
         <div
           ref={menuProgressRef}
           className="absolute bottom-0 left-0 h-full w-[100px] bg-white/80 rounded-menu"
+        />
+      </div>
+    </div>
+  );
+};
+
+////////////////////////////////////////////////////////////
+// LANGUAGE SWITCHER
+////////////////////////////////////////////////////////////
+
+const data = [
+  {
+    title: "EN",
+    id: "en",
+  },
+  {
+    title: "PT",
+    id: "pt",
+  },
+];
+
+const LanguageSwitcher = () => {
+  const langProgressRef = useRef<HTMLDivElement>(null);
+  const { introStoreDone, language, setLanguage } = useStore();
+
+  useGSAP(() => {
+    if (language === "pt") {
+      gsap.to(langProgressRef.current, {
+        x: ScrollTrigger.isTouch ? 40 : 60,
+        duration: 0.8,
+        ease: "expo.inOut",
+      });
+    } else {
+      gsap.to(langProgressRef.current, {
+        x: 0,
+        duration: 0.8,
+        ease: "expo.inOut",
+      });
+    }
+  }, [language]);
+
+  return (
+    <div
+      className={clsx(
+        "fixed bottom-2 lg:bottom-3 right-2 lg:right-3  opacity-0 transition-opacity duration-600 ease-in-out",
+        introStoreDone && "opacity-100"
+      )}
+      style={{ zIndex: 9999 }}
+    >
+      <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">
+        <div className="flex flex-row items-center ">
+          {data.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => setLanguage(item.id as "en" | "pt")}
+              className="font-sans text-sm text-dark-grey min-w-[40px] lg:min-w-[60px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              id={`${item.id}-lang`}
+            >
+              <span>{item.title}</span>
+            </div>
+          ))}
+        </div>
+        <div
+          ref={langProgressRef}
+          className="absolute bottom-0 left-0 h-full w-[40px] lg:w-[60px] bg-white/80 rounded-menu"
         />
       </div>
     </div>
