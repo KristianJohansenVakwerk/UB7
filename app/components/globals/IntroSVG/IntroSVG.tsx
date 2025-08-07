@@ -114,6 +114,7 @@ const IntroSVG = () => {
   const loaderRef = useRef<HTMLSpanElement>(null);
   const loaderRefPct = useRef<HTMLSpanElement>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [startAnimation, setStartAnimation] = useState(false);
 
   const { setIntroStoreDone, introStoreDone, currentStoreIndex } = useStore();
 
@@ -244,6 +245,7 @@ const IntroSVG = () => {
           onComplete: () => {
             if (index === textSettings.length - 1) {
               setIntroStoreDone(true);
+              setStartAnimation(true);
             }
           },
           duration: 2,
@@ -338,6 +340,40 @@ const IntroSVG = () => {
       }
     }
   }, [currentStoreIndex, isLoading, introStoreDone]);
+
+  // useGSAP(() => {
+  //   if (!startAnimation) return;
+
+  //   const ani = () => {
+  //     // Animate the background gradient offsets
+  //     if (bgGradientRef.current) {
+  //       const stopsBG = bgGradientRef.current.querySelectorAll("stop");
+
+  //       gsap.to(stopsBG, {
+  //         attr: {
+  //           offset: (i, target) => {
+  //             const currentOffset = parseFloat(
+  //               target.getAttribute("offset") || "0"
+  //             );
+  //             // Even slower movement for background
+  //             return (
+  //               currentOffset +
+  //               Math.sin(Date.now() * 0.000015 + i * 0.08) * 0.0008
+  //             );
+  //           },
+  //         },
+  //         duration: 0.1,
+  //         ease: "none",
+  //       });
+  //     }
+  //   };
+
+  //   gsap.ticker.add(ani);
+
+  //   return () => {
+  //     gsap.ticker.remove(ani);
+  //   };
+  // }, [startAnimation]);
 
   return (
     <>

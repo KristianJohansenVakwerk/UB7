@@ -34,7 +34,7 @@ const SectionPortfolioList = (props: Props) => {
     useAccordionSetup();
   const { playAccordion, resetAccordion, resetAccordionMobile } =
     useAccordionControls();
-  const { setHoverSector, setDisableScroll } = useStore();
+  const { setHoverSector, disableScroll, setDisableScroll } = useStore();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
@@ -61,13 +61,14 @@ const SectionPortfolioList = (props: Props) => {
   );
 
   const handleMouseLeave = useCallback(() => {
+    if (disableScroll) return;
     console.log("handleMouseLeave", active);
     if (!active) return;
 
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
     onShowBackground("");
-  }, [accordionAnis, iconAnis, active]);
+  }, [accordionAnis, iconAnis, active, disableScroll]);
 
   const { timelineRef } = useSectorListAnimation(currentIndex);
 
@@ -105,16 +106,19 @@ const SectionPortfolioList = (props: Props) => {
       return;
     }
 
+    setDisableScroll(true);
+
     pendingExpansionRef.current = { entryIndex, sector };
 
     resetAccordion(accordionAnis, iconAnis);
+    onShowBackground(sector);
 
-    if (timelineRef?.current) {
-      timelineRef.current.seek(1);
-      timelineRef.current.reverse();
-    }
-
-    setDisableScroll(true);
+    gsap.delayedCall(0.6, () => {
+      if (timelineRef?.current) {
+        timelineRef.current.seek(1);
+        timelineRef.current.reverse();
+      }
+    });
   };
 
   useEffect(() => {
