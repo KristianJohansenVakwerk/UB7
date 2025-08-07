@@ -35,6 +35,29 @@ const textSettings = [
   },
 ];
 
+const textSettingsMobile = [
+  // Light Gray
+
+  // Light Yellow/Cream
+  {
+    offset: 0.18,
+    "stop-color": "#FEFFC2",
+    delay: 0,
+  },
+  // Bright Lime Green
+  {
+    offset: 0.5,
+    "stop-color": "#7EFA50",
+    delay: 0.2,
+  },
+  // Dark Green
+  {
+    offset: 0.913462,
+    "stop-color": "#09603D",
+    delay: 0.4,
+  },
+];
+
 const bgSettings = [
   // Dark green
   {
@@ -140,6 +163,15 @@ const IntroSVG = () => {
     )
       return;
 
+    const stopsText = gradientRef.current.querySelectorAll("stop");
+
+    gsap.set(stopsText, {
+      attr: {
+        offset: 1,
+        "stop-color": "#D9D9D9",
+      },
+    });
+
     /// Mobile specifics for intro
     if (ScrollTrigger.isTouch) {
       gsap.set(number7Ref.current, {
@@ -155,8 +187,52 @@ const IntroSVG = () => {
         },
       });
 
-      textSettings.forEach((setting, index) => {
+      textSettingsMobile.forEach((setting, index) => {
         gsap.to(stopsNumber7[index], {
+          attr: {
+            offset: setting.offset,
+            "stop-color": setting["stop-color"],
+          },
+          onComplete: () => {
+            if (index === textSettingsMobile.length - 1) {
+              gsap.to(number7Ref.current, {
+                autoAlpha: 0,
+                duration: 0.5,
+                ease: "expo.inOut",
+                onComplete: () => {
+                  gsap.to(".intro-text-svg", {
+                    autoAlpha: 1,
+                    duration: 0.4,
+                    ease: "expo.inOut",
+                  });
+                  textSettings.forEach((setting, index) => {
+                    gsap.to(stopsText[index], {
+                      attr: {
+                        offset: setting.offset,
+                        "stop-color": setting["stop-color"],
+                      },
+                      onComplete: () => {
+                        if (index === textSettings.length - 1) {
+                          setIntroStoreDone(true);
+                        }
+                      },
+                      duration: 2,
+                      ease: "expo.inOut",
+                      delay: setting.delay,
+                    });
+                  });
+                },
+              });
+            }
+          },
+          duration: 2,
+          ease: "expo.inOut",
+          delay: setting.delay,
+        });
+      });
+    } else {
+      textSettings.forEach((setting, index) => {
+        gsap.to(stopsText[index], {
           attr: {
             offset: setting.offset,
             "stop-color": setting["stop-color"],
@@ -175,32 +251,6 @@ const IntroSVG = () => {
 
     gsap.set(gradientContainerRef.current, {
       opacity: 1,
-    });
-
-    const stopsText = gradientRef.current.querySelectorAll("stop");
-
-    gsap.set(stopsText, {
-      attr: {
-        offset: 1,
-        "stop-color": "#D9D9D9",
-      },
-    });
-
-    textSettings.forEach((setting, index) => {
-      gsap.to(stopsText[index], {
-        attr: {
-          offset: setting.offset,
-          "stop-color": setting["stop-color"],
-        },
-        onComplete: () => {
-          if (index === textSettings.length - 1) {
-            setIntroStoreDone(true);
-          }
-        },
-        duration: 2,
-        ease: "expo.inOut",
-        delay: setting.delay,
-      });
     });
 
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
@@ -231,6 +281,8 @@ const IntroSVG = () => {
     if (!bgGradientRef.current) return;
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
 
+    console.log("currentStoreIndex", currentStoreIndex);
+
     if (currentStoreIndex > 0) {
       gsap.to("#clocks", {
         autoAlpha: 0,
@@ -253,9 +305,7 @@ const IntroSVG = () => {
         duration: dur,
         ease: "expo.inOut",
       });
-    } else {
-      console.log("ding dong");
-
+    } else if (currentStoreIndex === 0) {
       gsap.to("#clocks", {
         autoAlpha: 1,
         duration: dur,
@@ -339,13 +389,13 @@ const IntroSVG = () => {
         </svg>
       </div>
 
-      <div className="hidden lg:block intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center px-3 lg:px-12 opacity-0">
+      <div className="intro-text-svg fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-start lg:justify-center px-1 lg:px-12 opacity-0">
         <svg
           ref={svgRef}
           viewBox="0 0 1921 1080"
           preserveAspectRatio="xMidYMid meet"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-screen h-screen block"
+          className="w-screen height-auto lg:h-screen block"
           style={{ willChange: "transform" }}
         >
           {/* Centered masked text with preserved aspect ratio */}
@@ -437,7 +487,6 @@ const IntroSVG = () => {
               y2="433.988"
               gradientUnits="userSpaceOnUse"
             >
-              <stop offset="0.0409477" stopColor="#D9D9D9" />
               <stop offset="0.231405" stopColor="#FEFFC2" />
               <stop offset="0.446281" stopColor="#7EFA50" />
               <stop offset="0.913462" stopColor="#09603D" />
