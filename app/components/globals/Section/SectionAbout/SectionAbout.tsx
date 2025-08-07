@@ -186,6 +186,7 @@ const SectionAbout = (props: any) => {
           [
             "#progress",
             "#menu",
+            "#language",
             "#section-title-about",
             ".text-about",
             ".item-team-member",

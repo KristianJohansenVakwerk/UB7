@@ -81,7 +81,13 @@ const SectionPortfolioList = (props: Props) => {
     console.log("onReverseComplete");
     if (!pendingExpansionRef.current) return;
     gsap.to(
-      ["#progress", "#section-title-portfolio", "#menu", ".section-title"],
+      [
+        "#progress",
+        "#section-title-portfolio",
+        "#menu",
+        "#language",
+        ".section-title",
+      ],
       {
         autoAlpha: 0,
         duration: 0.4,

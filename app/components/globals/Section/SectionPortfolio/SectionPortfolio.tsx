@@ -59,7 +59,13 @@ const SectionPortfolio = (props: any) => {
       ease: "expo.inOut",
       onComplete: () => {
         gsap.to(
-          ["#progress", "#section-title-portfolio", "#menu", ".section-title"],
+          [
+            "#progress",
+            "#section-title-portfolio",
+            "#menu",
+            "#language",
+            ".section-title",
+          ],
           {
             autoAlpha: 1,
             duration: 0.4,

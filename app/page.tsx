@@ -539,6 +539,7 @@ const LanguageSwitcher = () => {
         introStoreDone && "opacity-100"
       )}
       style={{ zIndex: 9999 }}
+      id={"language"}
     >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">
         <div className="flex flex-row items-center ">
@@ -976,6 +977,7 @@ const SectionAbout = ({
               [
                 "#progress",
                 "#menu",
+                "#language",
                 "#section-title-about",
                 ".text-about",
                 ".item-team-member",
