@@ -258,23 +258,18 @@ const IntroSVG = () => {
                 onComplete: () => {
                   gsap.to(".intro-text-svg", {
                     autoAlpha: 1,
-                    duration: 0.4,
+                    duration: 2,
                     ease: "expo.inOut",
+                    onComplete: () => {
+                      setIntroStoreDone(true);
+                    },
                   });
                   textSettings.forEach((setting, index) => {
-                    gsap.to(stopsText[index], {
+                    gsap.set(stopsText[index], {
                       attr: {
                         offset: setting.offset,
                         "stop-color": setting["stop-color"],
                       },
-                      onComplete: () => {
-                        if (index === textSettings.length - 1) {
-                          setIntroStoreDone(true);
-                        }
-                      },
-                      duration: 2,
-                      ease: "expo.inOut",
-                      delay: setting.delay,
                     });
                   });
                 },
