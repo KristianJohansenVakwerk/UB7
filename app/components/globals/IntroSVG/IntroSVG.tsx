@@ -231,6 +231,10 @@ const IntroSVG = () => {
         });
       });
     } else {
+      gsap.set(".intro-text-svg", {
+        autoAlpha: 1,
+      });
+
       textSettings.forEach((setting, index) => {
         gsap.to(stopsText[index], {
           attr: {

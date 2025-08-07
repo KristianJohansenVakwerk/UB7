@@ -94,19 +94,34 @@ const Sectors = (props: SectorsProps) => {
           },
         });
       } else {
-        gsap.to(draggableContainers.current[currentIndexRef.current - 1], {
-          id: "sectors-draggable-prev",
-          x: 0,
-          y: 0,
-          rotation: 0,
-          autoAlpha: 1,
-          duration: 0.5,
-          ease: "power4.inOut",
-          onComplete: () => {
-            currentIndexRef.current -= 1;
-            setCurrentIndex((prev) => (prev !== null ? prev - 1 : 0));
-          },
-        });
+        const prevContainer =
+          draggableContainers.current[currentIndexRef.current - 1];
+
+        if (prevContainer) {
+          gsap.set(prevContainer, {
+            id: "sectors-draggable-prev",
+            x: window.innerWidth,
+            y: 0,
+            scale: 1,
+            rotation: Math.random() * 360,
+            autoAlpha: 1,
+          });
+
+          gsap.to(prevContainer, {
+            id: "sectors-draggable-prev",
+            x: 0,
+            y: 0,
+            rotation: 0,
+            autoAlpha: 1,
+            duration: 0.5,
+            delay: 0.1,
+            ease: "power4.inOut",
+            onComplete: () => {
+              currentIndexRef.current -= 1;
+              setCurrentIndex((prev) => (prev !== null ? prev - 1 : 0));
+            },
+          });
+        }
       }
     };
 

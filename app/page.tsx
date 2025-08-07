@@ -134,7 +134,7 @@ export default function ObserverPage() {
       if (!box || aboutVideoExpandedHackRef.current) return;
 
       const direction = deltaY > 0 ? -1 : 1;
-      const baseSpeed = isTouchDevice ? 250 : 180;
+      const baseSpeed = isTouchDevice ? 250 : 100;
       const maxDistance = isTouchDevice ? 100 : 58;
 
       const distance = Math.min(Math.abs(velocityY * baseSpeed), maxDistance); // Feel free to tweak
@@ -193,7 +193,7 @@ export default function ObserverPage() {
         const targetFPS = 60;
         const frameTime = 1000 / frameRate;
 
-        const baseSmoothing = isTouchDevice ? 0.08 : 0.06; // Touch needs slightly more smoothing
+        const baseSmoothing = isTouchDevice ? 0.08 : 0.1; // Touch needs slightly more smoothing
         const normalizedSmoothing =
           baseSmoothing * (frameTime / (1000 / targetFPS));
 
