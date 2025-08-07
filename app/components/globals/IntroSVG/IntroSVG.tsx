@@ -298,7 +298,7 @@ const IntroSVG = () => {
       </div>
       <div
         ref={gradientContainerRef}
-        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center px-3 lg:px-12 opacity-0"
+        className="fixed top-0 left-0 w-full h-full pointer-events-none z-0 flex flex-col items-center justify-center  opacity-0"
       >
         <svg
           ref={svgRef}
