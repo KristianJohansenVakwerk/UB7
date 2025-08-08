@@ -170,11 +170,11 @@ const Sectors = (props: SectorsProps) => {
   }, [onClose]);
 
   const handleDragged = useCallback((index: number) => {
-    setTimeout(() => {
+    gsap.delayedCall(0.1, () => {
       console.log("we are handle dragged here", index);
       setCurrentIndex(index + 1);
       currentIndexRef.current = index + 1;
-    }, 500);
+    });
   }, []);
 
   useEffect(() => {

@@ -73,7 +73,6 @@ const Sector = (props: Props) => {
 
           if (el) {
             const vx = InertiaPlugin.getVelocity(el, "x");
-            const vy = InertiaPlugin.getVelocity(el, "y");
 
             const directionX = vx > 0 ? 1 : vx < 0 ? -1 : 1;
 
@@ -101,14 +100,15 @@ const Sector = (props: Props) => {
                   return (
                     currentX +
                     (dragDirRef.current === 1
-                      ? window.innerWidth * 3
-                      : -window.innerWidth * 3)
+                      ? window.innerWidth - currentX
+                      : -window.innerWidth + currentX)
                   );
                 },
-                duration: 2,
+                duration: 0.8,
                 delay: 0.2,
                 ease: "expo.out",
               });
+
               onDragged(index);
             }
           }
@@ -136,117 +136,128 @@ const Sector = (props: Props) => {
             duration: 1.2,
             delay: 0.4,
             ease: "expo.out",
-            onComplete: () => {
-              onDragged(index);
-            },
+            onComplete: () => {},
+          });
+          gsap.delayedCall(0.4, () => {
+            onDragged(index);
           });
         },
       });
     }
   }, []);
 
+  const shouldBeDraggable = useMemo(() => {
+    if (currentIndex === null) return false;
+    // Current sector is always draggable
+    if (index === currentIndex) return true;
+    // Previous sector should be draggable when user wants to go back
+    if (index === currentIndex - 1) return true;
+    return false;
+  }, [currentIndex, index]);
+
   return (
+    // <div
+    //   className="sector-draggable-container absolute inset-0  flex items-start lg:items-center justify-center pt-2 lg:pt-0"
+    //   style={{
+    //     perspective: "1000px",
+    //     zIndex: getZIndex(index),
+    //     pointerEvents: shouldBeDraggable ? "auto" : "none",
+    //   }}
+    // >
     <div
-      className="sector-draggable-container absolute inset-0  flex items-start lg:items-center justify-center pt-2 lg:pt-0"
+      ref={draggableRef}
+      className="sector-draggable absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       style={{
-        perspective: "1000px",
+        transformStyle: "preserve-3d",
+        backfaceVisibility: "hidden",
+        transformOrigin: "center center",
         zIndex: getZIndex(index),
-        pointerEvents: currentIndex === index ? "auto" : "none",
+        pointerEvents: shouldBeDraggable ? "auto" : "none",
       }}
     >
-      <div
-        ref={draggableRef}
-        className="sector-draggable h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-        data-lenis-prevent
-        style={{
-          transformStyle: "preserve-3d",
-          backfaceVisibility: "hidden",
-          transformOrigin: "center center",
-        }}
-      >
-        <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
-          <div className={"font-mono text-sm px-2 lg:px-3"}>
-            Category: {data.sector}
-          </div>
-          <div className={"flex flex-col gap-4 lg:gap-8"}>
-            <div className={"font-sans text-md px-2"}>{data.title}</div>
+      <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
+        <div className={"font-mono text-sm px-2 lg:px-3"}>
+          Category: {data.sector}
+        </div>
+        <div className={"flex flex-col gap-4 lg:gap-8"}>
+          <div className={"font-sans text-md px-2"}>{data.title}</div>
 
-            <div className={"flex flex-col gap-3 px-2 lg:px-3"}>
-              <div className={"font-sans text-base"}>Details</div>
-              <div className={"flex flex-col gap-[0.2rem]"}>
-                {data?.details &&
-                  data.details.length > 0 &&
-                  data.details.map((detail: any, index: number) => (
-                    <div
-                      key={index}
-                      className={"flex flex-row items-start justify-between"}
-                    >
-                      <span className="font-sans text-base flex-1">
-                        {detail.title}
-                      </span>
-                      <span className={"font-mono text-base flex-1"}>
-                        {detail.value}
-                      </span>
-                    </div>
-                  ))}
-              </div>
+          <div className={"flex flex-col gap-3 px-2 lg:px-3"}>
+            <div className={"font-sans text-base"}>Details</div>
+            <div className={"flex flex-col gap-[0.2rem]"}>
+              {data?.details &&
+                data.details.length > 0 &&
+                data.details.map((detail: any, index: number) => (
+                  <div
+                    key={index}
+                    className={"flex flex-row items-start justify-between"}
+                  >
+                    <span className="font-sans text-base flex-1">
+                      {detail.title}
+                    </span>
+                    <span className={"font-mono text-base flex-1"}>
+                      {detail.value}
+                    </span>
+                  </div>
+                ))}
             </div>
           </div>
-          <div>
-            <div className={"flex flex-col gap-1 lg:gap-2"}>
-              <div
-                className={
-                  "flex flex-row items-center justify-start gap-1 px-2 lg:px-3"
-                }
-              >
-                {data?.socials &&
-                  data.socials.length > 0 &&
-                  data.socials.map((s: any, index: number) => (
-                    <div
-                      key={index}
-                      className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
-                    >
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        className="team-member-social opacity-100"
-                      >
-                        {s.platform}
-                      </a>
-                    </div>
-                  ))}
-              </div>
-
-              <div className="w-full flex flex-col gap-4">
-                {data?.slides && data.slides.length > 0 && (
-                  <Slider
-                    settings={{
-                      slidesPerView: 1.5,
-                      spaceBetween: 10,
-                      slidesOffsetBefore: 32,
-                      slidesOffsetAfter: 32,
-                      freeMode: {
-                        enabled: true,
-                        momentum: false,
-                      },
-                    }}
-                    type={"media"}
-                    data={data.slides}
-                  />
-                )}
-
-                {data?.text && (
+        </div>
+        <div>
+          <div className={"flex flex-col gap-1 lg:gap-2"}>
+            <div
+              className={
+                "flex flex-row items-center justify-start gap-1 px-2 lg:px-3"
+              }
+            >
+              {data?.socials &&
+                data.socials.length > 0 &&
+                data.socials.map((s: any, index: number) => (
                   <div
-                    className={"px-2 lg:px-3 flex flex-col gap-2"}
-                    dangerouslySetInnerHTML={{ __html: data.text }}
-                  />
-                )}
-              </div>
+                    key={index}
+                    className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
+                  >
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      className="team-member-social opacity-100"
+                    >
+                      {s.platform}
+                    </a>
+                  </div>
+                ))}
+            </div>
+
+            <div className="w-full flex flex-col gap-4">
+              {data?.slides && data.slides.length > 0 && (
+                <Slider
+                  settings={{
+                    slidesPerView: 1.5,
+                    spaceBetween: 10,
+                    slidesOffsetBefore: 32,
+                    slidesOffsetAfter: 32,
+                    freeMode: {
+                      enabled: true,
+                      momentum: false,
+                    },
+                  }}
+                  type={"media"}
+                  data={data.slides}
+                />
+              )}
+
+              {data?.text && (
+                <div
+                  className={"px-2 lg:px-3 flex flex-col gap-2"}
+                  dangerouslySetInnerHTML={{ __html: data.text }}
+                />
+              )}
             </div>
           </div>
         </div>
       </div>
     </div>
+    // </div>
   );
 };
 

@@ -119,7 +119,7 @@ const SectionPortfolioList = (props: Props) => {
     resetAccordion(accordionAnis, iconAnis);
     onShowBackground(sector);
 
-    gsap.delayedCall(0.6, () => {
+    gsap.delayedCall(ScrollTrigger.isTouch ? 0.0 : 0.6, () => {
       if (timelineRef?.current) {
         timelineRef.current.seek(1);
         timelineRef.current.reverse();
