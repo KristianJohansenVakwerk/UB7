@@ -43,6 +43,7 @@ const Sector = (props: Props) => {
         scale: 0.9,
         autoAlpha: 1,
         rotation: 0,
+        force3D: true,
       });
     } else {
       if (index < currentIndex) {
@@ -172,7 +173,7 @@ const Sector = (props: Props) => {
         backfaceVisibility: "hidden",
         transformOrigin: "center center",
         zIndex: getZIndex(index),
-        pointerEvents: shouldBeDraggable ? "auto" : "none",
+        pointerEvents: currentIndex === index ? "auto" : "none",
         transform: "translate(-50%, -50%)",
       }}
     >
@@ -273,6 +274,7 @@ export const draggableConfig = {
   cursor: "grab",
   activeCursor: "grabbing",
   dragClickables: false,
+  zIndexBoost: false,
   minimumMovement: ScrollTrigger.isTouch ? 30 : 0,
   lockAxis: ScrollTrigger.isTouch ? true : false,
   clickableTest: (el: Element) => {
@@ -308,5 +310,6 @@ export const getTranslation = (index: number, currentIndex: number) => {
 };
 
 const getZIndex = (index: number) => {
+  console.log("getZIndex", index);
   return 100 - index; // This will make earlier items appear on top
 };
