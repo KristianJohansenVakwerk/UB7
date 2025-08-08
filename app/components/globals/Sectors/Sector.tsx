@@ -166,13 +166,14 @@ const Sector = (props: Props) => {
     // >
     <div
       ref={draggableRef}
-      className="sector-draggable absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      className="sector-draggable absolute top-1/2  left-1/2  h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
       style={{
         transformStyle: "preserve-3d",
         backfaceVisibility: "hidden",
         transformOrigin: "center center",
         zIndex: getZIndex(index),
         pointerEvents: shouldBeDraggable ? "auto" : "none",
+        transform: "translate(-50%, -50%)",
       }}
     >
       <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
