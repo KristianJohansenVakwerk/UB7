@@ -58,9 +58,11 @@ export default function ObserverPage() {
       type: "wheel,touch",
       preventDefault: true,
       onUp: (self: any) => {
+        console.log("onUp");
         allowScroll.current && scrollToSection(currentIndex.current + 1, true);
       },
       onDown: (self: any) => {
+        console.log("onDown");
         allowScroll.current && scrollToSection(currentIndex.current - 1, false);
       },
       tolerance: ScrollTrigger.isTouch ? 10 : 10,
@@ -243,6 +245,8 @@ export default function ObserverPage() {
     clicked?: boolean | undefined
   ) => {
     // For menu make sure it always animates
+
+    console.log("scrollToSection", index, isScrollingDown, clicked);
 
     if (clicked) {
       intentRef.current.enable();
