@@ -74,6 +74,20 @@
     --foreground: #ededed;
   }
 } */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+*:focus {
+  outline: none !important;
+}
+
+* {
+  tabindex: -1;
+}
 
 html,
 body {

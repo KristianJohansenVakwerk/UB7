@@ -20,18 +20,29 @@ type Props = {
 const Sector = (props: Props) => {
   const { data, index, currentIndex, active, onDragged } = props;
   const draggableRef = useRef<HTMLDivElement>(null);
-
+  console.log("Sector called");
   // Add utility function to check if element is out of bounds
   const isElementOutOfBounds = (element: HTMLElement): boolean => {
     const rect = element.getBoundingClientRect();
     const windowWidth = window.innerWidth;
-    const margin = 300; // 150px margin on each side
+
+    const margin = 300;
 
     // Check if element is out of bounds
     return (
-      rect.right < margin || // Element is completely to the left
-      rect.left > windowWidth - margin // Element is completely to the right
+      rect.right < 0 || // Element is completely to the left
+      windowWidth - rect.left < 0 // Element is completely to the right
     );
+  };
+
+  const getAnimateTo = (el: HTMLElement) => {
+    const box = el.getBoundingClientRect();
+
+    const x = box.x;
+    const currentX = gsap.getProperty(el, "x") as number;
+    const offset = window.innerWidth - (x + currentX);
+    console.log("box", box.x, currentX, el.clientWidth);
+    return currentX + (dragDirRef.current === 1 ? 300 : -300);
   };
 
   useGSAP(() => {
@@ -64,8 +75,10 @@ const Sector = (props: Props) => {
   }, [currentIndex]);
 
   const dragDirRef = useRef<number>(1);
+  const dragFlagRef = useRef<boolean>(true);
 
   useGSAP(() => {
+    console.log("init Draggable");
     if (typeof window !== "undefined") {
       Draggable.create(draggableRef.current, {
         ...draggableConfig,
@@ -92,26 +105,35 @@ const Sector = (props: Props) => {
 
             if (!el) return;
 
+            /// Fix for mobile
+
             const isOutOfBounds = isElementOutOfBounds(el);
 
-            if (isOutOfBounds) {
+            console.log("isOutOfBounds", isOutOfBounds, dragFlagRef.current);
+
+            if (isOutOfBounds && dragFlagRef.current) {
               gsap.to(el, {
                 x: function () {
-                  const currentX = gsap.getProperty(el, "x") as number;
-                  return (
-                    currentX +
-                    (dragDirRef.current === 1
-                      ? window.innerWidth - currentX
-                      : -window.innerWidth + currentX)
-                  );
+                  // const currentX = gsap.getProperty(el, "x") as number;
+                  console.log("el.clientWidth", el);
+                  const animateTo = getAnimateTo(el);
+                  return animateTo;
                 },
                 duration: 0.8,
                 delay: 0.2,
+                onStart: () => {
+                  dragFlagRef.current = false;
+                },
+                onComplete: () => {
+                  dragFlagRef.current = true;
+                  console.log("onComplete", index);
+                  onDragged(index);
+                },
                 ease: "expo.out",
               });
-
-              onDragged(index);
             }
+
+            // }
           }
         },
         onDragEnd: () => {
@@ -123,24 +145,27 @@ const Sector = (props: Props) => {
             return;
           }
 
-          gsap.to(el, {
-            x: function () {
-              const currentX = gsap.getProperty(el, "x") as number;
+          gsap.delayedCall(0.2, () => {
+            const isOutOfBounds = isElementOutOfBounds(el);
+            console.log("isOutOfBounds", isOutOfBounds);
 
-              return (
-                currentX +
-                (dragDirRef.current === 1
+            if (isOutOfBounds) {
+              onDragged(index);
+              return;
+            }
+
+            gsap.to(el, {
+              x: function () {
+                return dragDirRef.current === 1
                   ? window.innerWidth
-                  : -window.innerWidth)
-              );
-            },
-            duration: 1.2,
-            delay: 0.4,
-            ease: "expo.out",
-            onComplete: () => {},
-          });
-          gsap.delayedCall(0.4, () => {
-            onDragged(index);
+                  : -window.innerWidth;
+              },
+              duration: 1.2,
+              ease: "expo.out",
+              onComplete: () => {
+                onDragged(index);
+              },
+            });
           });
         },
       });
@@ -310,6 +335,5 @@ export const getTranslation = (index: number, currentIndex: number) => {
 };
 
 const getZIndex = (index: number) => {
-  console.log("getZIndex", index);
   return 100 - index; // This will make earlier items appear on top
 };
