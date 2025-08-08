@@ -90,6 +90,28 @@ export default function ObserverPage() {
 
     intentRef.current.disable();
 
+    // pin swipe section and initiate observer
+    ScrollTrigger.create({
+      trigger: ".swipe-section",
+      pin: true,
+      start: "top top",
+      end: "+=200", // just needs to be enough to not risk vibration where a user's fast-scroll shoots way past the end
+      onEnter: (self) => {
+        if (intentRef.current.isEnabled) {
+          return;
+        } // in case the native scroll jumped past the end and then we force it back to where it should be.
+        self.scroll(self.start + 1); // jump to just one pixel past the start of this section so we can hold there.
+        intentRef.current.enable(); // STOP native scrolling
+      },
+      onEnterBack: (self) => {
+        if (intentRef.current.isEnabled) {
+          return;
+        } // in case the native scroll jumped backward past the start and then we force it back to where it should be.
+        self.scroll(self.end - 1); // jump to one pixel before the end of this section so we can hold there.
+        intentRef.current.enable(); // STOP native scrolling
+      },
+    });
+
     let currentX = 0;
     let targetX = 0;
     let animating = false;
