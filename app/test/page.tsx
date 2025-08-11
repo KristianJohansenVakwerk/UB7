@@ -2,134 +2,143 @@
 
 import { useInView } from "react-intersection-observer";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import IntroPixi from "../components/globals/IntroPixi/IntroPixi";
-import SectionIntro from "../components/globals/Section/SectionIntro";
+
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
+gsap.registerPlugin(ScrollTrigger);
 
-const sections = [
-  {
-    id: "intro",
-    title: "Intro",
-  },
-  {
-    id: "portfolio",
-    title: "Portfolio",
-  },
-  {
-    id: "about",
-    title: "About",
-  },
-  {
-    id: "contact",
-    title: "Contact",
-  },
-];
+export default function TestPage() {
+  const boundsRef = useRef<HTMLDivElement>(null);
 
-export default function Home() {
-  const [activeSection, setActiveSection] = useState<string | null>(null);
-
-  const handleActiveSection = (section: string) => {
-    setActiveSection(section);
-  };
+  const observer = useRef<any>(null);
+  const currentIndex = useRef(0);
+  const isDragging = useRef(false);
+  // const startPos = useRef({ x: 0, y: 0 });
+  const currentPos = useRef({ x: 0, y: 0 });
+  const boxesPos = useRef<any>([]);
+  const velocity = useRef({ x: 0, y: 0 });
+  const lastTime = useRef(0);
 
   useGSAP(() => {
-    console.log("activeSection", activeSection);
-  }, [activeSection]);
+    const boxes = gsap.utils.toArray(".box");
+    boxes.forEach((box, index) => {
+      boxesPos.current[index] = { x: 0, y: 0 };
+    });
+    if (boundsRef.current) {
+      observer.current = ScrollTrigger.observe({
+        target: boundsRef.current,
+        type: "touch, pointer",
+        preventDefault: true,
+        onPress: (self: any) => {
+          isDragging.current = true;
+          // startPos.current = { x: self.x, y: self.y };
+          // currentPos.current = { x: 0, y: 0 };
+          lastTime.current = Date.now();
 
+          // Add grabbing cursor
+          const box = boxes[currentIndex.current] as HTMLElement;
+          if (box) {
+            box.style.cursor = "grabbing";
+          }
+        },
+        onDrag: (self: any) => {
+          if (!isDragging.current) return;
+
+          const now = Date.now();
+          const deltaTime = now - lastTime.current;
+
+          // Calculate velocity
+          velocity.current.x = self.deltaX / (deltaTime / 16.67); // Normalize to 60fps
+          velocity.current.y = self.deltaY / (deltaTime / 16.67);
+
+          // Update current position
+
+          const currentBox = boxesPos.current[currentIndex.current];
+
+          currentBox.x += self.deltaX;
+          currentBox.y += self.deltaY;
+
+          const box = boxes[currentIndex.current] as HTMLElement;
+          if (box) {
+            // Apply position with smooth animation
+            gsap.to(box, {
+              x: currentBox.x,
+              y: currentBox.y,
+              rotation: velocity.current.x * 0.01, // Add rotation based on velocity
+              duration: 0.5,
+              ease: "power2.out",
+            });
+          }
+
+          lastTime.current = now;
+        },
+        onRelease: (self: any) => {
+          isDragging.current = false;
+
+          const box = boxes[currentIndex.current] as HTMLElement;
+          if (box) {
+            box.style.cursor = "grab";
+
+            // Add inertia effect
+            const inertiaX = velocity.current.x * 10;
+            const inertiaY = velocity.current.y * 10;
+            const currentBoxPos = boxesPos.current[currentIndex.current];
+
+            gsap.to(box, {
+              x: currentBoxPos.x + inertiaX,
+              y: currentBoxPos.y + inertiaY,
+              rotation: 0,
+              duration: 1.2,
+              ease: "expo.out",
+              onUpdate: () => {
+                // Update current position during inertia
+                currentPos.current.x = gsap.getProperty(box, "x") as number;
+                currentPos.current.y = gsap.getProperty(box, "y") as number;
+              },
+              onComplete: () => {
+                if (currentIndex.current < boxes.length - 1) {
+                  currentIndex.current += 1;
+                } else {
+                  currentIndex.current = 0;
+                }
+
+                // boxesPos.current[currentIndex.current] = {
+                //   x: currentPos.current.x,
+                //   y: currentPos.current.y,
+                // };
+              },
+            });
+          }
+
+          // Reset velocity
+          velocity.current = { x: 0, y: 0 };
+        },
+      });
+
+      console.log("observer", observer.current);
+
+      observer.current.enable();
+    }
+  });
   return (
-    <>
-      <div className="fixed top-0 left-0 w-full h-full z-10">
-        <SectionIntro
-          inView={activeSection === "intro" ? true : false}
-          cssSnap={true}
-        />
+    <div className="relative h-screen w-screen overflow-hidden">
+      <div
+        ref={boundsRef}
+        className="bounds absolute top-0 left-0 bg-red-500 h-screen w-screen flex items-center justify-center"
+      >
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div
+            key={index}
+            className="box absolute top-1/2  left-1/2 -translate-x-1/2 -translate-y-1/2 h-[74vh] w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+            style={{ zIndex: 1000 - index }}
+          >
+            <div className=" bg-yellow-500">start</div>
+            <div className="h-[1000px] bg-blue-500">content</div>
+            <div className=" bg-green-500">end</div>
+          </div>
+        ))}
       </div>
-      <div className="relative h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth z-10">
-        {sections.map((section, index) => {
-          return (
-            <Section
-              key={section.id}
-              id={section.id}
-              title={section.title}
-              handleActiveSection={handleActiveSection}
-            />
-          );
-        })}
-      </div>
-
-      <IntroPixi />
-    </>
+    </div>
   );
 }
-
-const Section = ({
-  id,
-  title,
-  handleActiveSection,
-}: {
-  id: string;
-  title: string;
-  handleActiveSection: (section: string) => void;
-}) => {
-  const animationRef = useRef<any>(null);
-  const sectionRef = useRef<any>(null);
-  const options = {
-    threshold: 0.5,
-    rootMargin: id === "intro" ? "0px 0px -50% 0px" : "0px", // Trigger earlier for intro
-    initialInView: id === "intro",
-  };
-  const { ref, inView, entry } = useInView(options);
-
-  useGSAP(() => {
-    if (sectionRef.current) {
-      const target = sectionRef.current.querySelector(".test");
-
-      animationRef.current = gsap
-        .timeline({
-          id: id,
-          paused: true,
-          defaults: { duration: 0.5, delay: 0.5, ease: "power2.inOut" },
-        })
-        .addLabel("start")
-        .to(target, {
-          rotation: 360,
-          autoAlpha: 1,
-        });
-    }
-  }, []);
-
-  useGSAP(() => {
-    if (!animationRef.current) return;
-    const ani = animationRef?.current;
-
-    if (inView) {
-      ani.restart();
-      handleActiveSection(id);
-    } else {
-      ani.pause();
-      ani.seek("start");
-    }
-  }, [inView]);
-
-  return (
-    <section
-      ref={(el) => {
-        ref(el);
-        sectionRef.current = el;
-      }}
-      className="snap-start h-screen flex items-center justify-center transition-all duration-3000"
-      id={id}
-      style={{
-        pointerEvents: id === "intro" ? "none" : "auto",
-      }}
-    >
-      {id === "intro" ? (
-        <></>
-      ) : (
-        <h1 className="test text-4xl font-bold rotate-0 opacity-0">{`Section ${title} ${inView}`}</h1>
-      )}
-    </section>
-  );
-};
