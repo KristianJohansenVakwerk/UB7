@@ -3,7 +3,7 @@
 import { useInView } from "react-intersection-observer";
 import ScrollTrigger from "gsap/ScrollTrigger";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(ScrollTrigger);
@@ -192,8 +192,59 @@ export default function TestPage() {
       observer.current.enable();
     }
   });
+
+  const handleNext = useCallback(() => {
+    const boxes = gsap.utils.toArray(".box");
+    if (currentIndex.current === boxes.length - 1) return;
+
+    const activeBox = boxes[currentIndex.current] as HTMLElement;
+    const activeBoxPos = boxesPos.current[currentIndex.current];
+
+    gsap.to(activeBox, {
+      x: activeBoxPos.x + window.innerWidth,
+      rotation: Math.random() * 10,
+      duration: 1.2,
+      ease: "expo.out",
+      onComplete: () => {
+        gsap.killTweensOf(activeBox);
+        currentIndex.current += 1;
+      },
+    });
+  }, []);
+
+  const handlePrev = useCallback(() => {
+    if (currentIndex.current === 0) return;
+    const boxes = gsap.utils.toArray(".box");
+    currentIndex.current -= 1;
+
+    const activeBox = boxes[currentIndex.current] as HTMLElement;
+    const activeBoxPos = boxesPos.current[currentIndex.current];
+
+    gsap.to(activeBox, {
+      x: 0,
+      rotation: 0,
+      duration: 1.2,
+      ease: "expo.out",
+      onComplete: () => {
+        gsap.killTweensOf(activeBox);
+      },
+    });
+  }, []);
+
   return (
     <div className="relative h-[100svh] w-screen overflow-hidden">
+      <div
+        className="absolute top-3 left-3  z-10 cursor-pointer"
+        onClick={handlePrev}
+      >
+        Prev
+      </div>
+      <div
+        className="absolute top-3 right-3 z-10 cursor-pointer"
+        onClick={handleNext}
+      >
+        Next
+      </div>
       <div
         ref={boundsRef}
         className="bounds absolute top-0 left-0 bg-red-500 h-full w-screen flex items-center justify-center user-select-none"
