@@ -118,11 +118,18 @@ const Slider = (props: Props) => {
     slidesOffsetBefore: 30,
     slidesOffsetAfter: 30,
     loop: false,
+    speed: 800,
+    grabCursor: true,
+    resistance: true,
+    resistanceRatio: 0.85,
     freeMode: {
       enabled: true,
       momentum: true,
-      momentumRatio: 0.8,
-      momentumVelocityRatio: 0.8,
+      momentumRatio: 0.6,
+      momentumVelocityRatio: 0.6,
+      momentumBounce: false,
+      momentumBounceRatio: 0.1,
+      minimumVelocity: 0.02,
     },
   };
 
@@ -134,129 +141,6 @@ const Slider = (props: Props) => {
     onSlideChange: () => {},
     onSwiper: (swiper: any) => {},
   };
-
-  // useGSAP(() => {
-  //   const containers = gsap.utils.toArray(".team-member");
-  //   const names = gsap.utils.toArray(".team-member-name");
-  //   const images = gsap.utils.toArray(".team-member-image");
-  //   const texts = gsap.utils.toArray(".team-member-text");
-  //   const socials = gsap.utils.toArray(".team-member-social");
-
-  //   const sliderContainer = document.querySelector(
-  //     ".slider-container"
-  //   ) as HTMLElement;
-
-  //   const tl = gsap.timeline({
-  //     scrollTrigger: {
-  //       trigger: sliderContainer,
-  //       start: "top top",
-  //       end: "bottom bottom",
-  //       scrub: true,
-  //       markers: true,
-  //       id: "slider-tl",
-  //     },
-  //   });
-
-  //   containers.forEach((container: any, index: number) => {
-  //     const name = names[index] as HTMLDivElement;
-  //     const image = images[index] as HTMLDivElement;
-  //     const text = texts[index] as HTMLDivElement;
-  //     const socials = container.querySelectorAll(
-  //       ".team-member-social"
-  //     ) as NodeListOf<HTMLDivElement>;
-  //     tl.to(container, {
-  //       opacity: 1,
-  //       x: 0,
-  //       duration: 0.3,
-  //       ease: "power2.inOut",
-  //     });
-
-  //     tl.to(
-  //       name,
-  //       {
-  //         opacity: 1,
-  //         duration: 0.3,
-  //         ease: "power2.inOut",
-  //       },
-  //       `>`
-  //     );
-
-  //     tl.to(
-  //       image,
-  //       {
-  //         opacity: 1,
-  //         duration: 0.3,
-  //         ease: "power2.inOut",
-  //       },
-  //       `>`
-  //     );
-
-  //     tl.to(
-  //       text,
-  //       {
-  //         opacity: 1,
-  //         duration: 0.3,
-  //         ease: "power2.inOut",
-  //       },
-  //       `>`
-  //     );
-
-  //     tl.to(
-  //       socials,
-  //       {
-  //         opacity: 1,
-  //         duration: 0.2,
-  //         stagger: 0.1,
-  //         ease: "power2.inOut",
-  //       },
-  //       `>`
-  //     );
-  //   });
-
-  //   // Calculate total width of all team members
-  //   const totalWidth = containers.reduce((acc: number, container: any) => {
-  //     return acc + container.offsetWidth + 8; // Add gap width (2 * 4px)
-  //   }, 0);
-
-  // Draggable.create(sliderWrapper, {
-  //   type: "x",
-  //   bounds: {
-  //     minX: -(totalWidth - sliderContainer.offsetWidth),
-  //     maxX: 0,
-  //   },
-  //   inertia: true,
-  //   onDrag: function () {
-  //     // Optional: Add any additional behavior during drag
-  //   },
-  //   onDragEnd: function (self) {
-  //     // Get the current velocity
-  //     console.log(self);
-  //     const velocity = 0;
-
-  //     // Calculate the distance to travel based on velocity
-  //     const distance = velocity * 0.1; // Adjust multiplier to control throw distance
-
-  //     // Get current position
-  //     const currentX = gsap.getProperty(sliderWrapper, "x") as number;
-
-  //     // Calculate target position
-  //     let targetX = currentX + distance;
-
-  //     // Clamp the target position within bounds
-  //     targetX = Math.max(
-  //       -(totalWidth - sliderContainer.offsetWidth),
-  //       Math.min(0, targetX)
-  //     );
-
-  //     // Animate to the target position with easing
-  //     gsap.to(sliderWrapper, {
-  //       x: targetX,
-  //       duration: 0.5,
-  //       ease: "power2.out",
-  //     });
-  //   },
-  // });
-  // }, []);
 
   return (
     <Swiper {...swiperSettings}>
