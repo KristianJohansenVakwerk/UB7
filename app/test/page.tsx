@@ -29,18 +29,15 @@ export default function TestPage() {
       const getCurrentBox = () => boxes[currentIndex.current] as HTMLElement;
 
       const getPreviousBox = () => {
+        console.log("getPreviousBox", currentIndex.current);
         const prevIndex =
-          currentIndex.current === 0
-            ? boxes.length - 1
-            : currentIndex.current - 1;
+          currentIndex.current === 0 ? 0 : currentIndex.current - 1;
         return boxes[prevIndex] as HTMLElement;
       };
 
       const getPreviousBoxPos = () => {
         const prevIndex =
-          currentIndex.current === 0
-            ? boxes.length - 1
-            : currentIndex.current - 1;
+          currentIndex.current === 0 ? 0 : currentIndex.current - 1;
         return boxesPos.current[prevIndex];
       };
 
@@ -55,21 +52,34 @@ export default function TestPage() {
       };
 
       const updateCurrentIndex = () => {
+        console.log(
+          "before current index",
+          currentIndex.current,
+          direction.current,
+          boxes.length - 1
+        );
         if (direction.current === 1) {
           // Moving forward
           if (currentIndex.current < boxes.length - 1) {
             currentIndex.current += 1;
           } else {
-            currentIndex.current = 0;
+            currentIndex.current = boxes.length - 1;
           }
         } else {
           // Moving backward
           if (currentIndex.current > 0) {
             currentIndex.current -= 1;
           } else {
-            currentIndex.current = boxes.length - 1;
+            currentIndex.current = 0;
           }
         }
+
+        console.log(
+          "after current index",
+          currentIndex.current,
+          direction.current,
+          boxes.length - 1
+        );
       };
 
       // Set cursor
@@ -84,7 +94,7 @@ export default function TestPage() {
       const xTo = gsap.utils.pipe((value: number) => {
         const activeBox =
           direction.current === 1 ? getCurrentBox() : getPreviousBox();
-        return gsap.quickTo(activeBox, "x", { ease: "power4" })(value);
+        return gsap.quickTo(activeBox, "x", { ease: "power2" })(value);
       });
 
       const rTo = gsap.utils.pipe((value: number) => {
@@ -101,14 +111,9 @@ export default function TestPage() {
         tolerance: 10,
         ignore: ".disable-drag",
         onDrag: (self: any) => {
-          console.log("onDrag");
           // Only handle horizontal drags, ignore vertical ones
           if (Math.abs(self.deltaX) < Math.abs(self.deltaY)) {
             return; // Allow vertical scrolling to pass through
-          }
-
-          if (self.event) {
-            self.event.preventDefault();
           }
 
           if (!isDragging.current) {
@@ -158,26 +163,51 @@ export default function TestPage() {
 
           setCursor("grab");
 
-          if (Math.abs(activeBoxPos.x) > 100) {
-            console.log("onDragEnd", activeBoxPos.x);
-            updateCurrentIndex();
+          if (
+            currentIndex.current === boxes.length - 1 &&
+            direction.current === 1
+          ) {
+            gsap.to(activeBox, {
+              x: 0,
+              y: 0,
+              rotation: 0,
+              duration: 1.2,
+              ease: "expo.inOut",
+              onComplete: () => {
+                activeBoxPos.x = 0;
+                gsap.killTweensOf(activeBox);
+              },
+            });
 
+            return;
+          }
+
+          console.log("onRelease", currentIndex.current !== boxes.length - 1);
+
+          if (Math.abs(activeBoxPos.x) > 100) {
             gsap.to(activeBox, {
               x:
                 direction.current === 1
-                  ? activeBoxPos.x + window.innerWidth
+                  ? window.innerWidth / 2 + activeBox.clientWidth
                   : 0,
               rotation: 0,
               duration: 1.2,
               delay: 0.4,
               ease: "expo.out",
               onComplete: () => {
+                gsap.delayedCall(0.2, () => {
+                  activeBox.scrollTo({ top: 0 });
+                });
+                activeBoxPos.x = gsap.getProperty(activeBox, "x");
                 gsap.killTweensOf(activeBox);
               },
             });
+
+            updateCurrentIndex();
           } else {
             gsap.to(activeBox, {
               x: 0,
+              y: 0,
               rotation: 0,
               duration: 0.5,
               ease: "power2.out",
@@ -198,16 +228,19 @@ export default function TestPage() {
     if (currentIndex.current === boxes.length - 1) return;
 
     const activeBox = boxes[currentIndex.current] as HTMLElement;
+    const activeBoxWidth = activeBox.clientWidth;
     const activeBoxPos = boxesPos.current[currentIndex.current];
 
+    currentIndex.current += 1;
+
     gsap.to(activeBox, {
-      x: activeBoxPos.x + window.innerWidth,
+      x: window.innerWidth / 2 + activeBoxWidth,
+      y: Math.random() * 100 - 50,
       rotation: Math.random() * 10,
-      duration: 1.2,
+      duration: 2.2,
       ease: "expo.out",
       onComplete: () => {
         gsap.killTweensOf(activeBox);
-        currentIndex.current += 1;
       },
     });
   }, []);
@@ -222,6 +255,7 @@ export default function TestPage() {
 
     gsap.to(activeBox, {
       x: 0,
+      y: 0,
       rotation: 0,
       duration: 1.2,
       ease: "expo.out",
@@ -253,9 +287,10 @@ export default function TestPage() {
           overscrollBehavior: "none",
         }}
       >
-        {Array.from({ length: 3 }).map((_, index) => (
+        {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
+            data-index={index}
             className="box absolute top-2 lg:top-1/2  left-1/2 -translate-x-1/2 lg:-translate-y-1/2 h-[80vh] w-[calc(100vw-3rem)] p-2 lg:p-3 lg:w-[calc(80vh*0.55)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none  bg-gray-300"
             style={{ zIndex: 1000 - index, touchAction: "pan-x pan-y" }}
           >
