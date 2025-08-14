@@ -43,6 +43,7 @@ export default function ObserverPage() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      console.log(e.key, "keydown");
       if (e.key == "Tab") {
         e.stopPropagation();
         e.preventDefault();

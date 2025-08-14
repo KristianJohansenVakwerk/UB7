@@ -41,37 +41,53 @@ const DraggableObserver = (props: Props) => {
   const direction = useRef<1 | -1>(1);
   const isDragging = useRef(false);
 
+  // Refs to handle boxes
+  const activeBoxes = useRef<HTMLElement[]>([]);
+  const inActiveBoxes = useRef<HTMLElement[]>([]);
+
   // GSAP for the initial setup
   useGSAP(() => {
     const boxes = gsap.utils.toArray(".box");
 
     // Active boxes are the ones that are visible
-    const activeBoxes = boxes.slice(entriesFrom);
+    const activeBoxesArray = boxes.slice(entriesFrom);
+    activeBoxes.current = activeBoxesArray as HTMLElement[];
 
     // Inactive boxes are the ones that are not visible
-    const inActiveBoxes = boxes.slice(0, entriesFrom);
+    const inActiveBoxesArray = boxes.slice(0, entriesFrom);
+    inActiveBoxes.current = inActiveBoxesArray as HTMLElement[];
 
-    // Set the inactive boxes to the right of the screen
-    gsap.set(inActiveBoxes, {
-      x: window.innerWidth / 2 + (inActiveBoxes[0] as HTMLElement).clientWidth,
-    });
+    if (inActiveBoxesArray.length > 0) {
+      // Set the inactive boxes to the right of the screen
+      gsap.set(inActiveBoxesArray, {
+        x:
+          window.innerWidth / 2 +
+          (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+      });
+    }
 
     // Set the active boxes to the top of the screen
-    gsap.set(activeBoxes, { y: -window.innerHeight });
+    gsap.set(activeBoxesArray, { y: -window.innerHeight });
 
     // Delay the initial setup to allow the boxes to be set
     gsap.delayedCall(1, () => {
       setReady(true);
-      activeBoxes.forEach((box, index) => {
-        gsap.to(box as HTMLElement, {
-          y: getTranslation(index + entriesFrom, entriesFrom),
-          scale: getScale(index + entriesFrom, entriesFrom),
-          duration: 0.75,
-          delay: index * 0.1,
-          ease: "expo.inOut",
-          onComplete: () => {},
-        });
-      });
+      (activeBoxesArray as HTMLElement[]).forEach(
+        (box: HTMLElement, index: number) => {
+          gsap.to(box, {
+            y: getTranslation(index + entriesFrom, entriesFrom),
+            scale: getScale(index + entriesFrom, entriesFrom),
+            duration: 0.55,
+            delay: index * 0.05,
+            ease: "expo.inOut",
+            onComplete: () => {
+              if (index === activeBoxesArray.length - 1) {
+                activeBoxes.current.shift();
+              }
+            },
+          });
+        }
+      );
     });
   }, []);
 
@@ -108,6 +124,7 @@ const DraggableObserver = (props: Props) => {
       };
 
       const updateCurrentIndex = () => {
+        console.log("updateCurrentIndex");
         if (direction.current === 1) {
           // Moving forward
           if (currentIndex.current < boxes.length - 1) {
@@ -133,6 +150,73 @@ const DraggableObserver = (props: Props) => {
         if (box) {
           box.style.cursor = cursor;
         }
+      };
+
+      const setPositions = (
+        boxPos: number,
+        currentBoxIndex: number,
+        isForward: boolean
+      ) => {
+        activeBoxes.current.forEach((box: HTMLElement, index: number) => {
+          console.log(box.dataset.index, index, currentBoxIndex);
+          if (index + currentBoxIndex > currentBoxIndex) {
+            gsap.killTweensOf(box);
+          }
+
+          const dragProgress = isForward
+            ? Math.max(0, Math.min(boxPos / 100, 1))
+            : 0;
+
+          const boxIndex = index + currentBoxIndex;
+          const distanceFromCurrent = boxIndex - currentBoxIndex;
+
+          // Get base positions
+          const baseY = getTranslationNum(boxIndex, currentBoxIndex);
+          const baseScale = getScaleNum(boxIndex, currentBoxIndex);
+
+          let finalY = baseY;
+          let finalScale = baseScale;
+
+          // Moving forward - boxes cascade up and scale UP
+          switch (distanceFromCurrent) {
+            case 0:
+              // Current box stays at center
+
+              const targetY0 = boxPos > 0 ? 0 : -3;
+              const targetScale0 = boxPos > 0 ? 1 : 0.95;
+
+              finalY = gsap.utils.interpolate(baseY, targetY0, dragProgress);
+
+              finalScale = gsap.utils.interpolate(
+                baseScale,
+                targetScale0,
+                dragProgress
+              );
+              break;
+            case 1:
+              // Next box: interpolate between -3vh (base) and 0vh (forward) or -6vh (backward)
+              const targetY1 = boxPos > 0 ? -3 : -6;
+              const targetScale1 = boxPos > 0 ? 0.95 : 0.9;
+              finalY = gsap.utils.interpolate(baseY, targetY1, dragProgress);
+              finalScale = gsap.utils.interpolate(
+                baseScale,
+                targetScale1,
+                dragProgress
+              );
+              break;
+            default:
+              // Other boxes stay as they are
+              finalY = baseY;
+              finalScale = baseScale;
+              break;
+          }
+
+          gsap.to(box, {
+            y: `${finalY}vh`,
+            scale: finalScale,
+            ease: "power1.inOut",
+          });
+        });
       };
 
       // Animations
@@ -189,6 +273,14 @@ const DraggableObserver = (props: Props) => {
           xTo(activeBoxPos.x);
           rTo(r);
           lastTime.current = now;
+
+          if (direction.current === 1) {
+            setPositions(
+              activeBoxPos.x,
+              parseFloat(activeBox.dataset.index as string),
+              true
+            );
+          }
         },
         onPress: (self: any) => {
           setCursor("grabbing");
@@ -207,6 +299,7 @@ const DraggableObserver = (props: Props) => {
 
           setCursor("grab");
 
+          // if last box disable animation out
           if (
             currentIndex.current === boxes.length - 1 &&
             direction.current === 1
@@ -215,6 +308,7 @@ const DraggableObserver = (props: Props) => {
               x: 0,
               y: 0,
               rotation: 0,
+              scale: 1,
               duration: 1.2,
               ease: "expo.inOut",
               onComplete: () => {
@@ -226,14 +320,13 @@ const DraggableObserver = (props: Props) => {
             return;
           }
 
-          if (Math.abs(activeBoxPos.x) > 100) {
+          if (Math.abs(activeBoxPos.x) > 200) {
             gsap.to(activeBox, {
               x:
                 direction.current === 1
                   ? window.innerWidth / 2 + activeBox.clientWidth
                   : 0,
 
-              y: 0,
               rotation: 0,
               duration: 1.2,
               delay: 0.4,
@@ -244,33 +337,34 @@ const DraggableObserver = (props: Props) => {
                 });
                 activeBoxPos.x = gsap.getProperty(activeBox, "x");
                 gsap.killTweensOf(activeBox);
-
-                // const restBoxes = boxes.slice(
-                //   currentIndex.current,
-                //   boxes.length - 1
-                // );
-                // restBoxes.forEach((box, index) => {
-                //   gsap.to(box as HTMLElement, {
-                //     y: getTranslation(
-                //       index + currentIndex.current,
-                //       boxes.length - 1
-                //     ),
-                //     scale: getScale(
-                //       index + currentIndex.current,
-                //       boxes.length - 1
-                //     ),
-                //     duration: 0.75,
-                //     ease: "expo.inOut",
-                //   });
-                // });
               },
             });
 
             updateCurrentIndex();
+
+            // Remove or add the current box to the beginning of activeBoxes array
+            if (direction.current === 1) {
+              console.log("shift", activeBox.dataset.index);
+              activeBoxes.current.shift();
+              // setPositions(100);
+            } else {
+              // Add the current box back to the beginning of activeBoxes array
+              console.log("unshift", activeBox.dataset.index);
+              activeBoxes.current.unshift(activeBox);
+
+              gsap.delayedCall(2, () => {
+                setPositions(
+                  0,
+                  parseFloat(activeBox.dataset.index as string),
+                  false
+                );
+              });
+            }
           } else {
+            console.log("else");
+            // setPositions(activeBoxPos.x);
             gsap.to(activeBox, {
               x: 0,
-              y: 0,
               rotation: 0,
               duration: 0.5,
               ease: "power2.out",
@@ -468,10 +562,11 @@ export const Entry = (props: any) => {
     <div
       className="box absolute top-2 lg:top-1/2 border-5 border-blue-500  left-1/2 -translate-x-1/2 lg:-translate-y-1/2 h-[80vh] lg:h-[74vh] w-[calc(100vw-3rem)]  lg:w-[calc(80vh*0.46)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
       style={{ zIndex: 1000 - index, touchAction: "pan-x pan-y" }}
+      data-index={index}
     >
       <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
         <div className={"font-mono text-sm px-2 lg:px-3"}>
-          Category: {data.sector}
+          Category: {data.sector} {index}
         </div>
         <div className={"flex flex-col gap-4 lg:gap-8"}>
           <div className={"font-sans text-md px-2"}>{data.title}</div>
@@ -569,7 +664,6 @@ export const getScale = (index: number, currentIndex: number) => {
 };
 
 export const getTranslation = (index: number, currentIndex: number) => {
-  console.log(index, currentIndex);
   if (index === currentIndex) {
     return "0"; // First item centered
   } else if (index === currentIndex + 1) {
@@ -578,6 +672,25 @@ export const getTranslation = (index: number, currentIndex: number) => {
     return "-6vh"; // Third item moved up more
   } else {
     return "-6vh"; // Rest of the items below
+  }
+};
+
+export const getScaleNum = (index: number, currentIndex: number) => {
+  if (index === currentIndex) {
+    return 0.95; // First item centered
+  } else if (index === currentIndex + 1) {
+    return 0.9; // Second item moved up
+  } else {
+    return 0.9; // Rest of the items below
+  }
+};
+export const getTranslationNum = (index: number, currentIndex: number) => {
+  if (index === currentIndex) {
+    return -3; // First item centered
+  } else if (index === currentIndex + 1) {
+    return -6; // Second item moved up
+  } else {
+    return -6; // Rest of the items below
   }
 };
 
