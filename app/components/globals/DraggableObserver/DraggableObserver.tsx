@@ -40,6 +40,7 @@ const DraggableObserver = (props: Props) => {
   const lastTime = useRef(0);
   const direction = useRef<1 | -1>(1);
   const isDragging = useRef(false);
+  const dragStartPos = useRef(0);
 
   // Refs to handle boxes
   const activeBoxes = useRef<HTMLElement[]>([]);
@@ -123,22 +124,16 @@ const DraggableObserver = (props: Props) => {
         }
       };
 
-      const updateCurrentIndex = () => {
+      const updateCurrentIndex = (direction: number) => {
         console.log("updateCurrentIndex");
-        if (direction.current === 1) {
-          // Moving forward
-          if (currentIndex.current < boxes.length - 1) {
-            currentIndex.current += 1;
-          } else {
-            currentIndex.current = boxes.length - 1;
-          }
+        const next = currentIndex.current + direction;
+
+        if (next >= 0 && next < boxes.length) {
+          currentIndex.current = next;
+        } else if (next < 0) {
+          currentIndex.current = 0;
         } else {
-          // Moving backward
-          if (currentIndex.current > 0) {
-            currentIndex.current -= 1;
-          } else {
-            currentIndex.current = 0;
-          }
+          currentIndex.current = boxes.length - 1;
         }
 
         setCurrentStateIndex(currentIndex.current);
@@ -157,22 +152,43 @@ const DraggableObserver = (props: Props) => {
         currentBoxIndex: number,
         isForward: boolean
       ) => {
-        activeBoxes.current.forEach((box: HTMLElement, index: number) => {
-          console.log(box.dataset.index, index, currentBoxIndex);
-          if (index + currentBoxIndex > currentBoxIndex) {
-            gsap.killTweensOf(box);
+        (boxes as HTMLElement[]).forEach((box: HTMLElement, index: number) => {
+          const boxDataIndex = parseFloat(box.dataset.index as string);
+          const distanceFromCurrent = boxDataIndex - currentBoxIndex;
+
+          // Only animate boxes that are within the visible range
+          if (distanceFromCurrent < 0 || distanceFromCurrent > 2) {
+            return; // Skip boxes that are too far away
           }
 
-          const dragProgress = isForward
-            ? Math.max(0, Math.min(boxPos / 100, 1))
-            : 0;
+          // Skip the current box from positions updates
+          if (boxDataIndex === currentBoxIndex) {
+            return;
+          }
 
-          const boxIndex = index + currentBoxIndex;
-          const distanceFromCurrent = boxIndex - currentBoxIndex;
+          // Calculate drag progress based on direction and position
+          let dragProgress = 0;
+
+          if (isForward) {
+            // Forward movement: positive progress for positive positions
+
+            dragProgress = Math.max(0, Math.min(boxPos / 100, 1));
+          } else {
+            // Backward movement: need to calculate relative to starting position
+            const currentPos = gsap.getProperty(box, "x") as number;
+            const dragDistance = Math.abs(currentPos - dragStartPos.current);
+
+            dragProgress = Math.max(0, Math.min(dragDistance / 100, 1));
+          }
+
+          const threshold = 0.3; // Adjust this value as needed
+          if (dragProgress > threshold) {
+            dragProgress = 1;
+          }
 
           // Get base positions
-          const baseY = getTranslationNum(boxIndex, currentBoxIndex);
-          const baseScale = getScaleNum(boxIndex, currentBoxIndex);
+          const baseY = getTranslationNum(boxDataIndex, currentBoxIndex);
+          const baseScale = getScaleNum(boxDataIndex, currentBoxIndex);
 
           let finalY = baseY;
           let finalScale = baseScale;
@@ -182,8 +198,8 @@ const DraggableObserver = (props: Props) => {
             case 0:
               // Current box stays at center
 
-              const targetY0 = boxPos > 0 ? 0 : -3;
-              const targetScale0 = boxPos > 0 ? 1 : 0.95;
+              const targetY0 = isForward ? 0 : -3;
+              const targetScale0 = isForward ? 1 : 0.95;
 
               finalY = gsap.utils.interpolate(baseY, targetY0, dragProgress);
 
@@ -195,12 +211,23 @@ const DraggableObserver = (props: Props) => {
               break;
             case 1:
               // Next box: interpolate between -3vh (base) and 0vh (forward) or -6vh (backward)
-              const targetY1 = boxPos > 0 ? -3 : -6;
-              const targetScale1 = boxPos > 0 ? 0.95 : 0.9;
+              const targetY1 = isForward ? 0 : -3;
+              const targetScale1 = isForward ? 1 : 0.95;
               finalY = gsap.utils.interpolate(baseY, targetY1, dragProgress);
               finalScale = gsap.utils.interpolate(
                 baseScale,
                 targetScale1,
+                dragProgress
+              );
+              break;
+            case 2:
+              // Next box: interpolate between -3vh (base) and 0vh (forward) or -6vh (backward)
+              const targetY2 = isForward ? -3 : -6;
+              const targetScale2 = isForward ? 0.95 : 0.9;
+              finalY = gsap.utils.interpolate(baseY, targetY2, dragProgress);
+              finalScale = gsap.utils.interpolate(
+                baseScale,
+                targetScale2,
                 dragProgress
               );
               break;
@@ -214,35 +241,64 @@ const DraggableObserver = (props: Props) => {
           gsap.to(box, {
             y: `${finalY}vh`,
             scale: finalScale,
-            ease: "power1.inOut",
+            ease: "power1.out",
           });
         });
+      };
+
+      // Function to calc when update and animate the current box out on release both directions
+      const shouldUpdateOnRelease = (boxPos: number) => {
+        const threshold = ScrollTrigger.isTouch ? 100 : 200;
+        let currentPos = 0;
+
+        if (direction.current === 1) {
+          currentPos = gsap.getProperty(getCurrentBox(), "x") as number;
+          return boxPos > threshold;
+        }
+
+        if (direction.current === -1) {
+          currentPos = gsap.getProperty(getPreviousBox(), "x") as number;
+          console.log("currentPos", currentPos, dragStartPos.current);
+          return true;
+        }
+
+        return false;
       };
 
       // Animations
       const xTo = gsap.utils.pipe((value: number) => {
         const activeBox =
           direction.current === 1 ? getCurrentBox() : getPreviousBox();
-        return gsap.quickTo(activeBox, "x", { ease: "power2" })(value);
+        return gsap.quickTo(activeBox, "x", {
+          ease: "power1.out",
+          duration: ScrollTrigger.isTouch ? 0.05 : 0.5,
+        })(value);
       });
 
       const rTo = gsap.utils.pipe((value: number) => {
         const activeBox =
           direction.current === 1 ? getCurrentBox() : getPreviousBox();
-        return gsap.quickTo(activeBox, "rotation", { ease: "power4" })(value);
+        return gsap.quickTo(activeBox, "rotation", {
+          ease: "power1.out",
+          duration: ScrollTrigger.isTouch ? 0.05 : 0.5,
+        })(value);
       });
 
       observer.current = ScrollTrigger.observe({
         target: boundsRef.current,
         type: "touch, pointer",
         preventDefault: false,
-        dragMinimum: 10,
+        dragMinimum: 60,
         tolerance: 10,
         ignore: ".disable-drag",
         onDrag: (self: any) => {
           // Only handle horizontal drags, ignore vertical ones
           if (Math.abs(self.deltaX) < Math.abs(self.deltaY)) {
             return; // Allow vertical scrolling to pass through
+          }
+
+          if (Math.abs(self.deltaX) < 20) {
+            return;
           }
 
           if (!isDragging.current) {
@@ -252,19 +308,20 @@ const DraggableObserver = (props: Props) => {
             setDirection(self.deltaX);
           }
 
+          const now = Date.now();
+          const deltaTime = now - lastTime.current;
+
           const activeBox =
             direction.current === 1 ? getCurrentBox() : getPreviousBox();
           const activeBoxPos =
             direction.current === 1 ? getCurrentBoxPos() : getPreviousBoxPos();
-          const now = Date.now();
-          const deltaTime = now - lastTime.current;
 
           // Kill tween
           gsap.killTweensOf(activeBox);
 
           // Calculate velocity
-          const v = (self.deltaX * 2) / (deltaTime / 16.67);
-          const r = v * 0.05;
+          const v = self.deltaX;
+          const r = v * 0.07;
 
           // Update current position
           activeBoxPos.x = activeBoxPos.x + v;
@@ -272,15 +329,14 @@ const DraggableObserver = (props: Props) => {
           // Update position and rotation
           xTo(activeBoxPos.x);
           rTo(r);
-          lastTime.current = now;
 
-          if (direction.current === 1) {
-            setPositions(
-              activeBoxPos.x,
-              parseFloat(activeBox.dataset.index as string),
-              true
-            );
-          }
+          setPositions(
+            activeBoxPos.x,
+            parseFloat(activeBox.dataset.index as string),
+            direction.current === 1 ? true : false
+          );
+
+          lastTime.current = now;
         },
         onPress: (self: any) => {
           setCursor("grabbing");
@@ -320,7 +376,7 @@ const DraggableObserver = (props: Props) => {
             return;
           }
 
-          if (Math.abs(activeBoxPos.x) > 200) {
+          if (shouldUpdateOnRelease(activeBoxPos.x)) {
             gsap.to(activeBox, {
               x:
                 direction.current === 1
@@ -329,40 +385,25 @@ const DraggableObserver = (props: Props) => {
 
               rotation: 0,
               duration: 1.2,
-              delay: 0.4,
               ease: "expo.out",
               onComplete: () => {
                 gsap.delayedCall(0.2, () => {
                   activeBox.scrollTo({ top: 0 });
                 });
+                console.log("onComplete", gsap.getProperty(activeBox, "x"));
                 activeBoxPos.x = gsap.getProperty(activeBox, "x");
                 gsap.killTweensOf(activeBox);
               },
             });
 
-            updateCurrentIndex();
-
-            // Remove or add the current box to the beginning of activeBoxes array
-            if (direction.current === 1) {
-              console.log("shift", activeBox.dataset.index);
-              activeBoxes.current.shift();
-              // setPositions(100);
-            } else {
-              // Add the current box back to the beginning of activeBoxes array
-              console.log("unshift", activeBox.dataset.index);
-              activeBoxes.current.unshift(activeBox);
-
-              gsap.delayedCall(2, () => {
-                setPositions(
-                  0,
-                  parseFloat(activeBox.dataset.index as string),
-                  false
-                );
-              });
-            }
+            updateCurrentIndex(direction.current);
           } else {
-            console.log("else");
-            // setPositions(activeBoxPos.x);
+            setPositions(
+              0,
+              parseFloat(activeBox.dataset.index as string),
+              false
+            );
+
             gsap.to(activeBox, {
               x: 0,
               rotation: 0,
@@ -457,7 +498,12 @@ const DraggableObserver = (props: Props) => {
         }}
       >
         {entries.map((entry, index) => (
-          <Entry key={index} data={entry} index={index} />
+          <Entry
+            key={index}
+            data={entry}
+            index={index}
+            currentIndex={currentStateIndex}
+          />
         ))}
       </div>
     </div>
@@ -557,11 +603,15 @@ const NextButton = (props: any) => {
 };
 
 export const Entry = (props: any) => {
-  const { data, index } = props;
+  const { data, index, currentIndex } = props;
   return (
     <div
-      className="box absolute top-2 lg:top-1/2 border-5 border-blue-500  left-1/2 -translate-x-1/2 lg:-translate-y-1/2 h-[80vh] lg:h-[74vh] w-[calc(100vw-3rem)]  lg:w-[calc(80vh*0.46)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
-      style={{ zIndex: 1000 - index, touchAction: "pan-x pan-y" }}
+      className="box absolute top-2 lg:top-1/2  left-1/2 -translate-x-1/2 lg:-translate-y-1/2 h-[80vh] lg:h-[74vh] w-[calc(100vw-2rem)]  lg:w-[calc(80vh*0.46)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      style={{
+        zIndex: 1000 - index,
+        touchAction: "pan-x pan-y",
+        pointerEvents: index === currentIndex ? "auto" : "none",
+      }}
       data-index={index}
     >
       <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
@@ -677,18 +727,18 @@ export const getTranslation = (index: number, currentIndex: number) => {
 
 export const getScaleNum = (index: number, currentIndex: number) => {
   if (index === currentIndex) {
-    return 0.95; // First item centered
+    return 1; // First item centered
   } else if (index === currentIndex + 1) {
-    return 0.9; // Second item moved up
+    return 0.95; // Second item moved up
   } else {
     return 0.9; // Rest of the items below
   }
 };
 export const getTranslationNum = (index: number, currentIndex: number) => {
   if (index === currentIndex) {
-    return -3; // First item centered
+    return 0; // First item centered
   } else if (index === currentIndex + 1) {
-    return -6; // Second item moved up
+    return -3; // Second item moved up
   } else {
     return -6; // Rest of the items below
   }
