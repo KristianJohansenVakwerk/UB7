@@ -40,6 +40,9 @@
   --radius-progress-bar: 20px;
   --aspect-ratio-box: 342/558;
   --aspect-ratio-box-lg: 769/411;
+
+  --slides: 2.5;
+  --slide-gap: 20px;
 }
 
 :root {
@@ -172,6 +175,35 @@ nav button {
 
 nav button:hover {
   background-color: #555;
+}
+
+.slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  height: 20vh;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    height: 30vh;
+  }
+}
+
+.slide-box {
+  --slides: 1.2;
+  --gap: 20px;
+  --gaps: calc((var(--slides) - 1) * var(--gap));
+  width: calc((100% - (var(--gaps))) / var(--slides));
+  /* margin-right: var(--slide-gap); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: green;
+  height: 100%;
+  padding: 0;
+  position: relative;
+  flex-shrink: 0;
 }
 
 /* Lenis Scrollbar Styles */

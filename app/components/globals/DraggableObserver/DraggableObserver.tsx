@@ -4,14 +4,24 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import Slider from "../../shared/Slider/Slider";
+import { useAccordionControls } from "@/app/hooks/AccordionHooks";
+
+import { useSectorListAnimation } from "@/app/hooks/AnimationsHooks";
 gsap.registerPlugin(ScrollTrigger);
 
 type Props = {
   data: any;
   entriesFrom: number;
+  active: boolean;
+  updateBackground: (sector: string) => void;
+  onClose: () => void;
 };
 const DraggableObserver = (props: Props) => {
-  const { data, entriesFrom } = props;
+  const { data, entriesFrom, active, updateBackground, onClose } = props;
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { resetAccordionMobile } = useAccordionControls();
 
   // Set state for initial setup to hide the UI
   const [ready, setReady] = useState(false);
@@ -27,8 +37,13 @@ const DraggableObserver = (props: Props) => {
     )
   );
 
+  useEffect(() => {
+    currentIndex.current = entriesFrom;
+    setCurrentStateIndex(entriesFrom);
+  }, [entriesFrom]);
+
   // State for the current index of the entry to update react stuff
-  const [currentStateIndex, setCurrentStateIndex] = useState(0);
+  const [currentStateIndex, setCurrentStateIndex] = useState(entriesFrom);
 
   // Ref for the bounds of the observer
   const boundsRef = useRef<HTMLDivElement>(null);
@@ -48,49 +63,63 @@ const DraggableObserver = (props: Props) => {
 
   // GSAP for the initial setup
   useGSAP(() => {
-    const boxes = gsap.utils.toArray(".box");
+    if (!containerRef.current) return;
 
-    // Active boxes are the ones that are visible
-    const activeBoxesArray = boxes.slice(entriesFrom);
-    activeBoxes.current = activeBoxesArray as HTMLElement[];
+    gsap.set(containerRef.current, {
+      autoAlpha: 0,
+    });
 
-    // Inactive boxes are the ones that are not visible
-    const inActiveBoxesArray = boxes.slice(0, entriesFrom);
-    inActiveBoxes.current = inActiveBoxesArray as HTMLElement[];
+    if (active) {
+      gsap.to(containerRef.current, {
+        autoAlpha: 1,
+        duration: 0.4,
+        delay: 0.8,
+        ease: "expo.inOut",
+      });
+      const boxes = gsap.utils.toArray(".box");
 
-    if (inActiveBoxesArray.length > 0) {
-      // Set the inactive boxes to the right of the screen
-      gsap.set(inActiveBoxesArray, {
-        x:
-          window.innerWidth / 2 +
-          (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+      // Active boxes are the ones that are visible
+      const activeBoxesArray = boxes.slice(entriesFrom);
+      activeBoxes.current = activeBoxesArray as HTMLElement[];
+
+      // Inactive boxes are the ones that are not visible
+      const inActiveBoxesArray = boxes.slice(0, entriesFrom);
+      inActiveBoxes.current = inActiveBoxesArray as HTMLElement[];
+
+      if (inActiveBoxesArray.length > 0) {
+        // Set the inactive boxes to the right of the screen
+        gsap.set(inActiveBoxesArray, {
+          x:
+            window.innerWidth / 2 +
+            (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+        });
+      }
+
+      // Set the active boxes to the top of the screen
+      gsap.set(activeBoxesArray, { y: -window.innerHeight });
+
+      // Delay the initial setup to allow the boxes to be set
+      gsap.delayedCall(1, () => {
+        setReady(true);
+        (activeBoxesArray as HTMLElement[]).forEach(
+          (box: HTMLElement, index: number) => {
+            gsap.to(box, {
+              y: getTranslation(index + entriesFrom, entriesFrom),
+              scale: getScale(index + entriesFrom, entriesFrom),
+              duration: 0.55,
+              delay: index * 0.05,
+              ease: "expo.inOut",
+              onComplete: () => {
+                if (index === activeBoxesArray.length - 1) {
+                  activeBoxes.current.shift();
+                }
+              },
+            });
+          }
+        );
       });
     }
-
-    // Set the active boxes to the top of the screen
-    gsap.set(activeBoxesArray, { y: -window.innerHeight });
-
-    // Delay the initial setup to allow the boxes to be set
-    gsap.delayedCall(1, () => {
-      setReady(true);
-      (activeBoxesArray as HTMLElement[]).forEach(
-        (box: HTMLElement, index: number) => {
-          gsap.to(box, {
-            y: getTranslation(index + entriesFrom, entriesFrom),
-            scale: getScale(index + entriesFrom, entriesFrom),
-            duration: 0.55,
-            delay: index * 0.05,
-            ease: "expo.inOut",
-            onComplete: () => {
-              if (index === activeBoxesArray.length - 1) {
-                activeBoxes.current.shift();
-              }
-            },
-          });
-        }
-      );
-    });
-  }, []);
+  }, [active]);
 
   useGSAP(() => {
     const boxes = gsap.utils.toArray(".box");
@@ -125,7 +154,6 @@ const DraggableObserver = (props: Props) => {
       };
 
       const updateCurrentIndex = (direction: number) => {
-        console.log("updateCurrentIndex");
         const next = currentIndex.current + direction;
 
         if (next >= 0 && next < boxes.length) {
@@ -284,11 +312,17 @@ const DraggableObserver = (props: Props) => {
         })(value);
       });
 
+      // Function to update the background image based on the index
+      const updateBackgroundOnRelease = (index: number) => {
+        console.log("updateBackground", index, entries[index].sector);
+        updateBackground(entries[index].sector);
+      };
+
       observer.current = ScrollTrigger.observe({
         target: boundsRef.current,
         type: "touch, pointer",
         preventDefault: false,
-        dragMinimum: 60,
+        dragMinimum: ScrollTrigger.isTouch ? 40 : 10,
         tolerance: 10,
         ignore: ".disable-drag",
         onDrag: (self: any) => {
@@ -320,7 +354,7 @@ const DraggableObserver = (props: Props) => {
           gsap.killTweensOf(activeBox);
 
           // Calculate velocity
-          const v = self.deltaX;
+          const v = ScrollTrigger.isTouch ? self.deltaX : self.deltaX * 2;
           const r = v * 0.07;
 
           // Update current position
@@ -353,6 +387,8 @@ const DraggableObserver = (props: Props) => {
           const activeBoxPos =
             direction.current === 1 ? getCurrentBoxPos() : getPreviousBoxPos();
 
+          console.log("activeBox", activeBox.dataset.index);
+
           setCursor("grab");
 
           // if last box disable animation out
@@ -382,16 +418,18 @@ const DraggableObserver = (props: Props) => {
                 direction.current === 1
                   ? window.innerWidth / 2 + activeBox.clientWidth
                   : 0,
-
               rotation: 0,
-              duration: 1.2,
+              duration: 0.8,
               ease: "expo.out",
               onComplete: () => {
-                gsap.delayedCall(0.2, () => {
-                  activeBox.scrollTo({ top: 0 });
-                });
-                console.log("onComplete", gsap.getProperty(activeBox, "x"));
+                if (direction.current === 1) {
+                  gsap.delayedCall(0.2, () => {
+                    activeBox.scrollTo({ top: 0 });
+                  });
+                }
+
                 activeBoxPos.x = gsap.getProperty(activeBox, "x");
+                updateBackgroundOnRelease(currentIndex.current);
                 gsap.killTweensOf(activeBox);
               },
             });
@@ -419,7 +457,29 @@ const DraggableObserver = (props: Props) => {
 
       observer.current.enable();
     }
-  });
+  }, []);
+
+  const { timelineRef } = useSectorListAnimation(0);
+
+  const handleClose = useCallback(() => {
+    // reset for mobile
+    resetAccordionMobile();
+    gsap.to(containerRef.current, {
+      autoAlpha: 0,
+      duration: 0.4,
+      ease: "expo.inOut",
+      onComplete: () => {
+        if (timelineRef?.current) {
+          timelineRef.current.seek(0);
+          timelineRef.current.play(0);
+
+          setCurrentStateIndex(0);
+          currentIndex.current = 0;
+          onClose();
+        }
+      },
+    });
+  }, []);
 
   const handleNext = useCallback(() => {
     const boxes = gsap.utils.toArray(".box");
@@ -465,7 +525,6 @@ const DraggableObserver = (props: Props) => {
     setCurrentStateIndex(currentIndex.current);
 
     const activeBox = boxes[currentIndex.current] as HTMLElement;
-    const activeBoxPos = boxesPos.current[currentIndex.current];
 
     gsap.to(activeBox, {
       x: 0,
@@ -480,8 +539,11 @@ const DraggableObserver = (props: Props) => {
   }, []);
 
   return (
-    <div className="relative h-[100svh] w-screen overflow-hidden  bg-red-500">
-      <CloseButton onClick={() => {}} />
+    <div
+      ref={containerRef}
+      className="relative h-[100svh] w-full overflow-hidden"
+    >
+      <CloseButton onClick={handleClose} />
       <PrevButton onClick={handlePrev} currentIndex={currentStateIndex} />
       <NextButton
         onClick={handleNext}
@@ -616,7 +678,7 @@ export const Entry = (props: any) => {
     >
       <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
         <div className={"font-mono text-sm px-2 lg:px-3"}>
-          Category: {data.sector} {index}
+          Category: {data.sector}
         </div>
         <div className={"flex flex-col gap-4 lg:gap-8"}>
           <div className={"font-sans text-md px-2"}>{data.title}</div>
@@ -668,22 +730,9 @@ export const Entry = (props: any) => {
             </div>
 
             <div className=" w-full flex flex-col gap-4">
-              <div className={"disable-drag"}>
+              <div className={"disable-drag "}>
                 {data?.slides && data.slides.length > 0 && (
-                  <Slider
-                    settings={{
-                      slidesPerView: 1.5,
-                      spaceBetween: 10,
-                      slidesOffsetBefore: 32,
-                      slidesOffsetAfter: 32,
-                      freeMode: {
-                        enabled: true,
-                        momentum: false,
-                      },
-                    }}
-                    type={"media"}
-                    data={data.slides}
-                  />
+                  <Slider type={"media"} data={data.slides} />
                 )}
               </div>
 

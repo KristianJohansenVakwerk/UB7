@@ -11,6 +11,8 @@ import Sectors from "../../Sectors/Sectors";
 import SectionTitle from "../SectionTitle";
 import SectionPortfolioList from "./SectionPortfolioList";
 import { useSectorListEvents } from "../../../../hooks/AnimationsHooks";
+import DraggableObserver from "../../DraggableObserver/DraggableObserver";
+import { portfolioData } from "@/app/utils/data";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -94,7 +96,7 @@ const SectionPortfolio = (props: any) => {
     <>
       <div
         className={clsx(
-          "portfolio relative h-full gap-0 w-full h-full px-2 lg:px-3 flex flex-col items-start justify-between overflow-hidden"
+          "portfolio relative h-full gap-0 w-full h-full  flex flex-col items-start justify-between overflow-hidden"
         )}
       >
         <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 px-2 lg:px-3 z-10">
@@ -116,12 +118,19 @@ const SectionPortfolio = (props: any) => {
         />
 
         {showUI && (
-          <Sectors
-            entries={entries}
+          // <Sectors
+          //   entries={entries}
+          //   entriesFrom={entriesFrom}
+          //   entriesTo={entriesTo}
+          //   active={showExpandedSectors}
+          //   updateCurrentSector={handleUpdateSector}
+          //   onClose={handleClose}
+          // />
+          <DraggableObserver
+            data={portfolioData}
             entriesFrom={entriesFrom}
-            entriesTo={entriesTo}
             active={showExpandedSectors}
-            updateCurrentSector={handleUpdateSector}
+            updateBackground={handleUpdateSector}
             onClose={handleClose}
           />
         )}

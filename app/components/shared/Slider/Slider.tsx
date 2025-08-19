@@ -1,199 +1,281 @@
 "use client";
-import Box from "../../ui/Box/Box";
-import clsx from "clsx";
+
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, FreeMode } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/free-mode";
+import Draggable from "gsap/Draggable";
+import InertiaPlugin from "gsap/InertiaPlugin";
+import { useEffect, useRef } from "react";
 
-gsap.registerPlugin(useGSAP);
-
-export interface TeamMember {
-  name: string;
-  text: string;
-  image: string;
-  socials: {
-    platform: string;
-    url: string;
-  }[];
-}
-
-export const teamMembers: TeamMember[] = [
-  {
-    name: "Thiago Silva Pontes 1",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_1.jpg",
-    socials: [
-      { platform: "Website", url: "https://thiagosilva.com" },
-      { platform: "Instagram", url: "https://instagram.com/thiagosilva" },
-      { platform: "Youtube", url: "https://youtube.com/thiagosilva" },
-    ],
-  },
-  {
-    name: "Vinicius Junior 2",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_2.jpg",
-    socials: [
-      { platform: "Website", url: "https://viniciusjr.com" },
-      { platform: "Instagram", url: "https://instagram.com/viniciusjr" },
-      { platform: "Youtube", url: "https://youtube.com/viniciusjr" },
-    ],
-  },
-  {
-    name: "Vini Jr.3",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_3.jpg",
-    socials: [
-      { platform: "Website", url: "https://vinijr.com" },
-      { platform: "Instagram", url: "https://instagram.com/vinijr" },
-      { platform: "Youtube", url: "https://youtube.com/vinijr" },
-    ],
-  },
-  {
-    name: "Thiago Silva Pontes 4",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_1.jpg",
-    socials: [
-      { platform: "Website", url: "https://thiagosilva.com" },
-      { platform: "Instagram", url: "https://instagram.com/thiagosilva" },
-      { platform: "Youtube", url: "https://youtube.com/thiagosilva" },
-    ],
-  },
-  {
-    name: "Vinicius Junior 5",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_2.jpg",
-    socials: [
-      { platform: "Website", url: "https://viniciusjr.com" },
-      { platform: "Instagram", url: "https://instagram.com/viniciusjr" },
-      { platform: "Youtube", url: "https://youtube.com/viniciusjr" },
-    ],
-  },
-  {
-    name: "Vini Jr. 6",
-    text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-    image: "/test-media/m_3.jpg",
-    socials: [
-      { platform: "Website", url: "https://vinijr.com" },
-      { platform: "Instagram", url: "https://instagram.com/vinijr" },
-      { platform: "Youtube", url: "https://youtube.com/vinijr" },
-    ],
-  },
-];
-
-type SwiperSettings = {
-  spaceBetween?: number;
-  slidesPerView?: number;
-  slidesOffsetBefore?: number;
-  slidesOffsetAfter?: number;
-  loop?: boolean;
-  freeMode?: {
-    enabled?: boolean;
-    momentum?: boolean;
-    momentumRatio?: number;
-    momentumVelocityRatio?: number;
-  };
-  autoplay?: {
-    delay?: number;
-    disableOnInteraction?: boolean;
-    pauseOnMouseEnter?: boolean;
-  };
-  speed?: number;
-};
+gsap.registerPlugin(Draggable, InertiaPlugin);
 
 type Props = {
   type?: "media" | "team";
   data?: any;
-  settings?: SwiperSettings;
 };
 
 const Slider = (props: Props) => {
-  const { type = "team", data, settings } = props;
+  const { type = "team", data } = props;
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef<any>(null);
 
-  const defaultSettings: SwiperSettings = {
-    spaceBetween: 50,
-    slidesPerView: 2.3,
-    slidesOffsetBefore: 30,
-    slidesOffsetAfter: 30,
-    loop: false,
-    speed: 800,
-    grabCursor: true,
-    resistance: true,
-    resistanceRatio: 0.85,
-    freeMode: {
-      enabled: true,
-      momentum: true,
-      momentumRatio: 0.6,
-      momentumVelocityRatio: 0.6,
-      momentumBounce: false,
-      momentumBounceRatio: 0.1,
-      minimumVelocity: 0.02,
-    },
-  };
+  useGSAP(() => {
+    if (!sliderRef.current) return;
 
-  const swiperSettings = {
-    ...defaultSettings,
-    ...settings,
-    modules: [FreeMode],
-    className: "w-full",
-    onSlideChange: () => {},
-    onSwiper: (swiper: any) => {},
-  };
+    const slider = sliderRef.current;
+
+    const slides = gsap.utils.toArray(".slide-box", slider);
+
+    timelineRef.current = useSliderLoop(slides, { speed: 0.5, center: false });
+  });
+
+  useEffect(() => {
+    return () => {
+      if (timelineRef.current) {
+        timelineRef.current.kill();
+        timelineRef.current = null;
+      }
+    };
+  }, []);
 
   return (
-    <Swiper {...swiperSettings}>
-      {type === "team"
-        ? teamMembers.map((m, index) => (
-            <SwiperSlide key={index} className="w-[30vw]">
-              <Box className="team-member bg-white rounded-2xl h-full w-full opacity-100">
-                <Box className="px-3 py-2 flex flex-col gap-1 h-full">
-                  <Box className="team-member-name text-light-grey text-base/none opacity-100">
-                    {m.name}
-                  </Box>
-                  <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
-                    <Box className="team-member-image h-full opacity-100 flex items-center justify-center ">
-                      <img
-                        src={m.image}
-                        width={267}
-                        height={312}
-                        className="w-full h-full object-cover aspect-266/311"
-                      />
-                    </Box>
-                    <Box className="flex-2 text-light-grey flex flex-col justify-between">
-                      <Box className="team-member-text text-base opacity-100">
-                        {m.text}
-                      </Box>
-                      <Box className="flex flex-row items-center justify-start gap-1">
-                        {m.socials.map((s, index) => (
-                          <Box
-                            key={index}
-                            className="font-mono text-sm text-light-grey bg-gray-100 rounded-xl px-2 py-0.5"
-                          >
-                            <span className="team-member-social opacity-100">
-                              {s.platform}
-                            </span>
-                          </Box>
-                        ))}
-                      </Box>
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-            </SwiperSlide>
-          ))
-        : data?.map((item: any, index: number) => (
-            <SwiperSlide key={index}>
-              <img
-                src={item.url}
-                alt={"item.alt"}
-                className="w-full h-full object-cover aspect-361/301"
-              />
-            </SwiperSlide>
-          ))}
-    </Swiper>
+    <div ref={sliderRef} className="slider-wrapper pl-2 lg:pl-3">
+      {data?.map((item: any, index: number) => (
+        <div className="slide-box mr-2 lg:mr-3" key={index}>
+          <img
+            src={item.url}
+            alt={"item.alt"}
+            className="w-full h-full object-cover "
+          />
+        </div>
+      ))}
+    </div>
   );
 };
 
 export default Slider;
+
+const useSliderLoop = (items: any, config: any) => {
+  config = config || {};
+
+  let lastIndex = 0,
+    tl: any = gsap.timeline({
+      repeat: -1,
+      paused: true,
+      defaults: { ease: "none" },
+      onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100),
+    });
+
+  console.log("items", items[0].offsetLeft);
+  let proxy = document.createElement("div"),
+    container: HTMLElement = items[0].parentNode,
+    length = items.length,
+    startX = items[0].offsetLeft,
+    times: number[] = [],
+    widths: number[] = [],
+    spaceBefore: number[] = [],
+    xPercents: number[] = [],
+    curIndex = 0,
+    indexIsDirty = false,
+    wrap = gsap.utils.wrap(0, 1),
+    ratio: number,
+    pixelsPerSecond = (config.speed || 1) * 100,
+    snap =
+      config.snap === false
+        ? (v: number) => v
+        : gsap.utils.snap(config.snap || 1),
+    startProgress: number,
+    initChangeX,
+    center = config.center || true,
+    timeOffset = 0,
+    totalWidth: number,
+    getTotalWidth = () => {
+      return (
+        items[length - 1].offsetLeft +
+        (xPercents[length - 1] / 100) * widths[length - 1] -
+        startX +
+        spaceBefore[0] +
+        items[length - 1].offsetWidth *
+          (gsap.getProperty(items[length - 1], "scaleX") as number) +
+        (parseFloat("0px") || 0)
+      );
+    },
+    populateWidths = () => {
+      let b1 = container.getBoundingClientRect(),
+        b2;
+      items.forEach((el: any, i: number) => {
+        widths[i] = parseFloat(gsap.getProperty(el, "width", "px") as any);
+        xPercents[i] = snap(
+          (parseFloat(gsap.getProperty(el, "x", "px") as any) / widths[i]) *
+            100 +
+            (gsap.getProperty(el, "xPercent") as number)
+        );
+        b2 = el.getBoundingClientRect();
+
+        spaceBefore[i] = b2.left - (i ? b1.right : b1.left);
+        b1 = b2;
+      });
+      gsap.set(items, {
+        // convert "x" to "xPercent" to make things responsive, and populate the widths/xPercents Arrays to make lookups faster.
+        xPercent: (i) => xPercents[i],
+      });
+
+      totalWidth = getTotalWidth();
+    },
+    timeWrap: any,
+    populateOffsets = () => {
+      timeOffset = center
+        ? (tl.duration() * (container.offsetWidth / 2)) / totalWidth
+        : 0;
+      center &&
+        times.forEach((t, i) => {
+          times[i] = timeWrap(
+            tl.labels["label" + i] +
+              (tl.duration() * widths[i]) / 2 / totalWidth -
+              timeOffset
+          );
+        });
+    },
+    getClosest = (values: any, value: any, wrap: any) => {
+      let i = values.length,
+        closest = 1e10,
+        index = 0,
+        d;
+      while (i--) {
+        d = Math.abs(values[i] - value);
+        if (d > wrap / 2) {
+          d = wrap - d;
+        }
+        if (d < closest) {
+          closest = d;
+          index = i;
+        }
+      }
+      return index;
+    },
+    populateTimeline = () => {
+      let i, item, curX, distanceToStart, distanceToLoop;
+
+      return;
+
+      tl.clear();
+      for (i = 0; i < length; i++) {
+        item = items[i];
+
+        curX = (xPercents[i] / 100) * widths[i];
+        distanceToStart = item.offsetLeft + curX - startX + spaceBefore[0];
+        distanceToLoop =
+          distanceToStart +
+          widths[i] * (gsap.getProperty(item, "scaleX") as any);
+
+        tl.to(
+          item,
+          {
+            xPercent: snap(((curX - distanceToLoop) / widths[i]) * 100),
+            duration: distanceToLoop / pixelsPerSecond,
+          },
+          0
+        )
+          .fromTo(
+            item,
+            {
+              xPercent: snap(
+                ((curX - distanceToLoop + totalWidth) / widths[i]) * 100
+              ),
+            },
+            {
+              xPercent: xPercents[i],
+              duration:
+                (curX - distanceToLoop + totalWidth - curX) / pixelsPerSecond,
+              immediateRender: false,
+            },
+            distanceToLoop / pixelsPerSecond
+          )
+          .add("label" + i, distanceToStart / pixelsPerSecond);
+        times[i] = distanceToStart / pixelsPerSecond;
+      }
+      timeWrap = gsap.utils.wrap(0, tl.duration());
+    },
+    refresh = (deep: any) => {
+      let progress = tl.progress();
+      tl.progress(0, true);
+      populateWidths();
+      deep && populateTimeline();
+      populateOffsets();
+      deep && tl.draggable
+        ? tl.time(times[curIndex], true)
+        : tl.progress(progress, true);
+    };
+
+  gsap.set(items as any, { x: 0 });
+  populateWidths();
+  populateTimeline();
+  populateOffsets();
+  window.addEventListener("resize", () => refresh(true));
+
+  const toIndex = (index: number, vars: any) => {
+    vars = vars || {};
+    Math.abs(index - curIndex) > length / 2 &&
+      (index += index > curIndex ? -length : length);
+
+    let newIndex = gsap.utils.wrap(0, length, index),
+      time = times[newIndex];
+    if (time > tl.time() !== index > curIndex && index !== curIndex) {
+      // if we're wrapping the timeline's playhead, make the proper adjustments
+      time += tl.duration() * (index > curIndex ? 1 : -1);
+    }
+    if (time < 0 || time > tl.duration()) {
+      vars.modifiers = { time: timeWrap };
+    }
+
+    curIndex = newIndex;
+    vars.overwrite = true;
+    gsap.killTweensOf(proxy);
+    return vars.duration === 0
+      ? tl.time(timeWrap(time))
+      : tl.tweenTo(time, vars);
+  };
+  tl.toIndex = (index: number, vars: any) => toIndex(index, vars);
+  tl.closestIndex = (setCurrent: boolean) => {
+    let index = getClosest(times, tl.time(), tl.duration());
+    if (setCurrent) {
+      curIndex = index;
+      indexIsDirty = false;
+    }
+    return index;
+  };
+  tl.current = () => (indexIsDirty ? tl.closestIndex(true) : curIndex);
+  tl.times = times;
+  tl.progress(1, true).progress(0, true);
+
+  let align: any = () =>
+      tl.progress(
+        wrap(startProgress + (draggable.startX - draggable.x) * ratio)
+      ),
+    syncIndex = () => tl.closestIndex(true),
+    draggable = Draggable.create(proxy, {
+      trigger: items[0].parentNode,
+      type: "x",
+      onPressInit() {
+        let x = this.x;
+        gsap.killTweensOf(tl);
+        startProgress = tl.progress();
+        refresh(true);
+        ratio = 1 / totalWidth;
+        initChangeX = startProgress / -ratio - x;
+        gsap.set(proxy, { x: startProgress / -ratio });
+      },
+      onDrag: align,
+      onThrowUpdate: align,
+      onRelease: () => {
+        syncIndex();
+      },
+      onThrowComplete: syncIndex,
+      overshootTolerance: 0,
+      inertia: true,
+    })[0];
+
+  tl.draggable = draggable;
+
+  tl.closestIndex(true);
+  lastIndex = curIndex;
+};
