@@ -257,20 +257,7 @@ const Sector = (props: Props) => {
 
             <div className="w-full flex flex-col gap-4">
               {data?.slides && data.slides.length > 0 && (
-                <Slider
-                  settings={{
-                    slidesPerView: 1.5,
-                    spaceBetween: 10,
-                    slidesOffsetBefore: 32,
-                    slidesOffsetAfter: 32,
-                    freeMode: {
-                      enabled: true,
-                      momentum: false,
-                    },
-                  }}
-                  type={"media"}
-                  data={data.slides}
-                />
+                <Slider type={"media"} data={data.slides} />
               )}
 
               {data?.text && (
