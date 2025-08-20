@@ -155,8 +155,6 @@ const useSliderLoop = (items: any, config: any) => {
     populateTimeline = () => {
       let i, item, curX, distanceToStart, distanceToLoop;
 
-      return;
-
       tl.clear();
       for (i = 0; i < length; i++) {
         item = items[i];

@@ -53,22 +53,21 @@ const SectionPortfolioList = (props: Props) => {
 
   const handleMouseEnter = useCallback(
     (index: number, sector: string) => {
+      if (!active) return;
       playAccordion(index, accordionAnis, iconAnis);
       setHoverSector(true);
       onShowBackground(sector);
     },
-    [accordionAnis, iconAnis]
+    [accordionAnis, iconAnis, active]
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (disableScroll) return;
-    console.log("handleMouseLeave", active);
     if (!active) return;
 
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
     onShowBackground("");
-  }, [accordionAnis, iconAnis, active, disableScroll]);
+  }, [accordionAnis, iconAnis, active]);
 
   const { timelineRef } = useSectorListAnimation(currentIndex);
 
