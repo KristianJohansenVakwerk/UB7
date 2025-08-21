@@ -314,23 +314,19 @@ const DraggableObserver = (props: Props) => {
       };
 
       // Animations
-      const xTo = gsap.utils.pipe((value: number) => {
-        const activeBox =
-          direction.current === 1 ? getCurrentBox() : getPreviousBox();
+      const xTo = (activeBox: HTMLElement, value: number) => {
         return gsap.quickTo(activeBox, "x", {
           ease: "power1.out",
-          duration: ScrollTrigger.isTouch ? 0.05 : 0.5,
+          duration: ScrollTrigger.isTouch ? 0.05 : 0.05,
         })(value);
-      });
+      };
 
-      const rTo = gsap.utils.pipe((value: number) => {
-        const activeBox =
-          direction.current === 1 ? getCurrentBox() : getPreviousBox();
+      const rTo = (activeBox: HTMLElement, value: number) => {
         return gsap.quickTo(activeBox, "rotation", {
           ease: "power1.out",
-          duration: ScrollTrigger.isTouch ? 0.05 : 0.5,
+          duration: ScrollTrigger.isTouch ? 0.05 : 0.3,
         })(value);
-      });
+      };
 
       observer.current = ScrollTrigger.observe({
         target: boundsRef.current,
@@ -345,7 +341,7 @@ const DraggableObserver = (props: Props) => {
             return; // Allow vertical scrolling to pass through
           }
 
-          if (Math.abs(self.deltaX) < 20) {
+          if (ScrollTrigger.isTouch && Math.abs(self.deltaX) < 10) {
             return;
           }
 
@@ -374,18 +370,16 @@ const DraggableObserver = (props: Props) => {
 
           // Calculate velocity with deltaTime for smooth animation
           const v = ScrollTrigger.isTouch
-            ? self.deltaX
-            : (self.deltaX * 5 * 16.67) / Math.max(deltaTime, 1);
+            ? (self.deltaX * 2 * 16.67) / Math.max(deltaTime, 1)
+            : (self.deltaX * 2 * 16.67) / Math.max(deltaTime, 1);
           const r = v * 0.07;
 
           // Update current position
           activeBoxPos.x = activeBoxPos.x + v;
 
-          console.log("activeBoxPos.x", v, activeBoxPos.x);
-
           // Update position and rotation
-          xTo(activeBoxPos.x);
-          rTo(r);
+          xTo(activeBox, activeBoxPos.x);
+          rTo(activeBox, r);
 
           setPositions(
             activeBoxPos.x,

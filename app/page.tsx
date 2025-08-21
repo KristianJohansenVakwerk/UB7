@@ -394,18 +394,20 @@ export default function ObserverPage() {
       {/* <IntroPixi /> */}
       <ProgressBars currentIndex={globalCurrentIndex} />
 
-      <Menu
-        setCurrentIndex={handleMenuClick}
-        currentIndex={globalCurrentIndex}
-        data={[
-          { title: "UB7", id: "intro" },
-          { title: "Portfolio", id: "portfolio" },
-          { title: "About", id: "about" },
-          { title: "Contact", id: "contact" },
-        ]}
-      />
+      <div className="fixed bottom-2 lg:bottom-3 left-2 lg:left-3 right-2 lg:right-3 z-50 flex flex-row items-center justify-between">
+        <Menu
+          setCurrentIndex={handleMenuClick}
+          currentIndex={globalCurrentIndex}
+          data={[
+            { title: "UB7", id: "intro" },
+            { title: "Portfolio", id: "portfolio" },
+            { title: "About", id: "about" },
+            { title: "Contact", id: "contact" },
+          ]}
+        />
 
-      <LanguageSwitcher />
+        <LanguageSwitcher />
+      </div>
     </>
   );
 }
@@ -480,7 +482,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { introStoreDone } = useStore();
+  const { introStoreDone, disableScroll } = useStore();
 
   useGSAP(() => {
     const menuItems = gsap.utils.toArray(".menu-item");
@@ -505,8 +507,10 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
     <div
       ref={menuRef}
       className={clsx(
-        "fixed bottom-2 lg:bottom-3 left-2 lg:left-3  opacity-0 transition-opacity duration-600 ease-in-out",
-        introStoreDone && "opacity-100"
+        "  transition-opacity duration-600 ease-in-out",
+        !introStoreDone || disableScroll
+          ? "opacity-0 pointer-events-none"
+          : "opacity-100 pointer-events-auto"
       )}
       style={{ zIndex: 9999 }}
       id={"menu"}
@@ -517,7 +521,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
             <div
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[65px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-menu`}
             >
               <span>{item.title}</span>
@@ -550,7 +554,7 @@ const data = [
 
 const LanguageSwitcher = () => {
   const langProgressRef = useRef<HTMLDivElement>(null);
-  const { introStoreDone, language, setLanguage } = useStore();
+  const { introStoreDone, language, setLanguage, disableScroll } = useStore();
 
   useGSAP(() => {
     if (language === "pt") {
@@ -571,8 +575,11 @@ const LanguageSwitcher = () => {
   return (
     <div
       className={clsx(
-        "fixed bottom-2 lg:bottom-3 right-2 lg:right-3  opacity-0 transition-opacity duration-600 ease-in-out",
-        introStoreDone && "opacity-100"
+        "transition-opacity duration-600 ease-in-out",
+
+        !introStoreDone || disableScroll
+          ? "opacity-0 pointer-events-none"
+          : "opacity-100 pointer-events-auto"
       )}
       style={{ zIndex: 9999 }}
       id={"language"}
@@ -583,7 +590,7 @@ const LanguageSwitcher = () => {
             <div
               key={index}
               onClick={() => setLanguage(item.id as "en" | "pt")}
-              className="font-sans text-sm text-dark-grey min-w-[40px] lg:min-w-[60px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[35px] lg:min-w-[60px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-lang`}
             >
               <span>{item.title}</span>
@@ -592,7 +599,7 @@ const LanguageSwitcher = () => {
         </div>
         <div
           ref={langProgressRef}
-          className="absolute bottom-0 left-0 h-full w-[40px] lg:w-[60px] bg-white/80 rounded-menu"
+          className="absolute bottom-0 left-0 h-full w-[35px] lg:w-[60px] bg-white/80 rounded-menu"
         />
       </div>
     </div>
@@ -892,7 +899,7 @@ const SectionAbout = ({
 
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
-  const { setAboutVideoExpanded } = useStore();
+  const { setAboutVideoExpanded, setDisableScroll } = useStore();
 
   const items = useMemo(() => {
     return [{ type: "box" }, ...teamMembers];
@@ -987,22 +994,42 @@ const SectionAbout = ({
       const imageWidth = image?.offsetWidth as number;
       const imageHeight = image?.offsetHeight as number;
       const vw = window.innerWidth;
-      const vh = window.innerHeight;
+      const vh = document.documentElement.clientHeight;
+
       const padding = !isTouch
         ? { top: 48, left: 48, button: 48, right: 102 }
-        : { top: 20, left: 20, button: 20, right: 20 };
+        : { top: 20, left: 20, button: 40, right: 20 };
 
       setAboutVideoExpanded(state);
 
       const availableWidth = vw - (padding.left + padding.right);
       const availableHeight = vh - (padding.top + padding.button);
 
-      const scaleX = availableWidth / imageWidth;
-      const scaleY = availableHeight / imageHeight;
+      const scaleX: { name: string; factor: number } = {
+        name: "x",
+        factor: availableWidth / imageWidth,
+      };
+      const scaleY: { name: string; factor: number } = {
+        name: "y",
+        factor: availableHeight / imageHeight,
+      };
 
-      const scale = Math.min(scaleX, scaleY);
+      const scale = scaleX.factor <= scaleY.factor ? scaleX : scaleY;
+
+      const scaledWidth = imageWidth * scale.factor;
+      const scaledHeight = imageHeight * scale.factor;
+
+      console.log("scaledWidth", availableHeight, scaledHeight);
+
+      const spaceAbove = (availableHeight - scaledHeight) / 2;
+      const spaceBelow = Math.round(availableHeight - scaledHeight - 30);
+
+      const calcY = spaceBelow;
+
+      console.log("calcY", scale.name, spaceAbove, spaceBelow);
 
       if (state) {
+        setDisableScroll(true);
         gsap.to(".about-box", {
           id: "about-box-reset",
           x: 0,
@@ -1012,8 +1039,6 @@ const SectionAbout = ({
             gsap.to(
               [
                 "#progress",
-                "#menu",
-                "#language",
                 "#section-title-about",
                 ".text-about",
                 ".item-team-member",
@@ -1032,8 +1057,11 @@ const SectionAbout = ({
                     ease: "expo.inOut",
                   });
                   gsap.to(image, {
-                    scale: scale,
-                    y: !isTouch ? 112 - padding.top : 90 - padding.top,
+                    scale: scale.factor,
+                    y: !isTouch
+                      ? calcY
+                      : ((scale.factor - 1) * availableHeight) / 2 -
+                        padding.top,
                     transformOrigin: "left bottom",
                     willChange: "transform",
                     duration: 0.8,
@@ -1049,11 +1077,10 @@ const SectionAbout = ({
         });
       } else {
         setShowClose(false);
-
+        setDisableScroll(false);
         gsap.to(
           [
             "#progress",
-            "#menu",
             "#section-title-about",
             ".text-about",
             ".item",
@@ -1109,7 +1136,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[130px] pb-[80px] lg:pb-0 lg:pt-0">
+      <div className="about-box  absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[124px] pb-[77px] lg:pb-0 lg:pt-0">
         <TeamMembers
           items={items}
           imageContainerRef={imageContainerRef}

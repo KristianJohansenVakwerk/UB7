@@ -65,7 +65,6 @@ const useSliderLoop = (items: any, config: any) => {
       onReverseComplete: () => tl.totalTime(tl.rawTime() + tl.duration() * 100),
     });
 
-  console.log("items", items[0].offsetLeft);
   let proxy = document.createElement("div"),
     container: HTMLElement = items[0].parentNode,
     length = items.length,
