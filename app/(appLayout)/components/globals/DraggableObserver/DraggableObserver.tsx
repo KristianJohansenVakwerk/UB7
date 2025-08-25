@@ -107,6 +107,22 @@ const DraggableObserver = (props: Props) => {
           scale: 1,
           rotation: 0,
         });
+        // Figure out how to set the init box pos of the in-active boxes to window.innerWidth / 2 +
+        // (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+
+        boxes.forEach((box, index) => {
+          const inactiveIndex = inActiveBoxesArray.indexOf(box);
+
+          if (inactiveIndex !== -1) {
+            boxesPos.current[index] = {
+              x:
+                window.innerWidth / 2 +
+                (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+            };
+          } else {
+            boxesPos.current[index] = { x: 0 };
+          }
+        });
       }
 
       // Set the active boxes to the top of the screen
@@ -354,6 +370,8 @@ const DraggableObserver = (props: Props) => {
 
           const now = Date.now();
           const deltaTime = now - lastTime.current;
+
+          console.log(boxesPos.current);
 
           // Ensure 60fps for desktop (16.67ms per frame)
           if (!ScrollTrigger.isTouch && deltaTime < 16.67) {
@@ -795,7 +813,7 @@ const Entry = (props: any) => {
   const { data, index, currentIndex } = props;
   return (
     <div
-      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[74vh] lg:mx-0 w-[calc(100vw-40px)]  lg:w-[calc(80vh*0.46)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)]  lg:w-[calc(92vh*0.50)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
       style={{
         zIndex: 1000 - index,
         touchAction: "pan-x pan-y",
