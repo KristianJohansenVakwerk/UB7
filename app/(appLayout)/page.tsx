@@ -3,6 +3,7 @@ import { sanityFetch } from "@/sanity/lib/live";
 import { sectionsData } from "./utils/data";
 import { sectionsQuery } from "@/sanity/queries/queries";
 import { notFound } from "next/navigation";
+import { richTextToHTML } from "./utils/utils";
 
 export default async function HomeRoute() {
   const { data: sections } = await sanityFetch({
@@ -15,7 +16,7 @@ export default async function HomeRoute() {
 
   return (
     <>
-      <ClientPage data={sections} />
+      <ClientPage data={sections} lang="en" />
     </>
   );
 }

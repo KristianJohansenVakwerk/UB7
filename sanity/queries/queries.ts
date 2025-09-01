@@ -1,4 +1,4 @@
-export const sectionsQuery = `*[_type in ["sectionPortfolio", "sectionAbout", "sectionContact"]] | order(
+export const baseSectionQuery = `*[_type in ["sectionPortfolio", "sectionAbout", "sectionContact"]] | order(
   select(
     _type == "sectionPortfolio" => 1,
     _type == "sectionAbout" => 2,
@@ -7,35 +7,68 @@ export const sectionsQuery = `*[_type in ["sectionPortfolio", "sectionAbout", "s
 ) {
   _type,
   _id,
-  "title": title.en,
+  "title": title,
+  "headline": headline,
   ...select(
-    _type == 'sectionPortfolio' => {
-      "test": 'test'
+    _type == "sectionAbout" => {
+      "text": text
     }
   )
+  
 }`;
 
-export const portfolioQuery = `*[_type == "portfolioCategory"] {
-  "title": title.en,
-  "media": media.asset->{...},
-  "entries": *[_type == 'portfolio' &&  category._ref == ^._id ] {
-    "title": title.en,
+export const portfolioSectionQuery = `{
+  "portfolio": *[_type == "portfolioCategory"] | order(orderRank) {
+    "title": title,
+    "media": media.asset->{...},
+    "entries": *[_type == 'portfolio' &&  category._ref == ^._id ] {
+      "title": title,
       slug,
-      "sector": ^.title.en,
+      "sector": ^.title,
+      "text": text,
       "details": details[] {
         _key,
-        "title": title.en,
-        "value": value.en
+        "title": title,
+        "value": value
       },
-    "socials": social[] {
-        _key,
-      "title": platform.en,
-      "url": url
-    },
+       "socials": social[] {
+          _key,
+        "title": platform,
+        "url": url
+      },
       "slides": slides[] {
         "asset": asset->{...}
       },
-    "text": text.en,
-    
+    }
   }
+}`;
+
+export const aboutSectionQuery = `{
+  
+  "team": *[_type == 'teamMember'] | order(orderRank) {
+  _type,
+  _id,
+  "name": name,
+  "description": description,
+  "image": image.asset->{...},
+  "links": links[] {
+    "title": title,
+    "link": link
+  }
+  }
+}`;
+
+export const contactSectionQuery = `{
+  address,
+  "email": email,
+  "contacttest": "test"
+}`;
+
+export const sectionsQuery = `${baseSectionQuery} {
+...,
+...select(
+  _type == 'sectionPortfolio' => ${portfolioSectionQuery},
+  _type == 'sectionAbout' => ${aboutSectionQuery},
+  _type == 'sectionContact' => ${contactSectionQuery}
+)
 }`;

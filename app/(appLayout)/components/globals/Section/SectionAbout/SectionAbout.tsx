@@ -368,50 +368,5 @@ export const TeamMembers = ({
         </Box>
       );
     }
-
-    if ("name" in m) {
-      return (
-        <Box
-          key={index}
-          className="item item-team-member bg-white rounded-2xl w-[30vw] min-w-[768px] h-[420px] opacity-0 will-change-opacity"
-        >
-          <Box className="px-3 py-3 flex flex-col gap-1 h-full">
-            <Box className="team-member-name text-light-grey text-base/none opacity-100">
-              {m.name}
-            </Box>
-            <Box className="flex flex-row items-stretch justify-start gap-2 h-full">
-              <Box className="team-member-image  h-full opacity-100 flex items-center justify-center flex-1">
-                <img
-                  src={m.image}
-                  width={267}
-                  height={312}
-                  className="w-full h-full object-cover object-center"
-                />
-              </Box>
-              <Box className="text-light-grey  flex-2 mr-3 h-full">
-                <Box className="flex flex-col gap-2 h-full justify-between">
-                  <Box className="team-member-text text-base opacity-100">
-                    {m.text}
-                  </Box>
-
-                  <Box className="flex flex-row items-center justify-between gap-1 w-full">
-                    {m.socials.map((s, index) => (
-                      <Box
-                        key={index}
-                        className="font-mono text-sm text-light-grey bg-gray-100 rounded-full px-1 py-0.5 flex-1 "
-                      >
-                        <span className="team-member-social opacity-100">
-                          {s.platform}
-                        </span>
-                      </Box>
-                    ))}
-                  </Box>
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      );
-    }
   });
 };

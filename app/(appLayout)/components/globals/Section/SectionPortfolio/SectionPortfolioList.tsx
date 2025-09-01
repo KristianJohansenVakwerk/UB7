@@ -16,6 +16,7 @@ import {
   useAccordionControls,
 } from "../../../../hooks/AccordionHooks";
 import { useGSAP } from "@gsap/react";
+import { checkLangString } from "@/app/(appLayout)/utils/utils";
 
 gsap.registerPlugin(ScrollSmoother, ScrollTrigger);
 
@@ -25,11 +26,18 @@ type Props = {
   onShowBackground: (sector: string) => void;
   active: boolean;
   currentIndex: number;
+  lang: string;
 };
 
 const SectionPortfolioList = (props: Props) => {
-  const { data, onExpandViewMode, onShowBackground, active, currentIndex } =
-    props;
+  const {
+    data,
+    onExpandViewMode,
+    onShowBackground,
+    active,
+    currentIndex,
+    lang,
+  } = props;
   const { accordionAnis, iconAnis, setupAccordion, cleanupAccordion } =
     useAccordionSetup();
   const { playAccordion, resetAccordion, resetAccordionMobile } =
@@ -166,12 +174,12 @@ const SectionPortfolioList = (props: Props) => {
               {...(isTouchDevice
                 ? {
                     onTouchStart: () => {
-                      return handleMouseEnter(index, sector.title);
+                      return handleMouseEnter(index, sector.title.en);
                     },
                   }
                 : {
                     onMouseEnter: () => {
-                      return handleMouseEnter(index, sector.title);
+                      return handleMouseEnter(index, sector.title.en);
                     },
                   })}
             >
@@ -180,7 +188,9 @@ const SectionPortfolioList = (props: Props) => {
                   "sector-item-trigger-content opacity-0 w-full h-full flex flex-row items-center justify-between px-2 cursor-pointer"
                 )}
               >
-                <div className={"font-mono text-sm"}>{sector.title}</div>
+                <div className={"font-mono text-sm"}>
+                  {checkLangString(lang, sector.title)}
+                </div>
 
                 <svg
                   width="24"
@@ -234,7 +244,9 @@ const SectionPortfolioList = (props: Props) => {
                           );
                         }}
                       >
-                        <span className="text-base">{entry.title}</span>
+                        <span className="text-base">
+                          {checkLangString(lang, entry.title)}
+                        </span>
                         <div>
                           <svg
                             width="18"

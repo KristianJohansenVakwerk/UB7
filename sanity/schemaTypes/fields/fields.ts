@@ -64,7 +64,7 @@ export const TeamMember = () =>
     type: "object",
     fields: [
       defineField({ name: "name", type: "string" }),
-      Image("Portrait", "portrait"),
+      image("Portrait", "portrait"),
       langBlock("Description", "description"),
       defineField({
         type: "array",
@@ -81,7 +81,7 @@ export const TeamMember = () =>
     ],
   });
 
-export const Image = (title: string, name: string) =>
+export const image = (title: string, name: string) =>
   defineField({
     name: "image",
     title: "Image",

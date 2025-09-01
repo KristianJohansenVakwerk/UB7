@@ -17,7 +17,7 @@ import { portfolioData } from "@/app/(appLayout)/utils/data";
 gsap.registerPlugin(ScrollTrigger);
 
 const SectionPortfolio = (props: any) => {
-  const { data, title, currentIndex } = props;
+  const { data, title, currentIndex, lang } = props;
   const [activeSector, setActiveSector] = useState<string | null>(null);
 
   const { introStoreDone } = useStore();
@@ -107,6 +107,7 @@ const SectionPortfolio = (props: any) => {
               onShowBackground={handleShowBackground}
               active={!showExpandedSectors}
               currentIndex={currentIndex}
+              lang={lang}
             />
           )}
         </div>
@@ -118,20 +119,13 @@ const SectionPortfolio = (props: any) => {
         />
 
         {showUI && (
-          // <Sectors
-          //   entries={entries}
-          //   entriesFrom={entriesFrom}
-          //   entriesTo={entriesTo}
-          //   active={showExpandedSectors}
-          //   updateCurrentSector={handleUpdateSector}
-          //   onClose={handleClose}
-          // />
           <DraggableObserver
-            data={portfolioData}
+            data={data}
             entriesFrom={entriesFrom}
             active={showExpandedSectors}
             updateBackground={handleUpdateSector}
             onClose={handleClose}
+            lang={lang}
           />
         )}
       </div>

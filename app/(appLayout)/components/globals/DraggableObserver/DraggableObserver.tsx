@@ -8,6 +8,8 @@ import { useAccordionControls } from "@/app/(appLayout)/hooks/AccordionHooks";
 
 import { useSectorListAnimation } from "@/app/(appLayout)/hooks/AnimationsHooks";
 import { useStore } from "@/store/store";
+import { RichText } from "../../shared/RichText";
+import { checkLangString } from "@/app/(appLayout)/utils/utils";
 gsap.registerPlugin(ScrollTrigger);
 
 type Props = {
@@ -16,9 +18,10 @@ type Props = {
   active: boolean;
   updateBackground: (sector: string) => void;
   onClose: () => void;
+  lang: string;
 };
 const DraggableObserver = (props: Props) => {
-  const { data, entriesFrom, active, updateBackground, onClose } = props;
+  const { data, entriesFrom, active, updateBackground, onClose, lang } = props;
 
   const { setDisableScroll } = useStore();
 
@@ -710,7 +713,9 @@ const DraggableObserver = (props: Props) => {
             data={entry}
             index={index}
             currentIndex={currentStateIndex}
+            lang={lang}
           />
+          // <div key={index}>{JSON.stringify(entry.sector)}</div>
         ))}
       </div>
     </div>
@@ -810,10 +815,10 @@ const NextButton = (props: any) => {
 };
 
 const Entry = (props: any) => {
-  const { data, index, currentIndex } = props;
+  const { data, index, currentIndex, lang } = props;
   return (
     <div
-      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)]  lg:w-[calc(92vh*0.50)] lg:w-[calc(80vh*0.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] lg:w-[calc(92vh*1.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
       style={{
         zIndex: 1000 - index,
         touchAction: "pan-x pan-y",
@@ -824,72 +829,91 @@ const Entry = (props: any) => {
     >
       <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
         <div className={"font-mono text-sm px-2 lg:px-3"}>
-          Category: {data.sector}
+          {lang === "en" ? "Category" : "Categoria"}:{" "}
+          {checkLangString(lang, data.sector)}
         </div>
         <div className={"flex flex-col gap-4 lg:gap-8"}>
-          <div className={"font-sans text-md px-2"}>{data.title}</div>
+          <div className={"font-sans text-md px-2"}>
+            {checkLangString(lang, data.title)}
+          </div>
 
-          <div className={"flex flex-col gap-3 px-2 lg:px-3"}>
-            <div className={"font-sans text-base"}>Details</div>
-            <div className={"flex flex-col gap-[0.2rem]"}>
-              {data?.details &&
-                data.details.length > 0 &&
-                data.details.map((detail: any, index: number) => (
-                  <div
-                    key={index}
-                    className={"flex flex-row items-start justify-between"}
-                  >
-                    <span className="font-sans text-base flex-1">
-                      {detail.title}
-                    </span>
-                    <span className={"font-mono text-base flex-1"}>
-                      {detail.value}
-                    </span>
-                  </div>
-                ))}
+          <div className="flex flex-row gap-6 bg-yellow-500">
+            <div>
+              <div className={"flex flex-col gap-3 px-2 lg:px-3 bg-green-500"}>
+                <div className={"font-sans text-base"}>
+                  {lang === "en" ? "Details" : "Detalhes"}
+                </div>
+                <div className={"flex flex-col gap-[0.2rem]"}>
+                  {data?.details &&
+                    data.details.length > 0 &&
+                    data.details.map((detail: any, index: number) => (
+                      <div
+                        key={index}
+                        className={"flex flex-row items-start justify-between"}
+                      >
+                        <span className="font-sans text-base flex-1">
+                          {checkLangString(lang, detail.title)}
+                        </span>
+                        <span className={"font-mono text-base flex-1"}>
+                          {checkLangString(lang, detail.value)}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              <div className={"flex flex-col gap-1 lg:gap-2"}>
+                <div
+                  className={
+                    "flex flex-row items-center justify-start gap-1 px-2 lg:px-3 bg-red-500"
+                  }
+                >
+                  {data?.socials &&
+                    data.socials.length > 0 &&
+                    data.socials.map((s: any, index: number) => (
+                      <div
+                        key={index}
+                        className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
+                      >
+                        <a
+                          href={s.url}
+                          target="_blank"
+                          className="team-member-social opacity-100"
+                        >
+                          {checkLangString(lang, s.title)}
+                        </a>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+            <div>
+              {data?.text && (
+                /// Out portable content from sanity here instead
+
+                <div className={"px-2 lg:px-3 flex flex-col gap-2 bg-blue-500"}>
+                  <RichText content={checkLangString(lang, data.text)} />
+                </div>
+              )}
             </div>
           </div>
-        </div>
-        <div>
-          <div className={"flex flex-col gap-1 lg:gap-2"}>
-            <div
-              className={
-                "flex flex-row items-center justify-start gap-1 px-2 lg:px-3"
-              }
-            >
-              {data?.socials &&
-                data.socials.length > 0 &&
-                data.socials.map((s: any, index: number) => (
-                  <div
-                    key={index}
-                    className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
-                  >
-                    <a
-                      href={s.url}
-                      target="_blank"
-                      className="team-member-social opacity-100"
-                    >
-                      {s.platform}
-                    </a>
-                  </div>
-                ))}
-            </div>
 
-            <div className=" w-full flex flex-col gap-4">
-              <div className={"disable-drag "}>
+          <div className=" w-full flex flex-col gap-4">
+            <div className={"disable-drag "}>
+              <span className="block lg:hidden">
                 {data?.slides && data.slides.length > 0 && (
                   <Slider type={"media"} data={data.slides} />
                 )}
-              </div>
-
-              {data?.text && (
-                /// Out portable content from sanity here instead
-                <div
-                  className={"px-2 lg:px-3 flex flex-col gap-2"}
-                  dangerouslySetInnerHTML={{ __html: data.text }}
-                />
-              )}
+              </span>
             </div>
+
+            {data?.text && (
+              /// Out portable content from sanity here instead
+
+              <div className={"px-2 lg:px-3 flex flex-col gap-2"}>
+                <RichText content={checkLangString(lang, data.text)} />
+              </div>
+            )}
           </div>
         </div>
       </div>

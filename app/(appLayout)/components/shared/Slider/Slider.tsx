@@ -5,6 +5,7 @@ import { useGSAP } from "@gsap/react";
 import Draggable from "gsap/Draggable";
 import InertiaPlugin from "gsap/InertiaPlugin";
 import { useEffect, useRef } from "react";
+import CustomImage from "../Image/Image";
 
 gsap.registerPlugin(Draggable, InertiaPlugin);
 
@@ -41,10 +42,9 @@ const Slider = (props: Props) => {
     <div ref={sliderRef} className="slider-wrapper pl-2 lg:pl-3">
       {data?.map((item: any, index: number) => (
         <div className="slide-box mr-2 lg:mr-3" key={index}>
-          <img
-            src={item.url}
-            alt={"item.alt"}
-            className="w-full h-full object-cover "
+          <CustomImage
+            asset={item.asset}
+            className="w-full h-full object-cover"
           />
         </div>
       ))}

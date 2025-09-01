@@ -1,8 +1,9 @@
 import { CogIcon, DocumentTextIcon } from "@sanity/icons";
 import type { StructureResolver } from "sanity/structure";
-
+import { orderableDocumentListDeskItem } from "@sanity/orderable-document-list";
+import { SSG_FALLBACK_EXPORT_ERROR } from "next/dist/lib/constants";
 // https://www.sanity.io/docs/structure-builder-cheat-sheet
-export const structure: StructureResolver = (S) =>
+export const structure: StructureResolver = (S, context) =>
   S.list()
     .title("UB7")
     .items([
@@ -80,14 +81,22 @@ export const structure: StructureResolver = (S) =>
                 ),
             ])
         ),
-      S.listItem()
-        .title("Portfolio Sectors")
-        .icon(DocumentTextIcon)
-        .child(
-          S.documentList()
-            .title("Portfolio sectors")
-            .filter("_type == 'portfolioCategory'")
-        ),
+      orderableDocumentListDeskItem({
+        type: "portfolioCategory",
+        title: "Portfolio Sectors",
+        S,
+        context,
+      }),
+
+      S.divider(),
+
+      orderableDocumentListDeskItem({
+        type: "teamMember",
+        title: "Team Members",
+        S,
+        context,
+      }),
+
       ...S.documentTypeListItems().filter(
         (item) =>
           item.getId() &&
@@ -99,6 +108,7 @@ export const structure: StructureResolver = (S) =>
             "portfolio",
             "portfolioCategory",
             "section",
+            "teamMember",
           ].includes(item.getId()!)
       ),
     ]);

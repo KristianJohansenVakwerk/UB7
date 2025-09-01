@@ -2,14 +2,15 @@
 
 @font-face {
   font-family: "RM Neue";
-  src: url("/fonts/RM_neue/rmneue-regular.woff") format("woff"),
+  src:
+    url("/fonts/RM_neue/rmneue-regular.woff") format("woff"),
     url("/fonts/RM_neue/rmneue-regular.woff2") format("woff2");
 }
 
 @font-face {
   font-family: "GT America Mono";
-  src: url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff")
-      format("woff"),
+  src:
+    url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff") format("woff"),
     url("/fonts/GT_america_mono/GT-America-Mono-LC-Regular.woff2")
       format("woff2");
 }
@@ -20,6 +21,7 @@
   --background-light-grey: var(--background);
   --color-light-grey: #676767;
   --color-dark-grey: var(--dark-grey);
+  --color-button-grey: var(--button-grey);
   --font-sans: var(--font-rm-neue);
   --font-mono: var(--font-gt-america-mono);
   --text-xs: 0.938rem;
@@ -35,12 +37,10 @@
   --text-lg--line-height: 1.02;
   --text-title: clamp(25px, 3.5vw, 82px);
   --text-title--line-height: 1;
-
   --radius-menu: 35px;
   --radius-progress-bar: 20px;
   --aspect-ratio-box: 342/558;
   --aspect-ratio-box-lg: 769/411;
-
   --slides: 2.5;
   --slide-gap: 20px;
 }

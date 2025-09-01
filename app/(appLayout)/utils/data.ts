@@ -543,15 +543,12 @@ export const portfolioData = [
 export interface TeamMember {
   type: "team" | "box";
   name: string;
-  text: string;
-  image: string;
-  socials: {
-    platform: string;
-    url: string;
-  }[];
+  description: any;
+  image: any;
+  links: any[];
 }
 
-export const teamMembers: TeamMember[] = [
+export const teamMembers: any[] = [
   {
     type: "team",
     name: "Thiago Silva Pontes",

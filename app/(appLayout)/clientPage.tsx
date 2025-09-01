@@ -3,9 +3,16 @@
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { Observer } from "gsap/Observer";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import IntroPixi from "./components/globals/IntroPixi/IntroPixi";
 import SectionIntro from "./components/globals/Section/SectionIntro";
-import { RefObject, use, useEffect, useMemo, useRef, useState } from "react";
+import {
+  RefObject,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
@@ -13,15 +20,19 @@ import { portfolioData } from "./utils/data";
 import SectionPortfolio from "./components/globals/Section/SectionPortfolio/SectionPortfolio";
 import { useStore } from "@/store/store";
 
-import { sectionsData } from "./utils/data";
-
 gsap.registerPlugin(Observer, ScrollTrigger, ScrollToPlugin);
 
-export default function ObserverPage({ data }: { data: any }) {
-  console.log("client data: ", data);
+export default function ObserverPage({
+  data,
+  lang = "en",
+}: {
+  data: any;
+  lang?: string;
+}) {
   const [globalCurrentIndex, setGlobalCurrentIndex] = useState(0);
   const [globalScrollDirection, setGlobalScrollDirection] =
     useState<boolean>(true);
+  const [currentLang, setCurrentLang] = useState<string>(lang || "en");
 
   const [globalProgressAbout, setGlobalProgressAbout] = useState<number>(0);
 
@@ -331,6 +342,10 @@ export default function ObserverPage({ data }: { data: any }) {
     scrollToSection(index, true, true);
   };
 
+  const handleLanguageChange = (lang: string) => {
+    setCurrentLang(lang);
+  };
+
   return (
     <>
       <div className={clsx("relative z-20")}>
@@ -357,8 +372,12 @@ export default function ObserverPage({ data }: { data: any }) {
               )}
             >
               <SectionPortfolio
-                data={portfolioData}
+                data={
+                  data.find((item: any) => item._type === "sectionPortfolio")
+                    ?.portfolio || []
+                }
                 currentIndex={currentIndex.current}
+                lang={currentLang}
               />
             </section>
 
@@ -369,8 +388,10 @@ export default function ObserverPage({ data }: { data: any }) {
               )}
             >
               <SectionAbout
+                data={data.find((item: any) => item._type === "sectionAbout")}
                 currentIndex={globalCurrentIndex}
                 scrollingDown={globalScrollDirection}
+                lang={currentLang}
               />
             </section>
 
@@ -389,6 +410,8 @@ export default function ObserverPage({ data }: { data: any }) {
       <SectionTitles
         currentIndex={globalCurrentIndex}
         scrollingDown={globalScrollDirection}
+        lang={currentLang}
+        data={data}
       />
 
       {/* <IntroPixi /> */}
@@ -399,9 +422,10 @@ export default function ObserverPage({ data }: { data: any }) {
           setCurrentIndex={handleMenuClick}
           currentIndex={globalCurrentIndex}
           data={data}
+          lang={currentLang}
         />
 
-        <LanguageSwitcher />
+        <LanguageSwitcher onLanguageChange={handleLanguageChange} />
       </div>
     </>
   );
@@ -472,8 +496,9 @@ interface MenuProps {
   data: any[];
   currentIndex: number;
   setCurrentIndex: (index: number) => void;
+  lang: string;
 }
-const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
+const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
   const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -483,8 +508,8 @@ const Menu = ({ data, currentIndex, setCurrentIndex }: MenuProps) => {
     { title: "UB7", id: "ub7" },
     ...data.map((item) => {
       return {
-        title: item.title,
-        id: item.title.toLowerCase(),
+        title: item.title[lang],
+        id: item.title.en.toLowerCase(),
       };
     }),
   ];
@@ -556,7 +581,11 @@ const data = [
   },
 ];
 
-const LanguageSwitcher = () => {
+const LanguageSwitcher = ({
+  onLanguageChange,
+}: {
+  onLanguageChange: (lang: string) => void;
+}) => {
   const langProgressRef = useRef<HTMLDivElement>(null);
   const { introStoreDone, language, setLanguage, disableScroll } = useStore();
 
@@ -576,6 +605,12 @@ const LanguageSwitcher = () => {
     }
   }, [language]);
 
+  const handleLanguageChange = () => {
+    const lang = language === "en" ? "pt" : "en";
+    setLanguage(lang);
+    onLanguageChange(lang);
+  };
+
   return (
     <div
       className={clsx(
@@ -587,13 +622,13 @@ const LanguageSwitcher = () => {
       )}
       style={{ zIndex: 9999 }}
       id={"language"}
+      onClick={handleLanguageChange}
     >
       <div className="relative h-full w-full bg-white/40 backdrop-blur-sm rounded-menu">
         <div className="flex flex-row items-center ">
           {data.map((item, index) => (
             <div
               key={index}
-              onClick={() => setLanguage(item.id as "en" | "pt")}
               className="font-sans text-sm text-dark-grey min-w-[35px] lg:min-w-[60px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-lang`}
             >
@@ -621,19 +656,54 @@ gsap.registerPlugin(SplitText);
 const SectionTitles = ({
   currentIndex,
   scrollingDown,
+  lang,
+  data,
 }: {
   currentIndex: number;
   scrollingDown: boolean;
+  lang: string;
+  data: any;
 }) => {
   const timelineRefs = useRef<any[]>([]);
   const localScollingDown = useRef(scrollingDown);
   const { introStoreDone } = useStore();
+  const splitTextRefs = useRef<any[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const prevLangRef = useRef(lang);
+  const headlinesRef = useRef<any[]>([]);
 
-  useGSAP(() => {
+  const createHeadline = (curLang: string) => {
+    headlinesRef.current = [
+      { text: "", id: "ub7" },
+      ...data.map((item: any) => {
+        return {
+          text: richTextToHTML(checkLangString(curLang, item.headline))
+            .replace(/<\/?[^>]+>/g, "")
+            .replace(/\n/g, "<br>"),
+        };
+      }),
+    ];
+  };
+
+  const generateDomContent = useCallback(() => {
+    if (!containerRef.current) return;
+
+    containerRef.current.innerHTML = "";
+
+    headlinesRef.current.forEach((headline) => {
+      const h1 = document.createElement("h1");
+      h1.className = "splitText text-title  absolute w-screen h-auto";
+      h1.innerHTML = headline.text;
+      containerRef?.current?.appendChild(h1);
+    });
+  }, []);
+
+  // Setup animations
+  const setupAnimations = useCallback(() => {
     const textElements = gsap.utils.toArray(".splitText");
 
     textElements.forEach((t, index) => {
-      const tl = gsap.timeline({ id: `tl-${index}`, paused: true });
+      const tl = gsap.timeline({ id: `tl-${index}-${lang}`, paused: true });
 
       const st = SplitText.create(t as HTMLElement, {
         type: "lines",
@@ -658,9 +728,59 @@ const SectionTitles = ({
     });
   }, []);
 
+  const resetCurrentTimeline = useCallback(
+    (onComplete?: () => void) => {
+      const currentTimeline = timelineRefs.current[currentIndex];
+      currentTimeline.reverse();
+      currentTimeline.eventCallback("onReverseComplete", () => {
+        onComplete?.();
+      });
+    },
+    [currentIndex]
+  );
+
+  const killAllSplitTexts = () => {
+    if (!containerRef.current) return;
+    containerRef.current.innerHTML = "";
+    timelineRefs.current.forEach((tl) => tl.kill());
+    timelineRefs.current = [];
+  };
+
   useGSAP(() => {
     localScollingDown.current = scrollingDown;
   }, [scrollingDown]);
+
+  useGSAP(() => {
+    createHeadline(lang);
+    generateDomContent();
+    // Wait for next frame to ensure DOM is updated
+    setTimeout(() => {
+      setupAnimations();
+    }, 0);
+  }, []);
+
+  useGSAP(() => {
+    if (prevLangRef.current !== lang) {
+      resetCurrentTimeline(() => {
+        if (!containerRef.current) return;
+        containerRef.current.style.opacity = "0";
+        killAllSplitTexts();
+        createHeadline(lang);
+
+        generateDomContent();
+        setTimeout(() => {
+          setupAnimations();
+        }, 0);
+
+        setTimeout(() => {
+          if (!containerRef.current) return;
+          containerRef.current.style.opacity = "1";
+          timelineRefs.current[currentIndex].play();
+        }, 100);
+      });
+      prevLangRef.current = lang;
+    }
+  }, [lang]);
 
   const previousIndex = useRef(currentIndex); // Track the last visible index
 
@@ -676,7 +796,6 @@ const SectionTitles = ({
     const currentTimeline = timelines[to];
 
     const resetAll = () => {
-      console.log("resetAll");
       timelines.forEach((tl) => tl.pause(0)); // pause and reset
     };
 
@@ -695,30 +814,24 @@ const SectionTitles = ({
     }
 
     previousIndex.current = to;
-  }, [currentIndex]);
+  }, [currentIndex, lang]);
 
   return (
     <div
+      ref={containerRef}
       className={clsx(
         "section-title fixed top-3 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     >
-      <h1 className="text-title">
-        {sectionsData.map((section) => (
-          <div
-            key={section.id}
-            className="splitText opacity-100 absolute w-screen h-auto"
-          >
-            {section?.text?.split("<br>").map((line: any, index: number) => (
-              <span className={clsx("text-dark-grey ")} key={index}>
-                {line}
-                {index < section?.text?.split("<br>").length - 1 && <br />}
-              </span>
-            ))}
-          </div>
-        ))}
-      </h1>
+      {/* {headlines.map((headline: { text: string }, index: number) => (
+        <h1
+          key={`${index}-${lang}`}
+          className="splitText text-title opacity-100 absolute w-screen h-auto whitespace-pre-wrap"
+        >
+          {headline.text}
+        </h1>
+      ))} */}
     </div>
   );
 };
@@ -891,23 +1004,59 @@ import { teamMembers } from "./utils/data";
 const SectionAbout = ({
   currentIndex,
   scrollingDown,
+  data,
+  lang,
 }: {
   currentIndex: number;
   scrollingDown: boolean;
+  data: any;
+  lang: string;
 }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const tlAboutTextRef = useRef<any>(null);
   const tlAboutSlideshowRef = useRef<any>(null);
+  const splitTextRef = useRef<any>(null);
   const [showClose, setShowClose] = useState(false);
   const clickCloseRef = useRef<HTMLDivElement | null>(null);
+  const prevLangRef = useRef(lang);
 
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const { setAboutVideoExpanded, setDisableScroll } = useStore();
 
-  const items = useMemo(() => {
-    return [{ type: "box" }, ...teamMembers];
-  }, []);
+  // Create a memoized text content that changes when lang or data.text changes
+  const textContent = useMemo(() => {
+    return richTextToHTML(checkLangString(lang, data?.text));
+  }, [lang, data?.text]);
+
+  // Handle language changes
+  useEffect(() => {
+    if (
+      prevLangRef.current !== lang &&
+      currentIndex === 2 &&
+      tlAboutTextRef.current
+    ) {
+      // Language changed and we're on the about section, play the animation
+      gsap.delayedCall(0.1, () => {
+        tlAboutTextRef.current.play();
+      });
+    }
+    prevLangRef.current = lang;
+  }, [lang, currentIndex]);
+
+  useGSAP(() => {
+    if (currentIndex === 2) {
+      gsap.delayedCall(2.2, () => {
+        tlAboutTextRef.current.play();
+      });
+
+      gsap.delayedCall(2.7, () => {
+        tlAboutSlideshowRef.current.play();
+      });
+    } else if (tlAboutTextRef.current && !scrollingDown) {
+      tlAboutTextRef.current.reverse();
+    }
+  }, [currentIndex, scrollingDown]);
 
   useGSAP(() => {
     tlAboutTextRef.current = gsap.timeline({
@@ -918,12 +1067,34 @@ const SectionAbout = ({
       paused: true,
     });
 
+    if (!textRef.current) return;
+
+    // Clean up previous SplitText instance if it exists
+    if (splitTextRef.current) {
+      splitTextRef.current.revert();
+      splitTextRef.current = null;
+    }
+
+    if (!textRef.current) return;
+
+    textRef.current.innerHTML = "";
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = textContent;
+
+    while (tempDiv.firstChild) {
+      textRef.current.appendChild(tempDiv.firstChild);
+    }
+
     const splitText = new SplitText(textRef.current, {
       type: "lines",
       linesClass: "split-line text-base-2",
       // wordsClass: "text-base-2",
       tag: "span",
     });
+
+    // Store the SplitText instance for cleanup
+    splitTextRef.current = splitText;
 
     tlAboutTextRef.current.add(
       gsap.from(splitText.lines, {
@@ -937,25 +1108,20 @@ const SectionAbout = ({
     tlAboutSlideshowRef.current.add(
       gsap.to(".item", {
         opacity: 1,
-        duration: 0.5,
-        stagger: 0.2,
+        duration: 0.4,
+        stagger: 0.1,
         ease: "expo.inOut",
       })
     );
-  }, []);
 
-  useGSAP(() => {
-    if (currentIndex === 2 && tlAboutTextRef.current) {
-      gsap.delayedCall(2.2, () => {
-        tlAboutTextRef.current.play();
-      });
-      gsap.delayedCall(2.7, () => {
-        tlAboutSlideshowRef.current.play();
-      });
-    } else if (tlAboutTextRef.current && !scrollingDown) {
-      tlAboutTextRef.current.reverse();
-    }
-  }, [currentIndex, scrollingDown]);
+    // Cleanup function to revert SplitText when component unmounts or re-renders
+    return () => {
+      if (splitTextRef.current) {
+        splitTextRef.current.revert();
+        splitTextRef.current = null;
+      }
+    };
+  }, [textContent]);
 
   useGSAP(() => {
     if (!imageContainerRef.current || !clickCloseRef.current) return;
@@ -1029,8 +1195,6 @@ const SectionAbout = ({
       const spaceBelow = Math.round(availableHeight - scaledHeight - 30);
 
       const calcY = spaceBelow;
-
-      console.log("calcY", scale.name, spaceAbove, spaceBelow);
 
       if (state) {
         setDisableScroll(true);
@@ -1130,21 +1294,14 @@ const SectionAbout = ({
       <div
         ref={textRef}
         className="text-about absolute hidden lg:block lg:top-7 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey"
-      >
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
-      </div>
+      />
 
       <div className="about-box  absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[124px] pb-[77px] lg:pb-0 lg:pt-0">
         <TeamMembers
-          items={items}
+          items={data.team}
           imageContainerRef={imageContainerRef}
           imageRef={imageRef}
+          lang={lang}
         />
       </div>
 
@@ -1179,15 +1336,20 @@ const SectionAbout = ({
 // SECTION ABOUT ~ TEAM MEMBERS
 ////////////////////////////////////////////////////////////
 import { TeamMember } from "./utils/data";
+import CustomImage from "./components/shared/Image/Image";
+import { RichText } from "./components/shared/RichText";
+import { checkLangString, richTextToHTML } from "./utils/utils";
 
 const TeamMembers = ({
   items,
   imageContainerRef,
   imageRef,
+  lang,
 }: {
   items: (TeamMember | { type: string })[];
   imageContainerRef: RefObject<HTMLDivElement | null>;
   imageRef: RefObject<HTMLImageElement | null>;
+  lang: string;
 }) => {
   return items.map((m, index: number) => {
     // @ts-ignore
@@ -1221,28 +1383,26 @@ const TeamMembers = ({
             </div>
             <div className="flex flex-col lg:flex-row items-stretch justify-start gap-2 h-full">
               <div className="team-member-image aspect-[266/312]  h-full opacity-100 flex items-center justify-center flex-1 w-1/2">
-                <img
-                  src={m.image}
-                  width={267}
-                  height={312}
+                <CustomImage
+                  asset={m.image}
                   className="w-full h-full object-cover object-center"
                 />
               </div>
               <div className="text-light-grey  flex-2 lg:mr-3 h-full">
                 <div className="flex flex-col gap-2 h-full justify-between">
                   <div className="team-member-text text-base opacity-100">
-                    {m.text}
+                    <RichText content={checkLangString(lang, m.description)} />
                   </div>
 
                   <div className="flex flex-row items-center justify-between gap-1 w-full">
-                    {m.socials.map((s, index) => (
+                    {m.links.map((s, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-center font-mono text-sm text-light-grey bg-gray-100 rounded-2xl py-1 flex-1"
                       >
                         <span className="team-member-social opacity-100">
-                          <a href="https://google.com" target="_blank">
-                            {s.platform}
+                          <a href={s.link} target="_blank">
+                            {checkLangString(lang, s.title)}
                           </a>
                         </span>
                       </div>

@@ -6,6 +6,7 @@ import { sectionAboutType } from "./sectionAbout";
 import { sectionContactType } from "./sectionContact";
 import { portfolioType } from "./portfolio";
 import { portfolioCategoryType } from "./portfolioCategories";
+import { teamMemberType } from "./teamMember";
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -16,5 +17,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     sectionContactType,
     portfolioType,
     portfolioCategoryType,
+    teamMemberType,
   ],
 };
