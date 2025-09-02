@@ -22,16 +22,17 @@
   --color-light-grey: #676767;
   --color-dark-grey: var(--dark-grey);
   --color-button-grey: var(--button-grey);
+  --color-button-grey-hover: var(--dark-grey);
   --font-sans: var(--font-rm-neue);
   --font-mono: var(--font-gt-america-mono);
-  --text-xs: 0.938rem;
+  --text-xs: 0.875rem;
   --text-heading: 2rem;
   --text-sm: clamp(12px, 0.85rem, 20px);
   --text-base: 1rem;
   --text-base-2: 1.125rem;
   --text-base-2--line-height: 1.2;
   --text-base--line-height: 1.2;
-  --text-md: 3rem;
+  --text-md: 3.4rem;
   --text-md--line-height: 1.02;
   --text-lg: 5.125rem;
   --text-lg--line-height: 1.02;
@@ -43,6 +44,10 @@
   --aspect-ratio-box-lg: 769/411;
   --slides: 2.5;
   --slide-gap: 20px;
+  --grid-slides: repeat(auto-fit, minmax(420px, 1fr));
+
+  --breakpoint-smd: 1440px;
+  --breakpoint-smd-max: 1640px;
 }
 
 :root {

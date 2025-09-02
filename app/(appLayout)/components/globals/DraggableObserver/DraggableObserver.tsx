@@ -10,6 +10,7 @@ import { useSectorListAnimation } from "@/app/(appLayout)/hooks/AnimationsHooks"
 import { useStore } from "@/store/store";
 import { RichText } from "../../shared/RichText";
 import { checkLangString } from "@/app/(appLayout)/utils/utils";
+import CustomImage from "../../shared/Image/Image";
 gsap.registerPlugin(ScrollTrigger);
 
 type Props = {
@@ -818,7 +819,7 @@ const Entry = (props: any) => {
   const { data, index, currentIndex, lang } = props;
   return (
     <div
-      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] lg:w-[calc(92vh*1.46)] bg-white  rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] smd:w-[calc(92vh*(1030/978))] smd-max:w-[calc(92vh*1.46)] bg-white rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
       style={{
         zIndex: 1000 - index,
         touchAction: "pan-x pan-y",
@@ -827,58 +828,48 @@ const Entry = (props: any) => {
       }}
       data-index={index}
     >
-      <div className="h-auto w-full py-2  flex flex-col gap-4 lg:gap-8">
-        <div className={"font-mono text-sm px-2 lg:px-3"}>
+      <div className="h-auto w-full py-2 px-2 flex flex-col gap-4 lg:gap-8">
+        <div className={"font-mono text-sm"}>
           {lang === "en" ? "Category" : "Categoria"}:{" "}
           {checkLangString(lang, data.sector)}
         </div>
         <div className={"flex flex-col gap-4 lg:gap-8"}>
-          <div className={"font-sans text-md px-2"}>
+          <div className={"font-sans text-md"}>
             {checkLangString(lang, data.title)}
           </div>
 
-          <div className="flex flex-row gap-6 bg-yellow-500">
-            <div>
-              <div className={"flex flex-col gap-3 px-2 lg:px-3 bg-green-500"}>
-                <div className={"font-sans text-base"}>
-                  {lang === "en" ? "Details" : "Detalhes"}
-                </div>
-                <div className={"flex flex-col gap-[0.2rem]"}>
-                  {data?.details &&
-                    data.details.length > 0 &&
-                    data.details.map((detail: any, index: number) => (
-                      <div
-                        key={index}
-                        className={"flex flex-row items-start justify-between"}
-                      >
-                        <span className="font-sans text-base flex-1">
-                          {checkLangString(lang, detail.title)}
-                        </span>
-                        <span className={"font-mono text-base flex-1"}>
-                          {checkLangString(lang, detail.value)}
-                        </span>
-                      </div>
-                    ))}
-                </div>
+          <div className="flex flex-row gap-0">
+            <div className="w-full lg:w-1/3 flex flex-col gap-6">
+              <div className={"grid grid-cols-[max-content_auto] gap-[0.5rem]"}>
+                {data?.details &&
+                  data.details.length > 0 &&
+                  data.details.map((detail: any, index: number) => (
+                    <div key={index} className={"contents"}>
+                      <span className="font-sans text-base grid-col-span-1">
+                        {checkLangString(lang, detail.title)}
+                      </span>
+                      <span className={"font-mono text-base grid-col-span-2"}>
+                        {checkLangString(lang, detail.value)}
+                      </span>
+                    </div>
+                  ))}
               </div>
 
               <div className={"flex flex-col gap-1 lg:gap-2"}>
                 <div
-                  className={
-                    "flex flex-row items-center justify-start gap-1 px-2 lg:px-3 bg-red-500"
-                  }
+                  className={"flex flex-row items-center justify-start gap-1"}
                 >
                   {data?.socials &&
                     data.socials.length > 0 &&
                     data.socials.map((s: any, index: number) => (
                       <div
                         key={index}
-                        className="clickable font-mono text-xs/none text-light-grey bg-button-grey rounded-2xl px-1 py-1 flex items-center justify-center"
+                        className="clickable text-light-grey hover:text-white bg-button-grey hover:bg-button-grey-hover  rounded-2xl px-1 smd-max:px-2 py-1 flex items-center justify-center transition all duration-300 ease-in-out"
                       >
                         <a
                           href={s.url}
                           target="_blank"
-                          className="team-member-social opacity-100"
+                          className="team-member-social opacity-100 font-mono text-xs/none"
                         >
                           {checkLangString(lang, s.title)}
                         </a>
@@ -887,11 +878,12 @@ const Entry = (props: any) => {
                 </div>
               </div>
             </div>
-            <div>
+            <div className="hidden lg:flex w-2/3">
               {data?.text && (
                 /// Out portable content from sanity here instead
-
-                <div className={"px-2 lg:px-3 flex flex-col gap-2 bg-blue-500"}>
+                <div
+                  className={"flex flex-col gap-[1.3rem]  smd-max:max-w-2/3 "}
+                >
                   <RichText content={checkLangString(lang, data.text)} />
                 </div>
               )}
@@ -905,12 +897,32 @@ const Entry = (props: any) => {
                   <Slider type={"media"} data={data.slides} />
                 )}
               </span>
+
+              <div className="hidden lg:grid grid-cols-[var(--grid-slides)] gap-2">
+                {data?.slides &&
+                  data.slides.length > 0 &&
+                  data.slides.map((slide: any, index: number) => {
+                    return (
+                      <div
+                        key={index}
+                        className="aspect-[450/275] rounded-2xl overflow-hidden"
+                      >
+                        <CustomImage
+                          asset={slide.asset}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
 
             {data?.text && (
               /// Out portable content from sanity here instead
 
-              <div className={"px-2 lg:px-3 flex flex-col gap-2"}>
+              <div
+                className={"flex lg:hidden px-2 lg:px-3 flex flex-col gap-2"}
+              >
                 <RichText content={checkLangString(lang, data.text)} />
               </div>
             )}
