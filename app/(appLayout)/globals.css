@@ -46,8 +46,8 @@
   --slide-gap: 20px;
   --grid-slides: repeat(auto-fit, minmax(420px, 1fr));
 
-  --breakpoint-smd: 1440px;
-  --breakpoint-smd-max: 1640px;
+  --breakpoint-smd: 90rem;
+  --breakpoint-smd-max: 100rem;
 }
 
 :root {

@@ -819,7 +819,7 @@ const Entry = (props: any) => {
   const { data, index, currentIndex, lang } = props;
   return (
     <div
-      className="box absolute top-1 lg:top-1/2  left-[20px] lg:left-1/2  h-[78vh] lg:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] smd:w-[calc(92vh*(1030/978))] smd-max:w-[calc(92vh*1.46)] bg-white rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      className="box absolute top-1 md:top-1/2 lg:top-1/2  left-[20px] md:left-1/2 lg:left-1/2  h-[78vh] sm:h-[92vh] md:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] sm:w-[calc(92vh*(820/1180))] smd:w-[calc(92vh*(1030/978))] smd-max:w-[calc(92vh*1.46)] bg-white sm:bg-red-500 md:bg-blue-500 rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
       style={{
         zIndex: 1000 - index,
         touchAction: "pan-x pan-y",
@@ -883,7 +883,7 @@ const Entry = (props: any) => {
                 /// Out portable content from sanity here instead
                 <div
                   className={
-                    "flex flex-col gap-[1.3rem] smd:pr-3 smd-max:pr-0 smd-max:max-w-2/3 "
+                    "flex flex-col gap-[1.3rem]  smd:pr-3 smd-max:pr-0 smd-max:max-w-2/3 "
                   }
                 >
                   <RichText content={checkLangString(lang, data.text)} />
