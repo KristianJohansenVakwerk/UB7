@@ -882,7 +882,9 @@ const Entry = (props: any) => {
               {data?.text && (
                 /// Out portable content from sanity here instead
                 <div
-                  className={"flex flex-col gap-[1.3rem]  smd-max:max-w-2/3 "}
+                  className={
+                    "flex flex-col gap-[1.3rem] smd:pr-3 smd-max:pr-0 smd-max:max-w-2/3 "
+                  }
                 >
                   <RichText content={checkLangString(lang, data.text)} />
                 </div>
