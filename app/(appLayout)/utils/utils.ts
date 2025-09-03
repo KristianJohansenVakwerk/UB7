@@ -79,3 +79,7 @@ const processBlock = (block: any): string => {
       return `<p>${content}</p>`;
   }
 };
+
+export const classFormatter = (classes: string[]) => {
+  return classes.join(" ");
+};

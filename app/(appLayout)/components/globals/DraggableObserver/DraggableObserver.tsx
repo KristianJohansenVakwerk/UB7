@@ -9,7 +9,7 @@ import { useAccordionControls } from "@/app/(appLayout)/hooks/AccordionHooks";
 import { useSectorListAnimation } from "@/app/(appLayout)/hooks/AnimationsHooks";
 import { useStore } from "@/store/store";
 import { RichText } from "../../shared/RichText";
-import { checkLangString } from "@/app/(appLayout)/utils/utils";
+import { checkLangString, classFormatter } from "@/app/(appLayout)/utils/utils";
 import CustomImage from "../../shared/Image/Image";
 gsap.registerPlugin(ScrollTrigger);
 
@@ -91,6 +91,11 @@ const DraggableObserver = (props: Props) => {
           xPercent: -50,
           yPercent: -50,
         });
+      } else if (window.innerWidth > 480 && window.innerWidth < 1024) {
+        gsap.set(boxes, {
+          xPercent: -50,
+          yPercent: -50,
+        });
       }
 
       // Active boxes are the ones that are visible
@@ -150,10 +155,50 @@ const DraggableObserver = (props: Props) => {
     }
   }, [active, entriesFrom]);
 
+  useGSAP(() => {
+    const handleResize = () => {
+      console.log("resize", inActiveBoxes.current);
+      const inActiveBoxesArray = inActiveBoxes.current;
+      const boxes = gsap.utils.toArray(".box");
+
+      if (inActiveBoxesArray.length > 0) {
+        // Set the inactive boxes to the right of the screen
+        gsap.set(inActiveBoxesArray, {
+          x:
+            window.innerWidth / 2 +
+            (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+          y: 0,
+          scale: 1,
+          rotation: 0,
+        });
+        // Figure out how to set the init box pos of the in-active boxes to window.innerWidth / 2 +
+        // (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+
+        boxes.forEach((box, index) => {
+          const inactiveIndex = inActiveBoxesArray.indexOf(box as HTMLElement);
+
+          if (inactiveIndex !== -1) {
+            boxesPos.current[index] = {
+              x:
+                window.innerWidth / 2 +
+                (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+            };
+          }
+        });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   // Function to update the background image based on the index
   const updateBackgroundOnRelease = useCallback(
     (index: number) => {
-      updateBackground(entries[index].sector);
+      updateBackground(entries[index].sector.en);
     },
     [entries, updateBackground]
   );
@@ -475,6 +520,11 @@ const DraggableObserver = (props: Props) => {
                   direction.current === 1
                     ? window.innerWidth / 2 + activeBox.clientWidth
                     : 0;
+
+                direction.current === 1
+                  ? inActiveBoxes.current.push(activeBox)
+                  : inActiveBoxes.current.pop();
+
                 updateBackgroundOnRelease(currentIndex.current);
                 // gsap.killTweensOf(activeBox);
               },
@@ -692,13 +742,46 @@ const DraggableObserver = (props: Props) => {
       ref={containerRef}
       className="relative h-[100svh] w-full overflow-hidden"
     >
-      <CloseButton onClick={handleClose} />
-      <PrevButton onClick={handlePrev} currentIndex={currentStateIndex} />
-      <NextButton
-        onClick={handleNext}
-        currentIndex={currentStateIndex}
-        entriesLength={entries.length}
-      />
+      <div
+        className={classFormatter([
+          "fixed",
+          "md:relative",
+          "bottom-1",
+          "md:bottom-auto",
+          "left-0",
+          "md:left-auto",
+          "w-full",
+          "h-auto",
+          "z-[9999]",
+          "flex",
+          "flex-row",
+          "justify-center",
+          "items-center",
+          "gap-3",
+        ])}
+      >
+        <span className="block md:hidden">
+          <PrevButton onClick={handlePrev} currentIndex={currentStateIndex} />
+        </span>
+        <CloseButton onClick={handleClose} />
+        <span className="block md:hidden">
+          <NextButton
+            onClick={handleNext}
+            currentIndex={currentStateIndex}
+            entriesLength={entries.length}
+          />
+        </span>
+      </div>
+      <span className="hidden md:block">
+        <PrevButton onClick={handlePrev} currentIndex={currentStateIndex} />
+      </span>
+      <span className="hidden md:block">
+        <NextButton
+          onClick={handleNext}
+          currentIndex={currentStateIndex}
+          entriesLength={entries.length}
+        />
+      </span>
       <div
         ref={boundsRef}
         className="bounds absolute top-0 left-0 h-full w-screen flex items-center justify-center user-select-none"
@@ -727,7 +810,27 @@ const CloseButton = (props: any) => {
   const { onClick } = props;
   return (
     <div
-      className=" absolute bottom-1 lg:bottom-auto lg:top-2 translate-x-1/2 lg:translate-x-0 right-1/2 lg:right-3 z-9999 w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md flex items-center justify-center text-dark-grey cursor-pointer"
+      className={classFormatter([
+        "relative",
+        "md:absolute",
+        "md:top-2",
+        "translate-x-0",
+        "md:translate-x-0",
+        "lg:translate-x-1/2",
+        "right-auto",
+        "md:right-3",
+        "z-9999",
+        "w-[48px]",
+        "h-[48px]",
+        "rounded-full",
+        "bg-[rgba(255,255,255,0.6)]",
+        "backdrop-blur-md",
+        "flex",
+        "items-center",
+        "justify-center",
+        "text-dark-grey",
+        "cursor-pointer",
+      ])}
       onClick={onClick}
     >
       <svg
@@ -756,7 +859,29 @@ const PrevButton = (props: any) => {
 
   return (
     <div
-      className="hidden lg:flex absolute top-1/2 -translate-y-1/2 left-3 z-9999 w-[48px] h-[48px]  cursor-pointer w-[48px] h-[48px] rounded-full  bg-[rgba(255,255,255,0.6)] backdrop-blur-md  items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
+      className={classFormatter([
+        "flex",
+        "relative",
+        "md:absolute",
+        "md:top-1/2",
+        "md:-translate-y-1/2",
+        "md:left-3",
+        "z-9999",
+        "w-[48px]",
+        "h-[48px]",
+        "cursor-pointer",
+        "w-[48px]",
+        "h-[48px]",
+        "rounded-full",
+        "bg-[rgba(255,255,255,0.6)]",
+        "backdrop-blur-md",
+        "items-center",
+        "justify-center",
+        "text-dark-grey",
+        "cursor-pointer",
+        "transition-opacity",
+        "duration-300",
+      ])}
       onClick={onClick}
       style={{
         pointerEvents: isDisabled ? "none" : "auto",
@@ -789,7 +914,7 @@ const NextButton = (props: any) => {
 
   return (
     <div
-      className="hidden lg:flex absolute top-1/2 -translate-y-1/2 right-2 z-[9999] cursor-pointer w-[48px] h-[48px] rounded-full  bg-[rgba(255,255,255,0.6)] backdrop-blur-md  items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
+      className="flex relative md:absolute md:top-1/2 md:-translate-y-1/2 md:right-2 z-[9999] cursor-pointer w-[48px] h-[48px] rounded-full  bg-[rgba(255,255,255,0.6)] backdrop-blur-md  items-center justify-center text-dark-grey cursor-pointer transition-opacity duration-300"
       onClick={onClick}
       style={{
         pointerEvents: isDisabled ? "none" : "auto",
@@ -819,7 +944,33 @@ const Entry = (props: any) => {
   const { data, index, currentIndex, lang } = props;
   return (
     <div
-      className="box absolute top-1 md:top-1/2 lg:top-1/2  left-[20px] md:left-1/2 lg:left-1/2  h-[78vh] sm:h-[92vh] md:h-[92vh] lg:mx-0 w-[calc(100vw-40px)] sm:w-[calc(92vh*(820/1180))] smd:w-[calc(92vh*(1030/978))] smd-max:w-[calc(92vh*1.46)] bg-white sm:bg-red-500 md:bg-blue-500 rounded-[26px] overflow-y-auto overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] touch-manipulation user-select-none"
+      className={classFormatter([
+        "box",
+        "absolute",
+        "top-1",
+        "md:top-1/2",
+        "lg:top-1/2",
+        "left-[20px]",
+        "md:left-1/2",
+        "lg:left-1/2",
+        "h-[78vh]",
+        "sm:h-[92vh]",
+        "md:h-[82vh]",
+        "lg:mx-0",
+        "w-[calc(100vw-40px)]",
+        "sm:max-xl:w-[calc(82vh*(820/1180))]",
+        "xl:max-3xl:w-[calc(92vh*(1030/978))]",
+        "3xl:w-[calc(92vh*1.46)]",
+        "bg-white",
+        "rounded-[26px]",
+        "overflow-y-auto",
+        "overscroll-contain",
+        "[&::-webkit-scrollbar]:hidden",
+        "[-ms-overflow-style:none]",
+        "[scrollbar-width:none]",
+        "touch-manipulation",
+        "user-select-none",
+      ])}
       style={{
         zIndex: 1000 - index,
         touchAction: "pan-x pan-y",
@@ -828,18 +979,31 @@ const Entry = (props: any) => {
       }}
       data-index={index}
     >
-      <div className="h-auto w-full py-2 px-2 flex flex-col gap-4 lg:gap-8">
-        <div className={"font-mono text-sm"}>
+      <div
+        className={classFormatter([
+          "h-auto",
+          "w-full",
+          "py-2",
+          "px-0",
+          "lg:px-2",
+          "flex",
+          "flex-col",
+          "gap-4",
+          "md:gap-5",
+          "xl:gap-8",
+        ])}
+      >
+        <div className={"font-mono text-sm px-2 lg:px-0"}>
           {lang === "en" ? "Category" : "Categoria"}:{" "}
           {checkLangString(lang, data.sector)}
         </div>
-        <div className={"flex flex-col gap-4 lg:gap-8"}>
-          <div className={"font-sans text-md"}>
+        <div className={"flex flex-col gap-4 lg:gap-8 "}>
+          <div className={"font-sans text-md px-2 lg:px-0"}>
             {checkLangString(lang, data.title)}
           </div>
 
-          <div className="flex flex-row gap-0">
-            <div className="w-full lg:w-1/3 flex flex-col gap-6">
+          <div className="flex flex-col xl:flex-row gap-0 md:gap-4 xl:gap-0 px-2 lg:px-0">
+            <div className="w-full xl:w-1/3 flex flex-col gap-6 ">
               <div className={"grid grid-cols-[max-content_auto] gap-[0.5rem]"}>
                 {data?.details &&
                   data.details.length > 0 &&
@@ -864,7 +1028,24 @@ const Entry = (props: any) => {
                     data.socials.map((s: any, index: number) => (
                       <div
                         key={index}
-                        className="clickable text-light-grey hover:text-white bg-button-grey hover:bg-button-grey-hover  rounded-2xl px-1 smd-max:px-2 py-1 flex items-center justify-center transition all duration-300 ease-in-out"
+                        className={classFormatter([
+                          "clickable",
+                          "text-light-grey",
+                          "hover:text-white",
+                          "bg-button-grey",
+                          "hover:bg-button-grey-hover",
+                          "rounded-2xl",
+                          "px-1",
+                          "3xl:px-2",
+                          "py-1",
+                          "flex",
+                          "items-center",
+                          "justify-center",
+                          "transition",
+                          "all",
+                          "duration-300",
+                          "ease-in-out",
+                        ])}
                       >
                         <a
                           href={s.url}
@@ -878,13 +1059,18 @@ const Entry = (props: any) => {
                 </div>
               </div>
             </div>
-            <div className="hidden lg:flex w-2/3">
+            <div className="hidden xl:flex w-full xl:w-2/3">
               {data?.text && (
                 /// Out portable content from sanity here instead
                 <div
-                  className={
-                    "flex flex-col gap-[1.3rem]  smd:pr-3 smd-max:pr-0 smd-max:max-w-2/3 "
-                  }
+                  className={classFormatter([
+                    "flex",
+                    "flex-col",
+                    "gap-[1.3rem]",
+                    "xl:max-3xl:pr-10",
+                    "3xl:pr-0",
+                    "3xl:max-w-2/3",
+                  ])}
                 >
                   <RichText content={checkLangString(lang, data.text)} />
                 </div>
@@ -892,15 +1078,15 @@ const Entry = (props: any) => {
             </div>
           </div>
 
-          <div className=" w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4">
             <div className={"disable-drag "}>
-              <span className="block lg:hidden">
+              <span className="block xl:hidden">
                 {data?.slides && data.slides.length > 0 && (
                   <Slider type={"media"} data={data.slides} />
                 )}
               </span>
 
-              <div className="hidden lg:grid grid-cols-[var(--grid-slides)] gap-2">
+              <div className="hidden xl:grid grid-cols-[var(--grid-slides)] gap-2">
                 {data?.slides &&
                   data.slides.length > 0 &&
                   data.slides.map((slide: any, index: number) => {
@@ -923,7 +1109,7 @@ const Entry = (props: any) => {
               /// Out portable content from sanity here instead
 
               <div
-                className={"flex lg:hidden px-2 lg:px-3 flex flex-col gap-2"}
+                className={"flex xl:hidden flex flex-col gap-2 px-2 lg:px-0"}
               >
                 <RichText content={checkLangString(lang, data.text)} />
               </div>

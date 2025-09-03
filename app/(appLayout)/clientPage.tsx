@@ -417,7 +417,12 @@ export default function ObserverPage({
       {/* <IntroPixi /> */}
       <ProgressBars currentIndex={globalCurrentIndex} />
 
-      <div className="fixed bottom-2 lg:bottom-3 left-2 lg:left-3 right-2 lg:right-3 z-50 flex flex-row items-center justify-between">
+      <div
+        className={clsx(
+          "fixed bottom-2 lg:bottom-3 left-2 lg:left-3 right-2 lg:right-3 z-50 flex flex-row items-center justify-between",
+          disableScroll ? "pointer-events-none" : "pointer-events-auto"
+        )}
+      >
         <Menu
           setCurrentIndex={handleMenuClick}
           currentIndex={globalCurrentIndex}
@@ -515,21 +520,31 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
   ];
 
   useGSAP(() => {
-    const menuItems = gsap.utils.toArray(".menu-item");
+    const setSize = (resize?: boolean) => {
+      const menuItems = gsap.utils.toArray(".menu-item");
 
-    const targetElementMenu = document.getElementById(
-      `${mappedData[currentIndex].id}-menu`
-    );
+      const targetElementMenu = document.getElementById(
+        `${mappedData[currentIndex].id}-menu`
+      );
 
-    if (!targetElementMenu) return;
+      if (!targetElementMenu) return;
 
-    gsap.to(menuProgressRef.current, {
-      width: targetElementMenu.offsetWidth,
-      x: targetElementMenu.offsetLeft,
-      duration: 0.8,
-      delay: 0.2,
-      ease: "expo.inOut",
-    });
+      gsap.to(menuProgressRef.current, {
+        width: targetElementMenu.offsetWidth,
+        x: targetElementMenu.offsetLeft,
+        duration: resize ? 0 : 0.8,
+        delay: resize ? 0 : 0.2,
+        ease: "expo.inOut",
+      });
+    };
+
+    setSize(false);
+
+    window.addEventListener("resize", () => setSize(true));
+
+    return () => {
+      window.removeEventListener("resize", () => setSize(true));
+    };
   }, [currentIndex]);
 
   return (

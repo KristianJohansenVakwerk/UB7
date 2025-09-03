@@ -44,6 +44,7 @@ const SectionPortfolioList = (props: Props) => {
     useAccordionControls();
   const { setHoverSector, disableScroll, setDisableScroll } = useStore();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [sectorClicked, setSectorClicked] = useState(false);
 
   useEffect(() => {
     setIsTouchDevice("ontouchstart" in window || navigator.maxTouchPoints > 0);
@@ -74,8 +75,8 @@ const SectionPortfolioList = (props: Props) => {
 
     resetAccordion(accordionAnis, iconAnis);
     setHoverSector(false);
-    onShowBackground("");
-  }, [accordionAnis, iconAnis, active]);
+    if (!sectorClicked) onShowBackground("");
+  }, [accordionAnis, iconAnis, active, sectorClicked]);
 
   const { timelineRef } = useSectorListAnimation(currentIndex);
 
@@ -85,7 +86,6 @@ const SectionPortfolioList = (props: Props) => {
   } | null>(null);
 
   useSectorListEvents("onReverseComplete", () => {
-    console.log("onReverseComplete");
     if (!pendingExpansionRef.current) return;
     gsap.to(
       [
@@ -102,6 +102,8 @@ const SectionPortfolioList = (props: Props) => {
       }
     );
 
+    setSectorClicked(false);
+
     onExpandViewMode(
       pendingExpansionRef.current.entryIndex,
       pendingExpansionRef.current.sector
@@ -111,7 +113,7 @@ const SectionPortfolioList = (props: Props) => {
 
   const showExpandedectors = (
     slug: string,
-    sector: string,
+    sector: { en: string; pt: string },
     entryIndex: number
   ) => {
     if (!active) {
@@ -121,10 +123,11 @@ const SectionPortfolioList = (props: Props) => {
 
     setDisableScroll(true);
 
-    pendingExpansionRef.current = { entryIndex, sector };
+    pendingExpansionRef.current = { entryIndex, sector: sector.en };
 
     resetAccordion(accordionAnis, iconAnis);
-    onShowBackground(sector);
+    setSectorClicked(true);
+    onShowBackground(sector.en);
 
     gsap.delayedCall(ScrollTrigger.isTouch ? 0.0 : 0.6, () => {
       if (timelineRef?.current) {

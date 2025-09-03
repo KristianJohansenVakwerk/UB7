@@ -25,16 +25,22 @@
   --color-button-grey-hover: var(--dark-grey);
   --font-sans: var(--font-rm-neue);
   --font-mono: var(--font-gt-america-mono);
-  --text-xs: 0.875rem;
-  --text-heading: 2rem;
+  /* --text-xs: 0.875rem; */
+  --text-xs: 14px;
+  /* --text-heading: 2rem; */
+  --text-heading: 32px;
   --text-sm: clamp(12px, 0.85rem, 20px);
-  --text-base: 1rem;
-  --text-base-2: 1.125rem;
+  /* --text-base: 1rem; */
+  --text-base: 17px;
+  /* --text-base-2: 1.125rem; */
+  --text-base-2: 18px;
   --text-base-2--line-height: 1.2;
   --text-base--line-height: 1.2;
-  --text-md: 3.4rem;
+  /* --text-md: 3.4rem; */
+  --text-md: 54.4px;
   --text-md--line-height: 1.02;
-  --text-lg: 5.125rem;
+  /* --text-lg: 5.125rem; */
+  --text-lg: 82px;
   --text-lg--line-height: 1.02;
   --text-title: clamp(25px, 3.5vw, 82px);
   --text-title--line-height: 1;
@@ -48,6 +54,7 @@
 
   --breakpoint-smd: 90rem;
   --breakpoint-smd-max: 100rem;
+  --breakpoint-3xl: 102rem;
 }
 
 :root {
@@ -63,7 +70,7 @@
   --font-gt-america-mono: "GT America Mono";
 
   @media (max-width: 1440px) {
-    --font-size: 14px;
+    --font-size: 16px;
     --spacing: 0.7142rem;
   }
 
@@ -98,12 +105,15 @@
   tabindex: -1;
 }
 
-html,
+html {
+  font-size: var(--font-size);
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: var(--font-size);
+  /* font-size: var(--font-size); */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -180,35 +190,6 @@ nav button {
 
 nav button:hover {
   background-color: #555;
-}
-
-.slider-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  height: 20vh;
-  width: 100%;
-
-  @media (max-width: 768px) {
-    height: 30vh;
-  }
-}
-
-.slide-box {
-  --slides: 1.2;
-  --gap: 20px;
-  --gaps: calc((var(--slides) - 1) * var(--gap));
-  width: calc((100% - (var(--gaps))) / var(--slides));
-  /* margin-right: var(--slide-gap); */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: green;
-  height: 100%;
-  padding: 0;
-  position: relative;
-  flex-shrink: 0;
 }
 
 /* Lenis Scrollbar Styles */
