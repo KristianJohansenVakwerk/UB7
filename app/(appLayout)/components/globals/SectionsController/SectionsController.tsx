@@ -2,7 +2,7 @@
 import { portfolioData, sectionsData } from "@/app/(appLayout)/utils/data";
 import React from "react";
 import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
-import SectionAbout from "../Section/SectionAbout/SectionAbout";
+import SectionAbout from "../Section/SectionAboutNew/SectionAboutNew";
 import SectionContact from "../Section/SectionContact/SectionContact";
 import clsx from "clsx";
 import { useMappedSections } from "@/app/(appLayout)/hooks/useMappedSections";

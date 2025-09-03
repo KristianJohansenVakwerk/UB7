@@ -387,7 +387,7 @@ export default function ObserverPage({
                 introStoreDone && "opacity-100"
               )}
             >
-              <SectionAbout
+              <SectionAboutNew
                 data={data.find((item: any) => item._type === "sectionAbout")}
                 currentIndex={globalCurrentIndex}
                 scrollingDown={globalScrollDirection}
@@ -838,16 +838,7 @@ const SectionTitles = ({
         "section-title fixed top-3 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
-    >
-      {/* {headlines.map((headline: { text: string }, index: number) => (
-        <h1
-          key={`${index}-${lang}`}
-          className="splitText text-title opacity-100 absolute w-screen h-auto whitespace-pre-wrap"
-        >
-          {headline.text}
-        </h1>
-      ))} */}
-    </div>
+    />
   );
 };
 
@@ -1013,8 +1004,6 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
 ////////////////////////////////////////////////////////////
 // SECTION ABOUT
 ////////////////////////////////////////////////////////////
-
-import { teamMembers } from "./utils/data";
 
 const SectionAbout = ({
   currentIndex,
@@ -1311,7 +1300,7 @@ const SectionAbout = ({
         className="text-about absolute hidden lg:block lg:top-7 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey"
       />
 
-      <div className="about-box  absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[124px] pb-[77px] lg:pb-0 lg:pt-0">
+      <div className="about-box bg-red-500  absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[124px] pb-[77px] lg:pb-0 lg:pt-0">
         <TeamMembers
           items={data.team}
           imageContainerRef={imageContainerRef}
@@ -1354,6 +1343,7 @@ import { TeamMember } from "./utils/data";
 import CustomImage from "./components/shared/Image/Image";
 import { RichText } from "./components/shared/RichText";
 import { checkLangString, richTextToHTML } from "./utils/utils";
+import SectionAboutNew from "./components/globals/Section/SectionAboutNew/SectionAboutNew";
 
 const TeamMembers = ({
   items,

@@ -10,7 +10,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
 import SectionContact from "../components/globals/Section/SectionContact/SectionContact";
-import SectionAbout from "../components/globals/Section/SectionAbout/SectionAbout";
+import SectionAbout from "../components/globals/Section/SectionAboutNew/SectionAboutNew";
 import SectionPortfolio from "../components/globals/Section/SectionPortfolio/SectionPortfolio";
 import { portfolioData, sectionsData } from "../utils/data";
 import { useStore } from "@/store/store";

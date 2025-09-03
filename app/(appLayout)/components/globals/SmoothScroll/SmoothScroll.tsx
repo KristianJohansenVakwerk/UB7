@@ -1,7 +1,7 @@
 "use client";
 import clsx from "clsx";
 import SectionPortfolio from "../Section/SectionPortfolio/SectionPortfolio";
-import SectionAbout from "../Section/SectionAbout/SectionAbout";
+import SectionAbout from "../Section/SectionAboutNew/SectionAboutNew";
 import SectionContact from "../Section/SectionContact/SectionContact";
 import { portfolioData, sectionsData } from "@/app/(appLayout)/utils/data";
 import gsap from "gsap";

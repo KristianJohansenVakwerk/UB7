@@ -89,7 +89,6 @@ const SectionPortfolio = (props: any) => {
   );
 
   const handleShowBackground = useCallback((sector: string) => {
-    console.log("handleShowBackground", sector);
     setActiveSector(sector);
   }, []);
 

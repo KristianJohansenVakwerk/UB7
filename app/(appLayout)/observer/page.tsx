@@ -752,7 +752,6 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
 ////////////////////////////////////////////////////////////
 
 import { teamMembers } from "../utils/data";
-import { TeamMembers } from "../components/globals/Section/SectionAbout/SectionAbout";
 
 const SectionAbout = ({
   currentIndex,
@@ -974,13 +973,7 @@ const SectionAbout = ({
         mollit anim id est laborum.
       </div>
 
-      <div className="about-box absolute bottom-8 left-3 left-0  flex justify-center items-center gap-4 will-change-transform opacity-100">
-        <TeamMembers
-          items={items}
-          imageContainerRef={imageContainerRef}
-          imageRef={imageRef}
-        />
-      </div>
+      <div className="about-box absolute bottom-8 left-3 left-0  flex justify-center items-center gap-4 will-change-transform opacity-100"></div>
 
       <div
         ref={clickCloseRef}
