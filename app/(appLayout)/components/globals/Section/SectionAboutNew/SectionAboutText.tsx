@@ -74,6 +74,7 @@ const AboutSectionText = (props: any) => {
       linesClass: "split-line text-base-2",
       // wordsClass: "text-base-2",
       tag: "span",
+      autoParseHtml: true,
     });
 
     // Store the SplitText instance for cleanup
@@ -88,12 +89,20 @@ const AboutSectionText = (props: any) => {
       })
     );
 
+    const handleResize = () => {
+      splitText.revert();
+      splitText.split({ type: "lines" });
+    };
+
+    window.addEventListener("resize", handleResize);
+
     // Cleanup function to revert SplitText when component unmounts or re-renders
     return () => {
       if (splitTextRef.current) {
         splitTextRef.current.revert();
         splitTextRef.current = null;
       }
+      window.removeEventListener("resize", handleResize);
     };
   }, [textContent]);
 

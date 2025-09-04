@@ -89,6 +89,7 @@ export default function ObserverPage({
         allowScroll.current && scrollToSection(currentIndex.current - 1, false);
       },
       tolerance: ScrollTrigger.isTouch ? 10 : 10,
+      ignore: "#aboutSlider",
       wheelSpeed: -1,
       onChange: (self: any) => {
         if (!allowScroll.current) return;
@@ -305,12 +306,14 @@ export default function ObserverPage({
       setGlobalCurrentIndex(index);
       setCurrentStoreIndex(index);
       setGlobalScrollDirection(isScrollingDown);
+
       currentIndex.current = index;
       return;
     }
-    if (currentIndex.current === 2) {
-      return;
-    }
+
+    // if (currentIndex.current === 2) {
+    //   return;
+    // }
 
     if (index === panels.current.length && isScrollingDown) {
       intentRef.current.disable();
