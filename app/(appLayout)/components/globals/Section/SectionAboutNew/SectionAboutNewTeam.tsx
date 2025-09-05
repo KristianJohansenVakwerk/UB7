@@ -1,9 +1,18 @@
 "use client";
 
-import { checkLangString, classFormatter } from "@/app/(appLayout)/utils/utils";
+import {
+  checkLangString,
+  classFormatter,
+  classFormatterClsx,
+} from "@/app/(appLayout)/utils/utils";
 import CustomImage from "../../../shared/Image/Image";
 import { RichText } from "../../../shared/RichText";
 import { RefObject, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
+import SplitTextComp from "../../SplitTextComp/SplitTextComp";
+import SplitRichTextComp from "../../SplitRichTextComp/SplitRichTextComp";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 
 export interface TeamMember {
   type: "team" | "box";
@@ -18,215 +27,275 @@ const TeamMembers = ({
   imageContainerRef,
   imageRef,
   lang,
+  currentIndex,
+  scrollingDown,
 }: {
   items: (TeamMember | { type: string })[];
   imageContainerRef: RefObject<HTMLDivElement | null>;
   imageRef: RefObject<HTMLImageElement | null>;
   lang: string;
+  currentIndex: number;
+  scrollingDown: boolean;
 }) => {
   const computedItems: (TeamMember | { type: string })[] = useMemo(() => {
     return [{ type: "box" }, ...items];
   }, [items]);
 
+  useGSAP(() => {
+    if (currentIndex === 2) {
+      gsap.delayedCall(3, () => {
+        gsap.to(".item", {
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.3,
+          ease: "expo.inOut",
+        });
+      });
+    } else if (!scrollingDown && currentIndex <= 2) {
+      gsap.to(".item", {
+        opacity: 0,
+        duration: 0.5,
+        stagger: -0.3,
+        ease: "expo.inOut",
+      });
+    }
+  }, [currentIndex, scrollingDown]);
+
   return (
     <div className={classFormatter(["flex", "w-full", "gap-3"])}>
       {computedItems.map((m, index: number) => {
         // @ts-ignore
-        if (m.type === "box") {
-          return (
-            <div
-              ref={imageContainerRef}
-              key={index}
-              className={classFormatter([
-                "item",
-                "item-box",
-                // "aspect-[var(--aspect-ratio-box)]",
-                // "lg:aspect-[var(--aspect-ratio-box-lg)]",
-                // "h-full",
-                // "lg:h-auto",
-                // "w-auto",
-                // "lg:min-h-none",
-                // "lg:max-h-none",
-                // "lg:min-w-[768px]",
-                "rounded-2xl",
-                "opacity-100",
-                "will-change-opacity",
-                "cursor-pointer",
-                "w-[940px]",
-                "h-auto",
-              ])}
-            >
-              <img
-                ref={imageRef}
-                src="/Reel.jpg"
-                width={"693"}
-                height={"376"}
-                className={classFormatter([
-                  "w-full",
-                  "h-full",
-                  "object-cover",
-                  "object-center",
-                  "rounded-2xl",
-                ])}
-              />
-            </div>
-          );
-        }
-
-        if ("name" in m) {
-          return (
-            <div
-              key={index}
-              className={classFormatter([
-                "item",
-                "item-team-member",
-                "relative",
-                "bg-white",
-                "rounded-2xl",
-                "h-auto",
-                "w-[820px]",
-                "border--2",
-                "border-yellow-500",
-                "opacity-100",
-                "will-change-opacity",
-              ])}
-            >
-              <div
-                className={classFormatter([
-                  "px-2",
-                  "lg:px-3",
-                  "py-2",
-                  "lg:py-3",
-                  "flex",
-                  "flex-col",
-                  "gap-1",
-                  "h-full",
-                ])}
-              >
-                <div
-                  className={classFormatter([
-                    "team-member-name",
-                    "text-light-grey",
-                    "text-base/none",
-                    "opacity-100",
-                  ])}
-                >
-                  {m.name}
-                </div>
-                <div
-                  className={classFormatter([
-                    "flex",
-                    "flex-col",
-                    "lg:flex-row",
-                    "items-stretch",
-                    "justify-start",
-                    "gap-2",
-                    "h-full",
-                  ])}
-                >
-                  <div
-                    className={classFormatter([
-                      "team-member-image",
-                      "aspect-[266/312]",
-                      "h-full",
-                      "opacity-100",
-                      "flex",
-                      "items-center",
-                      "justify-center",
-                      "flex-1",
-                      "w-1/2",
-                      "max-h-[425px]",
-                      "max-w-[363px]",
-                    ])}
-                  >
-                    <CustomImage
-                      asset={m.image}
-                      className={classFormatter([
-                        "w-full",
-                        "h-full",
-                        "object-cover",
-                        "object-center",
-                      ])}
-                    />
-                  </div>
-                  <div
-                    className={classFormatter([
-                      "text-light-grey",
-                      "flex-2",
-                      "lg:mr-3",
-                      "h-full",
-                    ])}
-                  >
-                    <div
-                      className={classFormatter([
-                        "flex",
-                        "flex-col",
-                        "gap-2",
-                        "h-full",
-                        "justify-between",
-                      ])}
-                    >
-                      <div
-                        className={classFormatter([
-                          "team-member-text",
-                          "text-base",
-                          "opacity-100",
-                        ])}
-                      >
-                        <RichText
-                          content={checkLangString(lang, m.description)}
-                        />
-                      </div>
-
-                      <div
-                        className={classFormatter([
-                          "flex",
-                          "flex-row",
-                          "items-center",
-                          "justify-between",
-                          "gap-1",
-                          "w-full",
-                        ])}
-                      >
-                        {m.links.map((s: any, index: number) => (
-                          <div
-                            key={index}
-                            className={classFormatter([
-                              "flex",
-                              "items-center",
-                              "justify-center",
-                              "font-mono",
-                              "text-sm",
-                              "text-light-grey",
-                              "bg-gray-100",
-                              "rounded-2xl",
-                              "py-1",
-                              "flex-1",
-                            ])}
-                          >
-                            <span
-                              className={classFormatter([
-                                "team-member-social",
-                                "opacity-100",
-                              ])}
-                            >
-                              <a href={s.link} target="_blank">
-                                {checkLangString(lang, s.title)}
-                              </a>
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        }
+        return (
+          <TeamMemberItem key={index} item={m} lang={lang} index={index} />
+        );
       })}
     </div>
   );
 };
 
 export default TeamMembers;
+
+const TeamMemberItem = (props: {
+  item: TeamMember | { type: string };
+  lang: string;
+  index: number;
+}) => {
+  const { item, lang, index } = props;
+
+  const { ref, inView } = useInView({
+    threshold: 0.8,
+    triggerOnce: true,
+  });
+
+  switch (item.type) {
+    case "box":
+      return (
+        <div
+          ref={ref}
+          className={classFormatter([
+            "item",
+            "item-box",
+            "rounded-2xl",
+            "opacity-0",
+            "will-change-opacity",
+            "cursor-pointer",
+            "w-[940px]",
+            "h-auto",
+          ])}
+        >
+          <img
+            ref={null}
+            src="/Reel.jpg"
+            width={"693"}
+            height={"376"}
+            className={classFormatter([
+              "w-full",
+              "h-full",
+              "object-cover",
+              "object-center",
+              "rounded-2xl",
+            ])}
+          />
+        </div>
+      );
+      break;
+
+    default:
+      if (!("name" in item)) return null;
+
+      return (
+        <div
+          ref={ref}
+          className={classFormatter([
+            "item",
+            "item-team-member",
+            "relative",
+            "bg-white",
+            "rounded-2xl",
+            "h-auto",
+            "w-[820px]",
+            "opacity-0",
+            "will-change-opacity",
+          ])}
+        >
+          <div
+            className={classFormatter([
+              "px-2",
+              "lg:px-3",
+              "py-2",
+              "lg:py-3",
+              "flex",
+              "flex-col",
+              "gap-1",
+              "h-full",
+            ])}
+          >
+            <div
+              className={classFormatter([
+                "team-member-name",
+                "text-light-grey",
+                "text-base/none",
+                "opacity-100",
+              ])}
+            >
+              <SplitTextComp text={item.name} active={inView} />
+            </div>
+            <div
+              className={classFormatter([
+                "flex",
+                "flex-col",
+                "lg:flex-row",
+                "items-stretch",
+                "justify-start",
+                "gap-2",
+                "h-full",
+              ])}
+            >
+              <div
+                className={classFormatter([
+                  "team-member-image",
+                  "aspect-[266/312]",
+                  "h-full",
+                  "opacity-100",
+                  "flex",
+                  "items-center",
+                  "justify-center",
+                  "flex-1",
+                  "w-1/2",
+                  "max-h-[425px]",
+                  "max-w-[363px]",
+                  "bg-button-grey",
+                  "rounded-[10px]",
+                ])}
+              >
+                <CustomImage
+                  asset={item.image}
+                  className={classFormatterClsx(
+                    [
+                      "w-full",
+                      "h-full",
+                      "object-cover",
+                      "object-center",
+                      "rounded-[10px]",
+                      "transition-opacity",
+                      "duration-300",
+                      "delay-300",
+                      "ease-in-out",
+                    ],
+                    [inView ? "opacity-100" : "opacity-0"]
+                  )}
+                />
+              </div>
+              <div
+                className={classFormatter([
+                  "text-light-grey",
+                  "flex-2",
+                  "lg:mr-3",
+                  "h-full",
+                ])}
+              >
+                <div
+                  className={classFormatter([
+                    "flex",
+                    "flex-col",
+                    "gap-2",
+                    "h-full",
+                    "justify-between",
+                  ])}
+                >
+                  <div
+                    className={classFormatter([
+                      "team-member-text",
+                      "text-base",
+                      "opacity-100",
+                    ])}
+                  >
+                    <SplitRichTextComp
+                      lang={lang}
+                      text={item.description}
+                      active={inView}
+                    />
+                  </div>
+
+                  <div
+                    className={classFormatter([
+                      "flex",
+                      "flex-row",
+                      "items-center",
+                      "justify-start",
+                      "gap-1",
+                      "w-full",
+                    ])}
+                  >
+                    {item.links.map((s: any, index: number) => (
+                      <div
+                        key={index}
+                        className={classFormatterClsx([
+                          "flex",
+                          "items-center",
+                          "justify-center",
+                          "font-mono",
+                          "text-sm",
+                          "text-light-grey",
+                          "bg-button-grey",
+                          "rounded-[100px]",
+                          "py-1",
+                          "px-2",
+                          "flex-shrink-0",
+                          "hover:bg-button-grey-hover",
+                          "hover:text-white",
+                          "transition-all",
+                          "duration-300",
+                          "ease-in-out",
+                        ])}
+                      >
+                        <span
+                          className={classFormatterClsx(
+                            [
+                              "team-member-social",
+                              "transition-opacity",
+                              "duration-300",
+                              "ease-in-out",
+                            ],
+                            [inView ? "opacity-100" : "opacity-0"]
+                          )}
+                          style={{
+                            transitionDelay: `${index * 0.3}s`,
+                          }}
+                        >
+                          <a href={s.link} target="_blank">
+                            {checkLangString(lang, s.title)}
+                          </a>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+      break;
+  }
+};

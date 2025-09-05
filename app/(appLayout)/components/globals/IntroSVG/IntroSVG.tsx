@@ -2,7 +2,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
 import { useStore } from "@/store/store";
@@ -158,6 +158,9 @@ const bgSettingsPortuguese = [
   },
 ];
 
+const dur = 0.75;
+const delay = 0.5;
+
 const IntroSVG = () => {
   const number7Ref = useRef<SVGSVGElement>(null);
   const number7GradientRef = useRef<SVGLinearGradientElement>(null);
@@ -170,8 +173,37 @@ const IntroSVG = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [startAnimation, setStartAnimation] = useState(false);
 
-  const { setIntroStoreDone, introStoreDone, currentStoreIndex, language } =
-    useStore();
+  const {
+    setIntroStoreDone,
+    introStoreDone,
+    currentStoreIndex,
+    language,
+    // introSplash,
+    // setIntroSplash,
+  } = useStore();
+
+  // useGSAP(() => {
+  //   if (introSplash) {
+  //     if (!bgGradientRef.current || currentStoreIndex <= 1) return;
+
+  //     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
+
+  //     bgSettings.forEach((setting, index) => {
+  //       gsap.to(stopsBG[index], {
+  //         attr: {
+  //           offset: setting.offset,
+  //         },
+  //         duration: 0.4,
+  //         delay: 0.75,
+  //         repeat: 1,
+  //         yoyo: true,
+  //         ease: "circ.inOut",
+  //       });
+  //     });
+
+  //     setIntroSplash(false);
+  //   }
+  // }, [introSplash, currentStoreIndex]);
 
   useGSAP(() => {
     if (!loaderRef.current) return;
@@ -330,14 +362,10 @@ const IntroSVG = () => {
   }, [isLoading]);
 
   useGSAP(() => {
-    console.log("isLoading", isLoading, introStoreDone);
     if (isLoading) return;
-    const dur = 0.75;
-    const delay = 0.5;
+
     if (!bgGradientRef.current) return;
     const stopsBG = bgGradientRef.current.querySelectorAll("stop");
-
-    console.log("currentStoreIndex", currentStoreIndex);
 
     if (currentStoreIndex > 0) {
       gsap.to("#clocks", {

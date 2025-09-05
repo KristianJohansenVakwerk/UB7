@@ -1,12 +1,12 @@
 "use client";
 
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import AboutSectionText from "./SectionAboutText";
 import SectionAboutNewTeam from "./SectionAboutNewTeam";
 import SectionAboutNewAnimationController from "./SectionAboutNewAnimationController";
 
 const SectionAboutNew = (props: any) => {
-  const { data, currentIndex, scrollingDown, lang } = props;
+  const { data, currentIndex, scrollingDown, lang, onEdgeReached } = props;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const containerScrollerRef = useRef<HTMLDivElement | null>(null);
   const imageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -21,6 +21,7 @@ const SectionAboutNew = (props: any) => {
         container={containerRef?.current}
         scroller={containerScrollerRef?.current}
         currentIndex={currentIndex}
+        onEdgeReached={onEdgeReached}
       >
         <div className="w-full overflow-hidden">
           <div
@@ -44,6 +45,8 @@ const SectionAboutNew = (props: any) => {
                 imageContainerRef={imageContainerRef}
                 imageRef={imageRef}
                 lang={lang}
+                currentIndex={currentIndex}
+                scrollingDown={scrollingDown}
               />
             </div>
           </div>

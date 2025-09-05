@@ -23,7 +23,6 @@ const Slider = (props: Props) => {
         slidesPerView={1}
         centeredSlides={true}
         onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
-        onSwiper={(swiper) => console.log(swiper)}
       >
         {data?.map((item: any, index: number) => (
           <SwiperSlide key={index}>

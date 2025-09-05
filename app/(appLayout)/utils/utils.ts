@@ -1,3 +1,5 @@
+import clsx from "clsx";
+
 export const checkLangString = (lang: string, text: any) => {
   return text[lang] || text.en;
 };
@@ -82,4 +84,8 @@ const processBlock = (block: any): string => {
 
 export const classFormatter = (classes: string[]) => {
   return classes.join(" ");
+};
+
+export const classFormatterClsx = (classes: string[], conditions?: any[]) => {
+  return clsx(classes.join(" "), conditions ? conditions : {});
 };

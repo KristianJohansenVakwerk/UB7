@@ -17,6 +17,8 @@ interface HoverState {
   setAboutVideoExpanded: (expanded: boolean) => void;
   language: "en" | "pt";
   setLanguage: (language: "en" | "pt") => void;
+  introSplash: boolean;
+  setIntroSplash: (splash: boolean) => void;
 }
 
 export const useStore = create<HoverState>((set) => ({
@@ -37,4 +39,6 @@ export const useStore = create<HoverState>((set) => ({
     set({ aboutVideoExpanded: expanded }),
   language: "en",
   setLanguage: (language: "en" | "pt") => set({ language }),
+  introSplash: false,
+  setIntroSplash: (splash: boolean) => set({ introSplash: splash }),
 }));

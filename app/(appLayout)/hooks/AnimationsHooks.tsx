@@ -166,6 +166,7 @@ export const useSectorListAnimation = (currentIndex: number) => {
   useGSAP(() => {
     if (currentIndex === 1) {
       gsap.delayedCall(1, () => {
+        console.log("playing timeline");
         timelineRef.current?.play();
       });
     }

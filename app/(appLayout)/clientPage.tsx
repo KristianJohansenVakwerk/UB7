@@ -42,9 +42,14 @@ export default function ObserverPage({
   const currentIndex = useRef<number>(0);
   const intentRef = useRef<any>(null);
   const scrollTimeout = useRef<any>(null);
-  const introStoreDone = useStore((state) => state.introStoreDone);
-  const { setCurrentStoreIndex, aboutVideoExpanded, disableScroll } =
-    useStore();
+
+  const {
+    introStoreDone,
+    setCurrentStoreIndex,
+    aboutVideoExpanded,
+    disableScroll,
+    setIntroSplash,
+  } = useStore();
 
   const aboutVideoExpandedHackRef = useRef<boolean>(false);
 
@@ -91,13 +96,13 @@ export default function ObserverPage({
       tolerance: ScrollTrigger.isTouch ? 10 : 10,
       ignore: "#aboutSlider",
       wheelSpeed: -1,
-      onChange: (self: any) => {
-        if (!allowScroll.current) return;
+      // onChange: (self: any) => {
+      //   if (!allowScroll.current) return;
 
-        if (currentIndex.current === 2) {
-          animateBox(self.deltaY, self.velocityY);
-        }
-      },
+      //   if (currentIndex.current === 2) {
+      //     animateBox(self.deltaY, self.velocityY);
+      //   }
+      // },
       onEnable: (self: any) => {
         allowScroll.current = false;
         scrollTimeout.current.restart(true);
@@ -113,138 +118,6 @@ export default function ObserverPage({
     });
 
     intentRef.current.disable();
-
-    let currentX = 0;
-    let targetX = 0;
-    let animating = false;
-    const isTouchDevice = ScrollTrigger.isTouch;
-
-    // const box = gsap.utils.toArray(".about-box");
-    const box = document.querySelector(".about-box") as HTMLElement;
-    const aboutProgress = document.getElementById(
-      "about-progress"
-    ) as HTMLElement;
-    const setX = gsap.quickSetter(box, "x", "px");
-    const setW = gsap.quickSetter(aboutProgress, "width", "%");
-
-    const boxWidth = box?.offsetWidth;
-    const gap = isTouchDevice ? 20 : 48;
-    const minX = -(boxWidth - window.innerWidth + gap * 2);
-    const maxX = 0;
-
-    const lerp = (start: number, end: number, amt: number) =>
-      start + (end - start) * amt;
-
-    const clamp = (value: number, min: number, max: number) =>
-      Math.min(Math.max(value, min), max);
-
-    const onEdgeReached = (edge: "min" | "max") => {
-      if (edge === "max") {
-        currentIndex.current = 1;
-        scrollToSection(currentIndex.current, false);
-      } else if (edge === "min") {
-        currentIndex.current = 3;
-        scrollToSection(currentIndex.current, true);
-      }
-
-      isAtMin = false;
-      isAtMax = false;
-      edgeAttempt = 0;
-    };
-
-    let edgeAttempt = 0;
-    let isAtMin = false;
-    let isAtMax = false;
-
-    const animateBox = (deltaY: number, velocityY: number) => {
-      if (!box || aboutVideoExpandedHackRef.current) return;
-
-      const direction = deltaY > 0 ? -1 : 1;
-      const baseSpeed = isTouchDevice ? 250 : 100;
-      const maxDistance = isTouchDevice ? 100 : 58;
-
-      const distance = Math.min(Math.abs(velocityY * baseSpeed), maxDistance); // Feel free to tweak
-      targetX -= direction * distance;
-
-      const newTargetX = targetX - direction * distance;
-      const nextTargetX = newTargetX + direction * distance;
-
-      // Overscroll at left edge
-      if (nextTargetX < minX) {
-        targetX = minX;
-
-        if (!isAtMin) {
-          edgeAttempt++;
-          const limit = isTouchDevice ? 10 : 40;
-          if (edgeAttempt >= limit) {
-            isAtMin = true;
-            isAtMax = false;
-            edgeAttempt = 0;
-            onEdgeReached("min");
-          }
-        }
-        return;
-      }
-
-      // Overscroll at right edge
-      if (nextTargetX > maxX) {
-        targetX = maxX;
-
-        if (!isAtMax) {
-          edgeAttempt++;
-          const limit = isTouchDevice ? 10 : 40;
-          if (edgeAttempt >= limit) {
-            isAtMax = true;
-            isAtMin = false;
-            edgeAttempt = 0;
-            onEdgeReached("max");
-          }
-        }
-        return;
-      }
-
-      targetX = clamp(targetX, minX, maxX);
-
-      if (!animating) {
-        animateLoop();
-      }
-    };
-
-    const animateLoop = () => {
-      animating = true;
-
-      const update = () => {
-        // Normalize lerp factor based on device type and frame rate
-        const frameRate = 60; // Assuming 60fps
-        const targetFPS = 60;
-        const frameTime = 1000 / frameRate;
-
-        const baseSmoothing = isTouchDevice ? 0.08 : 0.1; // Touch needs slightly more smoothing
-        const normalizedSmoothing =
-          baseSmoothing * (frameTime / (1000 / targetFPS));
-
-        // Apply additional smoothing for very small movements
-        const distanceToTarget = Math.abs(currentX - targetX);
-        const adaptiveSmoothing =
-          distanceToTarget < 10
-            ? normalizedSmoothing * 0.7
-            : normalizedSmoothing;
-        currentX = lerp(currentX, targetX, adaptiveSmoothing); // 0.1 = smoothing factor
-
-        const pct = Math.min(100, (Math.abs(targetX) / Math.abs(minX)) * 100);
-
-        setX(currentX, minX);
-        setW(pct);
-
-        if (Math.abs(currentX - targetX) > 0.5) {
-          requestAnimationFrame(update);
-        } else {
-          animating = false;
-        }
-      };
-
-      requestAnimationFrame(update);
-    };
   }, []);
 
   // useGSAP(() => {
@@ -285,6 +158,16 @@ export default function ObserverPage({
     }
   }, [disableScroll, introStoreDone]);
 
+  const onEdgeReachedCB = useCallback((edge: "min" | "max") => {
+    if (edge === "max") {
+      currentIndex.current = 1;
+      scrollToSection(currentIndex.current, false);
+    } else if (edge === "min") {
+      currentIndex.current = 3;
+      scrollToSection(currentIndex.current, true);
+    }
+  }, []);
+
   const scrollToSection = (
     index: number,
     isScrollingDown: boolean,
@@ -294,14 +177,35 @@ export default function ObserverPage({
 
     if (clicked) {
       intentRef.current.enable();
+      setIntroSplash(true);
 
-      gsap.to(sectionsContainer?.current, {
+      const tl = gsap.timeline({
+        id: "scroll-to-section",
+        paused: true,
+      });
+
+      /// DOES THIS MAKES SENSE?
+      tl.to(document.getElementById("container"), {
+        duration: 0.4,
+        ease: "expo.inOut",
+        opacity: 0,
+      });
+
+      tl.to(sectionsContainer?.current, {
         yPercent: -100 * index,
-        duration: 0.75,
+        duration: 0.2,
         force3D: true,
-        delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
         ease: "expo.inOut",
       });
+
+      /// DOES THIS MAKES SENSE?
+      tl.to(document.getElementById("container"), {
+        duration: 0.4,
+        ease: "expo.inOut",
+        opacity: 1,
+      });
+
+      tl.play();
 
       setGlobalCurrentIndex(index);
       setCurrentStoreIndex(index);
@@ -311,9 +215,9 @@ export default function ObserverPage({
       return;
     }
 
-    // if (currentIndex.current === 2) {
-    //   return;
-    // }
+    if (currentIndex.current === 2) {
+      return;
+    }
 
     if (index === panels.current.length && isScrollingDown) {
       intentRef.current.disable();
@@ -351,7 +255,7 @@ export default function ObserverPage({
 
   return (
     <>
-      <div className={clsx("relative z-20")}>
+      <div id={"container"} className={clsx("relative z-20")}>
         <div
           className={
             "swipe-section  relative w-screen h-[100svh] lg:h-screen overflow-hidden"
@@ -395,6 +299,7 @@ export default function ObserverPage({
                 currentIndex={globalCurrentIndex}
                 scrollingDown={globalScrollDirection}
                 lang={currentLang}
+                onEdgeReached={onEdgeReachedCB}
               />
             </section>
 
@@ -507,25 +412,21 @@ interface MenuProps {
   lang: string;
 }
 const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
-  const menuItemsRef = useRef<(HTMLDivElement | null)[]>([]);
   const menuProgressRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const { introStoreDone, disableScroll } = useStore();
 
-  const mappedData = [
-    { title: "UB7", id: "ub7" },
-    ...data.map((item) => {
-      return {
-        title: item.title[lang],
-        id: item.title.en.toLowerCase(),
-      };
-    }),
-  ];
+  const mappedData = useMemo(() => {
+    return [
+      { title: "UB7", id: "ub7" },
+      ...data.map((item) => {
+        return { title: item.title[lang], id: item.title.en.toLowerCase() };
+      }),
+    ];
+  }, [data, lang]);
 
   useGSAP(() => {
     const setSize = (resize?: boolean) => {
-      const menuItems = gsap.utils.toArray(".menu-item");
-
       const targetElementMenu = document.getElementById(
         `${mappedData[currentIndex].id}-menu`
       );
@@ -543,10 +444,21 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
 
     setSize(false);
 
+    const menu = menuRef.current;
+    if (!menu) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      gsap.set(menuProgressRef.current, {
+        x: e.clientX,
+      });
+    };
+    menu.addEventListener("mousemove", handleMouseMove);
+
     window.addEventListener("resize", () => setSize(true));
 
     return () => {
       window.removeEventListener("resize", () => setSize(true));
+      menu.removeEventListener("mousemove", handleMouseMove);
     };
   }, [currentIndex]);
 
