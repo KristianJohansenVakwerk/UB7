@@ -12,6 +12,11 @@ export const baseSectionQuery = `*[_type in ["sectionPortfolio", "sectionAbout",
   ...select(
     _type == "sectionAbout" => {
       "text": text
+    },
+    _type == "sectionContact" => {
+      "social": social,
+      "email": email,
+      "address": address
     }
   )
   
@@ -58,11 +63,7 @@ export const aboutSectionQuery = `{
   }
 }`;
 
-export const contactSectionQuery = `{
-  address,
-  "email": email,
-  "contacttest": "test"
-}`;
+export const contactSectionQuery = `{}`;
 
 export const sectionsQuery = `${baseSectionQuery} {
 ...,

@@ -309,7 +309,11 @@ export default function ObserverPage({
                 introStoreDone && "opacity-100"
               )}
             >
-              <SectionContact currentIndex={globalCurrentIndex} />
+              <SectionContact
+                data={data.find((item: any) => item._type === "sectionContact")}
+                currentIndex={globalCurrentIndex}
+                lang={currentLang}
+              />
             </section>
           </div>
         </div>
@@ -837,6 +841,8 @@ const SectionTitles = ({
 ////////////////////////////////////////////////////////////
 
 import Link from "next/link";
+import SectionAboutNew from "./components/globals/Section/SectionAboutNew/SectionAboutNew";
+import { checkLangString, richTextToHTML } from "./utils/utils";
 
 const info = [
   {
@@ -875,9 +881,44 @@ const info = [
   },
 ];
 
-const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
+const SectionContact = ({
+  data,
+  currentIndex,
+  lang,
+}: {
+  data: any;
+  currentIndex: number;
+  lang: string;
+}) => {
   const container = useRef<HTMLDivElement>(null);
   const tlRef = useRef<any>(null);
+
+  if (!data) return <></>;
+
+  console.log("data", data);
+
+  const infoData = useMemo(() => {
+    const infoObjs = {
+      social: {
+        label: lang === "en" ? "social" : "redes sociais",
+        items: data.social,
+      },
+      email: {
+        label: lang === "en" ? "email" : "email",
+        title: data.email.title,
+        url: data.email.link,
+      },
+      address: {
+        label: lang === "en" ? "address" : "endereço",
+        title: data.address.title,
+        url: data.address.link,
+      },
+    };
+
+    return Object.values(infoObjs);
+  }, [data, lang]);
+
+  console.log("infoData", infoData);
 
   useGSAP(() => {
     const contactItems = gsap.utils.toArray(".contact-title");
@@ -954,7 +995,7 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
       className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-0 lg:mt-[40vw]"
     >
       <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
-        {info.map((item, index) => {
+        {/* {info.map((item, index) => {
           return (
             <div
               key={index}
@@ -985,432 +1026,58 @@ const SectionContact = ({ currentIndex }: { currentIndex: number }) => {
               </div>
             </div>
           );
+        })} */}
+
+        {infoData.map((item: any, index) => {
+          switch (item.label) {
+            case "address":
+            case "email":
+              return (
+                <div
+                  key={index + lang}
+                  className="col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
+                >
+                  <div className="contact-title font-mono text-sm text-light-grey">
+                    {item.label}
+                  </div>
+
+                  <div className="contact-label cursor-pointer font-sans text-base text-light-grey">
+                    <Link href={item?.url || "#"} target="_blank">
+                      {item.title}
+                    </Link>
+                  </div>
+                </div>
+              );
+
+            case "social":
+              return (
+                <div
+                  key={index + lang}
+                  className="col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
+                >
+                  <div className="contact-title font-mono text-sm text-light-grey">
+                    {item.label}
+                  </div>
+
+                  <div className="flex flex-col gap-0">
+                    {item.items.map((link: any, linkIndex: number) => {
+                      return (
+                        <div
+                          key={linkIndex}
+                          className="contact-label cursor-pointer font-sans text-base text-light-grey"
+                        >
+                          <Link href={link?.link || "#"} target="_blank">
+                            {link.title}
+                          </Link>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+          }
         })}
       </div>
     </div>
   );
-};
-
-////////////////////////////////////////////////////////////
-// SECTION ABOUT
-////////////////////////////////////////////////////////////
-
-const SectionAbout = ({
-  currentIndex,
-  scrollingDown,
-  data,
-  lang,
-}: {
-  currentIndex: number;
-  scrollingDown: boolean;
-  data: any;
-  lang: string;
-}) => {
-  const textRef = useRef<HTMLDivElement>(null);
-  const tlAboutTextRef = useRef<any>(null);
-  const tlAboutSlideshowRef = useRef<any>(null);
-  const splitTextRef = useRef<any>(null);
-  const [showClose, setShowClose] = useState(false);
-  const clickCloseRef = useRef<HTMLDivElement | null>(null);
-  const prevLangRef = useRef(lang);
-
-  const imageContainerRef = useRef<HTMLDivElement | null>(null);
-  const imageRef = useRef<HTMLImageElement | null>(null);
-  const { setAboutVideoExpanded, setDisableScroll } = useStore();
-
-  // Create a memoized text content that changes when lang or data.text changes
-  const textContent = useMemo(() => {
-    return richTextToHTML(checkLangString(lang, data?.text));
-  }, [lang, data?.text]);
-
-  // Handle language changes
-  useEffect(() => {
-    if (
-      prevLangRef.current !== lang &&
-      currentIndex === 2 &&
-      tlAboutTextRef.current
-    ) {
-      // Language changed and we're on the about section, play the animation
-      gsap.delayedCall(0.1, () => {
-        tlAboutTextRef.current.play();
-      });
-    }
-    prevLangRef.current = lang;
-  }, [lang, currentIndex]);
-
-  useGSAP(() => {
-    if (currentIndex === 2) {
-      gsap.delayedCall(2.2, () => {
-        tlAboutTextRef.current.play();
-      });
-
-      gsap.delayedCall(2.7, () => {
-        tlAboutSlideshowRef.current.play();
-      });
-    } else if (tlAboutTextRef.current && !scrollingDown) {
-      tlAboutTextRef.current.reverse();
-    }
-  }, [currentIndex, scrollingDown]);
-
-  useGSAP(() => {
-    tlAboutTextRef.current = gsap.timeline({
-      paused: true,
-    });
-
-    tlAboutSlideshowRef.current = gsap.timeline({
-      paused: true,
-    });
-
-    if (!textRef.current) return;
-
-    // Clean up previous SplitText instance if it exists
-    if (splitTextRef.current) {
-      splitTextRef.current.revert();
-      splitTextRef.current = null;
-    }
-
-    if (!textRef.current) return;
-
-    textRef.current.innerHTML = "";
-
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = textContent;
-
-    while (tempDiv.firstChild) {
-      textRef.current.appendChild(tempDiv.firstChild);
-    }
-
-    const splitText = new SplitText(textRef.current, {
-      type: "lines",
-      linesClass: "split-line text-base-2",
-      // wordsClass: "text-base-2",
-      tag: "span",
-    });
-
-    // Store the SplitText instance for cleanup
-    splitTextRef.current = splitText;
-
-    tlAboutTextRef.current.add(
-      gsap.from(splitText.lines, {
-        opacity: 0,
-        duration: 0.3,
-        stagger: 0.1,
-        ease: "sine.inOut",
-      })
-    );
-
-    tlAboutSlideshowRef.current.add(
-      gsap.to(".item", {
-        opacity: 1,
-        duration: 0.4,
-        stagger: 0.1,
-        ease: "expo.inOut",
-      })
-    );
-
-    // Cleanup function to revert SplitText when component unmounts or re-renders
-    return () => {
-      if (splitTextRef.current) {
-        splitTextRef.current.revert();
-        splitTextRef.current = null;
-      }
-    };
-  }, [textContent]);
-
-  useGSAP(() => {
-    if (!imageContainerRef.current || !clickCloseRef.current) return;
-
-    let isScaled = false;
-
-    const handleResize = () => {
-      if (!isScaled || !imageRef.current) return;
-
-      const image = imageRef.current;
-      const imageWidth = image.offsetWidth;
-      const imageHeight = image.offsetHeight;
-      const windowWidth = window.innerWidth;
-      const windowHeight = window.innerHeight;
-
-      const availableWidth = windowWidth - (48 + 100); // 48px left, 100px right
-      const availableHeight = windowHeight - (48 + 48); // 48px top and bottom
-
-      const widthScale = availableWidth / imageWidth;
-      const heightScale = availableHeight / imageHeight;
-      const scale = Math.min(widthScale, heightScale);
-
-      gsap.to(image, {
-        scale: scale,
-        duration: 0.3,
-        ease: "expo.inOut",
-      });
-    };
-
-    const handleClick = (state: boolean) => {
-      const isTouch = ScrollTrigger.isTouch;
-      isScaled = state;
-      const image = imageRef.current;
-
-      if (!image || !image.complete) {
-        console.warn("Image not ready, retrying...");
-        setTimeout(() => handleClick(state), 100);
-        return;
-      }
-      const imageWidth = image?.offsetWidth as number;
-      const imageHeight = image?.offsetHeight as number;
-      const vw = window.innerWidth;
-      const vh = document.documentElement.clientHeight;
-
-      const padding = !isTouch
-        ? { top: 48, left: 48, button: 48, right: 102 }
-        : { top: 20, left: 20, button: 40, right: 20 };
-
-      setAboutVideoExpanded(state);
-
-      const availableWidth = vw - (padding.left + padding.right);
-      const availableHeight = vh - (padding.top + padding.button);
-
-      const scaleX: { name: string; factor: number } = {
-        name: "x",
-        factor: availableWidth / imageWidth,
-      };
-      const scaleY: { name: string; factor: number } = {
-        name: "y",
-        factor: availableHeight / imageHeight,
-      };
-
-      const scale = scaleX.factor <= scaleY.factor ? scaleX : scaleY;
-
-      const scaledWidth = imageWidth * scale.factor;
-      const scaledHeight = imageHeight * scale.factor;
-
-      console.log("scaledWidth", availableHeight, scaledHeight);
-
-      const spaceAbove = (availableHeight - scaledHeight) / 2;
-      const spaceBelow = Math.round(availableHeight - scaledHeight - 30);
-
-      const calcY = spaceBelow;
-
-      if (state) {
-        setDisableScroll(true);
-        gsap.to(".about-box", {
-          id: "about-box-reset",
-          x: 0,
-          duration: 0.5,
-          ease: "expo.inOut",
-          onComplete: () => {
-            gsap.to(
-              [
-                "#progress",
-                "#section-title-about",
-                ".text-about",
-                ".item-team-member",
-                ".section-title",
-                "#menu",
-                "#language-switcher",
-              ],
-              {
-                autoAlpha: 0,
-                duration: 0.4,
-                delay: 0.5,
-                ease: "power2.inOut",
-                onComplete: () => {
-                  setShowClose(true);
-                  gsap.to(imageContainerRef.current, {
-                    opacity: 1,
-                    duration: 0.8,
-                    ease: "expo.inOut",
-                  });
-                  gsap.to(image, {
-                    scale: scale.factor,
-                    y: !isTouch
-                      ? calcY
-                      : ((scale.factor - 1) * availableHeight) / 2 -
-                        padding.top,
-                    transformOrigin: "left bottom",
-                    willChange: "transform",
-                    duration: 0.8,
-                    ease: "expo.inOut",
-                    onComplete: () => {
-                      setShowClose(true);
-                    },
-                  });
-                },
-              }
-            );
-          },
-        });
-      } else {
-        setShowClose(false);
-        setDisableScroll(false);
-        gsap.to(
-          [
-            "#progress",
-            "#section-title-about",
-            ".text-about",
-            ".item",
-            ".section-title",
-          ],
-          {
-            autoAlpha: 1,
-            duration: 0.4,
-            delay: 0.5,
-            ease: "power2.inOut",
-          }
-        );
-        gsap.to(imageRef.current, {
-          scale: 1,
-          y: 0,
-          transformOrigin: "left bottom",
-          duration: 0.8,
-          ease: "power4.inOut",
-          onComplete: () => {},
-        });
-      }
-    };
-
-    clickCloseRef.current.addEventListener("click", () => handleClick(false));
-    imageContainerRef.current.addEventListener("click", () =>
-      handleClick(true)
-    );
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      clickCloseRef.current?.removeEventListener("click", () =>
-        handleClick(false)
-      );
-      imageContainerRef.current?.removeEventListener("click", () =>
-        handleClick(true)
-      );
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  return (
-    <div className="about-section w-full h-full flex flex-col gap-0 items-start justify-start px-3 mt-[40vw]">
-      <div
-        ref={textRef}
-        className="text-about absolute hidden lg:block lg:top-7 left-2 lg:left-auto right-2 lg:right-3 w-[90vw] lg:w-1/3 text-light-grey"
-      />
-
-      <div className="about-box bg-red-500  absolute bottom-0 h-full lg:h-auto  lg:bottom-10 left-2 lg:left-3 flex justify-center items-center gap-2 lg:gap-4 will-change-transform opacity-100 pt-[124px] pb-[77px] lg:pb-0 lg:pt-0">
-        <TeamMembers
-          items={data.team}
-          imageContainerRef={imageContainerRef}
-          imageRef={imageRef}
-          lang={lang}
-        />
-      </div>
-
-      <div
-        ref={clickCloseRef}
-        className={clsx(
-          "fixed top-2 right-2 z-[9999] w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer opacity-0 transition-all duration-300 ease",
-          showClose && "opacity-100"
-        )}
-      >
-        <svg
-          width="25"
-          height="25"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M15 5L5 15M5 5L15 15"
-            stroke="currentColor"
-            strokeWidth="1"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-    </div>
-  );
-};
-
-////////////////////////////////////////////////////////////
-// SECTION ABOUT ~ TEAM MEMBERS
-////////////////////////////////////////////////////////////
-import { TeamMember } from "./utils/data";
-import CustomImage from "./components/shared/Image/Image";
-import { RichText } from "./components/shared/RichText";
-import { checkLangString, richTextToHTML } from "./utils/utils";
-import SectionAboutNew from "./components/globals/Section/SectionAboutNew/SectionAboutNew";
-
-const TeamMembers = ({
-  items,
-  imageContainerRef,
-  imageRef,
-  lang,
-}: {
-  items: (TeamMember | { type: string })[];
-  imageContainerRef: RefObject<HTMLDivElement | null>;
-  imageRef: RefObject<HTMLImageElement | null>;
-  lang: string;
-}) => {
-  return items.map((m, index: number) => {
-    // @ts-ignore
-    if (m.type === "box") {
-      return (
-        <div
-          ref={imageContainerRef}
-          key={index}
-          className="item item-box aspect-[var(--aspect-ratio-box)] lg:aspect-[var(--aspect-ratio-box-lg)] h-full lg:h-auto  w-auto lg:min-h-none lg:max-h-none lg:min-w-[768px] rounded-2xl opacity-0 will-change-opacity cursor-pointer "
-        >
-          <img
-            ref={imageRef}
-            src="/Reel.jpg"
-            width={"693"}
-            height={"376"}
-            className="w-full h-full object-cover object-center rounded-2xl"
-          />
-        </div>
-      );
-    }
-
-    if ("name" in m) {
-      return (
-        <div
-          key={index}
-          className="item item-team-member relative bg-white rounded-2xl  aspect-[var(--aspect-ratio-box)] h-full lg:h-auto  lg:aspect-[var(--aspect-ratio-box-lg)]  lg:max-h-none w-auto lg:min-w-[768px] opacity-0 will-change-opacity"
-        >
-          <div className="px-2 lg:px-3 py-2 lg:py-3 flex flex-col gap-1 h-full">
-            <div className="team-member-name text-light-grey text-base/none opacity-100">
-              {m.name}
-            </div>
-            <div className="flex flex-col lg:flex-row items-stretch justify-start gap-2 h-full">
-              <div className="team-member-image aspect-[266/312]  h-full opacity-100 flex items-center justify-center flex-1 w-1/2">
-                <CustomImage
-                  asset={m.image}
-                  className="w-full h-full object-cover object-center"
-                />
-              </div>
-              <div className="text-light-grey  flex-2 lg:mr-3 h-full">
-                <div className="flex flex-col gap-2 h-full justify-between">
-                  <div className="team-member-text text-base opacity-100">
-                    <RichText content={checkLangString(lang, m.description)} />
-                  </div>
-
-                  <div className="flex flex-row items-center justify-between gap-1 w-full">
-                    {m.links.map((s, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-center font-mono text-sm text-light-grey bg-gray-100 rounded-2xl py-1 flex-1"
-                      >
-                        <span className="team-member-social opacity-100">
-                          <a href={s.link} target="_blank">
-                            {checkLangString(lang, s.title)}
-                          </a>
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    }
-  });
 };
