@@ -447,11 +447,21 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     const menu = menuRef.current;
     if (!menu) return;
 
-    let tween: any = null;
+    const followTween = gsap.to(menuProgressRef.current, {
+      x: 0,
+      duration: 0.4,
+      ease: "expo.inOut",
+      paused: true,
+    });
+
+    let debounceTimer: NodeJS.Timeout | null = null;
+    let isHovering = false;
+    let lastMousePosition = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (ScrollTrigger.isTouch) return;
       if (!menuProgressRef.current || !menuRef.current) return;
+
       const container = menuRef.current;
       const box = menuProgressRef.current;
       const x = e.clientX - box.clientWidth / 2;
@@ -467,26 +477,45 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       }, steps[0]);
 
       const newX = closest * container.clientWidth;
+      lastMousePosition = newX;
 
-      if (tween) {
-        tween.kill();
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
       }
-
-      tween = gsap.to(box, {
-        x: newX,
-        duration: 0.4,
-        ease: "expo.inOut",
-      });
+      debounceTimer = setTimeout(() => {
+        followTween.vars.x = newX;
+        followTween.invalidate().restart();
+      }, 100);
     };
 
     console.log(menuRef?.current?.clientWidth);
 
     const handleMouseEnter = () => {
       if (ScrollTrigger.isTouch) return;
+
+      isHovering = true;
+
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(() => {
+        followTween.vars.x = lastMousePosition;
+        followTween.invalidate().restart();
+      }, 100);
     };
 
     const handleMouseLeave = () => {
       if (ScrollTrigger.isTouch) return;
+      isHovering = false;
+
+      // Clear debounce timer
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+        debounceTimer = null;
+      }
+
+      followTween.kill();
+
       setSize(false);
     };
 
@@ -496,6 +525,11 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     window.addEventListener("resize", () => setSize(true));
 
     return () => {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      followTween.kill();
+
       window.removeEventListener("resize", () => setSize(true));
       menu.removeEventListener("mousemove", handleMouseMove);
       menu.removeEventListener("mouseenter", handleMouseEnter);
