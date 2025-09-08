@@ -8,6 +8,7 @@ import Observer from "gsap/Observer";
 import InertiaPlugin from "gsap/InertiaPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
+import { useStore } from "@/store/store";
 
 gsap.registerPlugin(Draggable, Observer, InertiaPlugin);
 
@@ -16,8 +17,106 @@ gsap.registerPlugin(Draggable, Observer, InertiaPlugin);
 const SectionAboutNewAnimationController = (props: any) => {
   const { container, currentIndex, scroller, onEdgeReached } = props;
   const draggableRef = useRef<any>(null);
+  const observerRef = useRef<any>(null);
+  const tlRef = useRef<any>(null);
   const proxyRef = useRef<any>(null);
   let targetX = 0;
+  const { aboutVideoExpanded } = useStore();
+
+  useEffect(() => {
+    const proxy = proxyRef.current;
+    const d = draggableRef.current;
+    const videoBox = document.getElementById("videoBox");
+    if (!proxy || !d || !observerRef.current) return;
+
+    if (aboutVideoExpanded) {
+      const videoBoxX = videoBox?.getBoundingClientRect().x as number;
+      const currentX = gsap.getProperty(proxy, "x") as number;
+
+      const gap = 48;
+      const tl = gsap
+        .timeline({
+          paused: true,
+          immediateRender: false,
+          onComplete: () => {
+            d.update();
+            d.disable();
+            observerRef.current.disable();
+            console.log("onComplete");
+          },
+        })
+        .to([scroller, proxy], {
+          x: currentX - videoBoxX + gap,
+          duration: 0.6,
+          ease: "expo.inOut",
+        })
+        .to(
+          [
+            "#progress",
+            "#section-title-about",
+            ".text-about",
+            ".item-team-member",
+            ".section-title",
+            "#menu",
+            "#language",
+          ],
+          {
+            autoAlpha: 0,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.inOut",
+          }
+        )
+        .to(videoBox, {
+          scale: useCalculateVideoScale().scale,
+          y: useCalculateVideoScale().y,
+          transformOrigin: "left bottom",
+          willChange: "transform",
+          duration: 0.6,
+          ease: "expo.inOut",
+        });
+
+      tl.play();
+    } else {
+      const tl = gsap
+        .timeline({
+          paused: true,
+          immediateRender: false,
+          onComplete: () => {
+            d.enable();
+            d.update();
+            observerRef.current.enable();
+          },
+        })
+        .to(videoBox, {
+          scale: 1,
+          y: 0,
+          transformOrigin: "left bottom",
+          willChange: "transform",
+          duration: 0.6,
+          ease: "expo.inOut",
+        })
+        .to(
+          [
+            "#progress",
+            "#section-title-about",
+            ".text-about",
+            ".item-team-member",
+            ".section-title",
+            "#menu",
+            "#language",
+          ],
+          {
+            autoAlpha: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.inOut",
+          }
+        );
+
+      tl.play();
+    }
+  }, [aboutVideoExpanded]);
 
   useEffect(() => {
     if (!scroller || !draggableRef.current || !proxyRef.current) return;
@@ -116,7 +215,7 @@ const SectionAboutNewAnimationController = (props: any) => {
       }
     };
 
-    Observer.create({
+    observerRef.current = Observer.create({
       target: container,
       type: "wheel, touch",
       preventDefault: true,
@@ -165,3 +264,51 @@ const SectionAboutNewAnimationController = (props: any) => {
 };
 
 export default SectionAboutNewAnimationController;
+
+const useCalculateVideoScale = () => {
+  const isTouch = ScrollTrigger.isTouch;
+  const imageBox = document.getElementById("videoBox");
+
+  const imageWidth = imageBox?.offsetWidth as number;
+  const imageHeight = imageBox?.offsetHeight as number;
+  const vw = window.innerWidth;
+  const vh = document.documentElement.clientHeight;
+
+  const padding = !isTouch
+    ? { top: 48, left: 48, bottom: 48, right: 102 }
+    : { top: 20, left: 20, bottom: 40, right: 20 };
+
+  // Calculate available space correctly
+  const availableWidth = vw - padding.left - padding.right;
+  const availableHeight = vh - padding.top - padding.bottom;
+
+  // Calculate scale factors
+  const scaleX = availableWidth / imageWidth;
+  const scaleY = availableHeight / imageHeight;
+
+  // Use the smaller scale to ensure the image fits within bounds
+  const scale = Math.min(scaleX, scaleY);
+
+  // Calculate scaled dimensions
+  const scaledWidth = imageWidth * scale;
+  const scaledHeight = imageHeight * scale;
+
+  // Since transformOrigin is "left bottom", we need to calculate position differently
+  // The element will scale from its bottom-left corner
+
+  // Calculate where the bottom-left corner should be positioned
+  const targetBottomLeftY = vh - padding.bottom;
+
+  // Get current position of the videoBox
+  const currentRect = imageBox?.getBoundingClientRect();
+  const currentBottomLeftY = currentRect?.bottom || 0;
+
+  // Calculate the offset needed to move the bottom-left corner to the target position
+
+  const offsetY = targetBottomLeftY - currentBottomLeftY;
+
+  return {
+    scale,
+    y: offsetY,
+  };
+};

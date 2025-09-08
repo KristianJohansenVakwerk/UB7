@@ -13,6 +13,7 @@ import SplitTextComp from "../../SplitTextComp/SplitTextComp";
 import SplitRichTextComp from "../../SplitRichTextComp/SplitRichTextComp";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { useStore } from "@/store/store";
 
 export interface TeamMember {
   type: "team" | "box";
@@ -24,15 +25,11 @@ export interface TeamMember {
 
 const TeamMembers = ({
   items,
-  imageContainerRef,
-  imageRef,
   lang,
   currentIndex,
   scrollingDown,
 }: {
   items: (TeamMember | { type: string })[];
-  imageContainerRef: RefObject<HTMLDivElement | null>;
-  imageRef: RefObject<HTMLImageElement | null>;
   lang: string;
   currentIndex: number;
   scrollingDown: boolean;
@@ -82,6 +79,8 @@ const TeamMemberItem = (props: {
 }) => {
   const { item, lang, index } = props;
 
+  const { setAboutVideoExpanded } = useStore();
+
   const { ref, inView } = useInView({
     threshold: 0.8,
     triggerOnce: true,
@@ -91,6 +90,7 @@ const TeamMemberItem = (props: {
     case "box":
       return (
         <div
+          id="videoBox"
           ref={ref}
           className={classFormatter([
             "item",
@@ -102,6 +102,7 @@ const TeamMemberItem = (props: {
             "w-[940px]",
             "h-auto",
           ])}
+          onClick={() => setAboutVideoExpanded(true)}
         >
           <img
             ref={null}

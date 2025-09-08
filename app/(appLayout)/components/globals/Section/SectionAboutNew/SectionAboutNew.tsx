@@ -4,26 +4,50 @@ import { useCallback, useRef } from "react";
 import AboutSectionText from "./SectionAboutText";
 import SectionAboutNewTeam from "./SectionAboutNewTeam";
 import SectionAboutNewAnimationController from "./SectionAboutNewAnimationController";
+import { useStore } from "@/store/store";
+import clsx from "clsx";
 
 const SectionAboutNew = (props: any) => {
   const { data, currentIndex, scrollingDown, lang, onEdgeReached } = props;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const containerScrollerRef = useRef<HTMLDivElement | null>(null);
-  const imageContainerRef = useRef<HTMLDivElement | null>(null);
-  const imageRef = useRef<HTMLImageElement | null>(null);
+  const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
   return (
     <div
       ref={containerRef}
       className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[124px] lg:pb-[115px]"
     >
+      <div
+        className={clsx(
+          "fixed top-2 right-2 z-[9999] w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer opacity-0 transition-all duration-300 ease",
+          aboutVideoExpanded && "opacity-100"
+        )}
+        onClick={() => setAboutVideoExpanded(false)}
+      >
+        <svg
+          width="25"
+          height="25"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M15 5L5 15M5 5L15 15"
+            stroke="currentColor"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
       <SectionAboutNewAnimationController
         container={containerRef?.current}
         scroller={containerScrollerRef?.current}
         currentIndex={currentIndex}
         onEdgeReached={onEdgeReached}
       >
-        <div className="w-full overflow-hidden">
+        <div className="w-full">
           <div
             id="aboutSlider"
             ref={containerScrollerRef}
@@ -42,8 +66,6 @@ const SectionAboutNew = (props: any) => {
             <div className="flex-shrink-0 w-auto">
               <SectionAboutNewTeam
                 items={data.team}
-                imageContainerRef={imageContainerRef}
-                imageRef={imageRef}
                 lang={lang}
                 currentIndex={currentIndex}
                 scrollingDown={scrollingDown}

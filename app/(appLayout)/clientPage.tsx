@@ -86,7 +86,7 @@ export default function ObserverPage({
       type: "wheel,touch",
       preventDefault: true,
       onUp: (self: any) => {
-        console.log("onUp");
+        if (currentIndex.current === 3) return;
         allowScroll.current && scrollToSection(currentIndex.current + 1, true);
       },
       onDown: (self: any) => {
@@ -447,18 +447,59 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     const menu = menuRef.current;
     if (!menu) return;
 
+    let tween: any = null;
+
     const handleMouseMove = (e: MouseEvent) => {
-      gsap.set(menuProgressRef.current, {
-        x: e.clientX,
+      if (ScrollTrigger.isTouch) return;
+      if (!menuProgressRef.current || !menuRef.current) return;
+      const container = menuRef.current;
+      const box = menuProgressRef.current;
+      const x = e.clientX - box.clientWidth / 2;
+      const min = 0;
+      const max = container.clientWidth - box.clientWidth;
+      const steps = [0, 0.25, 0.5, 0.75];
+
+      const xInRange = Math.max(Math.min(x, max), min);
+
+      const pct = xInRange / container.clientWidth;
+      const closest = steps.reduce((prev, curr) => {
+        return Math.abs(curr - pct) < Math.abs(prev - pct) ? curr : prev;
+      }, steps[0]);
+
+      const newX = closest * container.clientWidth;
+
+      if (tween) {
+        tween.kill();
+      }
+
+      tween = gsap.to(box, {
+        x: newX,
+        duration: 0.4,
+        ease: "expo.inOut",
       });
     };
-    menu.addEventListener("mousemove", handleMouseMove);
 
+    console.log(menuRef?.current?.clientWidth);
+
+    const handleMouseEnter = () => {
+      if (ScrollTrigger.isTouch) return;
+    };
+
+    const handleMouseLeave = () => {
+      if (ScrollTrigger.isTouch) return;
+      setSize(false);
+    };
+
+    menu.addEventListener("mousemove", handleMouseMove);
+    menu.addEventListener("mouseenter", handleMouseEnter);
+    menu.addEventListener("mouseleave", handleMouseLeave);
     window.addEventListener("resize", () => setSize(true));
 
     return () => {
       window.removeEventListener("resize", () => setSize(true));
       menu.removeEventListener("mousemove", handleMouseMove);
+      menu.removeEventListener("mouseenter", handleMouseEnter);
+      menu.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [currentIndex]);
 
@@ -1130,6 +1171,8 @@ const SectionAbout = ({
                 ".text-about",
                 ".item-team-member",
                 ".section-title",
+                "#menu",
+                "#language-switcher",
               ],
               {
                 autoAlpha: 0,
