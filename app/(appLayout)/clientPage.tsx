@@ -290,7 +290,7 @@ export default function ObserverPage({
 
             <section
               className={clsx(
-                "panel about absolute w-full h-full  flex justify-start items-start opacity-0",
+                "panel about absolute w-full h-full  flex justify-start items-start opacity-0 overflow-hidden",
                 introStoreDone && "opacity-100"
               )}
             >
@@ -685,35 +685,58 @@ const SectionTitles = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const prevLangRef = useRef(lang);
   const headlinesRef = useRef<any[]>([]);
+  const localCurrentIndexRef = useRef(currentIndex);
 
   const createHeadline = (curLang: string) => {
+    console.log("Create Headline");
+
     headlinesRef.current = [
       { text: "", id: "ub7" },
       ...data.map((item: any) => {
         return {
           text: richTextToHTML(checkLangString(curLang, item.headline))
             .replace(/<\/?[^>]+>/g, "")
-            .replace(/\n/g, "<br>"),
+            .replace(/\n/g, " "),
         };
       }),
     ];
   };
 
   const generateDomContent = useCallback(() => {
+    console.log("Generate Dom Content");
+
     if (!containerRef.current) return;
 
     containerRef.current.innerHTML = "";
 
     headlinesRef.current.forEach((headline) => {
       const h1 = document.createElement("h1");
-      h1.className = "splitText text-title  absolute w-screen h-auto";
+      h1.className =
+        "splitText text-title absolute h-auto  w-full md:w-full lg:w-4/5 xl:w-1/2";
       h1.innerHTML = headline.text;
       containerRef?.current?.appendChild(h1);
     });
   }, []);
 
+  // const handleSplit = (self: any) => {
+  //   if (!localCurrentIndexRef.current || !timelineRefs.current) return;
+
+  //   const timelines = timelineRefs.current;
+
+  //   setTimeout(() => {
+  //     console.log("Handle split reset", self.lines);
+  //     // reset all timelines
+  //     timelines.forEach((tl) => tl.reverse(1)); // pause and reset
+
+  //     // Seek to the end of the current timeline on split
+  //     // timelines[localCurrentIndexRef.current].seek(1);
+  //   }, 1000);
+  // };
+
   // Setup animations
   const setupAnimations = useCallback(() => {
+    console.log("Setup Animations");
+
     const textElements = gsap.utils.toArray(".splitText");
 
     textElements.forEach((t, index) => {
@@ -723,6 +746,11 @@ const SectionTitles = ({
         type: "lines",
         preserveSpaces: true,
         preserveNewlines: true,
+        autoSplit: true,
+        linesClass: "w-full",
+        onSplit: (self: any) => {
+          // handleSplit(self);
+        },
       });
 
       tl.add(
@@ -745,6 +773,7 @@ const SectionTitles = ({
   const resetCurrentTimeline = useCallback(
     (onComplete?: () => void) => {
       const currentTimeline = timelineRefs.current[currentIndex];
+      console.log("Current timeline", currentTimeline);
       currentTimeline.reverse();
       currentTimeline.eventCallback("onReverseComplete", () => {
         onComplete?.();
@@ -765,12 +794,38 @@ const SectionTitles = ({
   }, [scrollingDown]);
 
   useGSAP(() => {
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      console.log("Handle resize");
+      containerRef.current.style.opacity = "0";
+      killAllSplitTexts();
+      createHeadline(lang);
+
+      generateDomContent();
+      setTimeout(() => {
+        setupAnimations();
+      }, 0);
+
+      setTimeout(() => {
+        if (!containerRef.current) return;
+        containerRef.current.style.opacity = "1";
+
+        timelineRefs.current[localCurrentIndexRef.current].play();
+      }, 1000);
+    };
+
     createHeadline(lang);
     generateDomContent();
     // Wait for next frame to ensure DOM is updated
     setTimeout(() => {
       setupAnimations();
     }, 0);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   useGSAP(() => {
@@ -803,6 +858,8 @@ const SectionTitles = ({
     const to = currentIndex;
     const direction = to > from ? "forward" : "backward";
 
+    console.log("From", from, "To", to, "Direction", direction);
+
     if (from === to) return;
 
     const timelines = timelineRefs.current;
@@ -828,13 +885,14 @@ const SectionTitles = ({
     }
 
     previousIndex.current = to;
+    localCurrentIndexRef.current = to;
   }, [currentIndex, lang]);
 
   return (
     <div
       ref={containerRef}
       className={clsx(
-        "section-title fixed top-3 left-2 lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
+        "section-title fixed top-3 left-2 right-2 lg:right-3  h-auto lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     />
@@ -848,6 +906,7 @@ const SectionTitles = ({
 import Link from "next/link";
 import SectionAboutNew from "./components/globals/Section/SectionAboutNew/SectionAboutNew";
 import { checkLangString, richTextToHTML } from "./utils/utils";
+import { useTimelineSelector } from "sanity";
 
 const info = [
   {

@@ -23,6 +23,33 @@ const SectionAboutNewAnimationController = (props: any) => {
   let targetX = 0;
   const { aboutVideoExpanded } = useStore();
 
+  // This hook is specifically for the mobile version
+  useGSAP(() => {
+    if (window.innerWidth > 768 || !container) return;
+
+    Observer.create({
+      target: container,
+      type: "touch",
+      preventDefault: true,
+      onChangeY: () => {
+        gsap.to(".section-title", {
+          autoAlpha: 0,
+          duration: 0.4,
+          ease: "expo.inOut",
+        });
+        gsap.to(container, {
+          y: -125,
+          duration: 0.4,
+          ease: "expo.inOut",
+          onComplete: () => {
+            draggableRef.current.enable();
+            observerRef.current.enable();
+          },
+        });
+      },
+    });
+  }, [container]);
+
   useEffect(() => {
     const proxy = proxyRef.current;
     const d = draggableRef.current;
@@ -235,6 +262,10 @@ const SectionAboutNewAnimationController = (props: any) => {
 
     draggableRef.current = draggable;
 
+    if (window.innerWidth < 768) {
+      draggable.disable();
+    }
+
     let edgeState = {
       min: { active: false, attempts: 0, fired: false },
       max: { active: false, attempts: 0, fired: false },
@@ -298,6 +329,10 @@ const SectionAboutNewAnimationController = (props: any) => {
         });
       },
     });
+
+    if (window.innerWidth < 768) {
+      observerRef.current.disable();
+    }
 
     updateBounds();
 

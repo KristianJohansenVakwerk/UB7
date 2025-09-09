@@ -59,14 +59,22 @@ const TeamMembers = ({
   }, [currentIndex, scrollingDown]);
 
   return (
-    <div className={classFormatter(["flex", "w-full", "gap-2", "lg:gap-3"])}>
+    <
+      // className={classFormatter([
+      //   "flex",
+      //   "flex-row",
+      //   "w-full",
+      //   "gap-2",
+      //   "lg:gap-3",
+      // ])}
+    >
       {computedItems.map((m, index: number) => {
         // @ts-ignore
         return (
           <TeamMemberItem key={index} item={m} lang={lang} index={index} />
         );
       })}
-    </div>
+    </>
   );
 };
 
@@ -99,16 +107,20 @@ const TeamMemberItem = (props: {
             "opacity-0",
             "will-change-opacity",
             "cursor-pointer",
-            "w-[340px]",
+            "w-auto",
             "md:w-[750px]",
             "lg:w-[940px]",
-
-            "h-auto",
+            "h-[73vh]",
+            "md:h-auto",
+            "flex-shrink-0",
+            "max-md:aspect-[340/640]",
           ])}
           onClick={() => setAboutVideoExpanded(true)}
+          // style={{
+          //   aspectRatio: "340/640",
+          // }}
         >
           <img
-            ref={null}
             src="/Reel.jpg"
             width={"693"}
             height={"376"}
@@ -136,13 +148,14 @@ const TeamMemberItem = (props: {
             "relative",
             "bg-white",
             "rounded-2xl",
-            "h-auto",
-            "w-[340px]",
-            "w-[340px]",
+            "w-auto",
             "md:w-[750px]",
             "lg:w-[820px]",
             "opacity-0",
             "will-change-opacity",
+            "h-[73vh]",
+            "md:h-auto",
+            "flex-shrink-0",
           ])}
         >
           <div

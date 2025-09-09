@@ -6,6 +6,7 @@ import SectionAboutNewTeam from "./SectionAboutNewTeam";
 import SectionAboutNewAnimationController from "./SectionAboutNewAnimationController";
 import { useStore } from "@/store/store";
 import clsx from "clsx";
+import gsap from "gsap";
 
 const SectionAboutNew = (props: any) => {
   const { data, currentIndex, scrollingDown, lang, onEdgeReached } = props;
@@ -13,11 +14,25 @@ const SectionAboutNew = (props: any) => {
   const containerScrollerRef = useRef<HTMLDivElement | null>(null);
   const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
+  // const handleTextClick = () => {
+  //   if (!containerRef.current) return;
+
+  //   gsap.to(".section-title", {
+  //     autoAlpha: 0,
+  //     duration: 0.4,
+  //     ease: "expo.inOut",
+  //   });
+
+  //   gsap.to(containerRef.current, {
+  //     duration: 0.4,
+  //     ease: "expo.inOut",
+  //     y: -130,
+  //     onComplete: () => {},
+  //   });
+  // };
+
   return (
-    <div
-      ref={containerRef}
-      className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] lg:pb-[115px]"
-    >
+    <>
       <div
         className={clsx(
           "fixed top-2 right-2 z-[9999] w-[48px] h-[48px] rounded-full bg-[rgba(255,255,255,0.6)] backdrop-blur-md  flex items-center justify-center text-dark-grey cursor-pointer opacity-0 transition-all duration-300 ease",
@@ -41,40 +56,49 @@ const SectionAboutNew = (props: any) => {
           />
         </svg>
       </div>
-      <SectionAboutNewAnimationController
-        container={containerRef?.current}
-        scroller={containerScrollerRef?.current}
-        currentIndex={currentIndex}
-        onEdgeReached={onEdgeReached}
+      <div
+        ref={containerRef}
+        className="flex flex-col gap-4 justify-start md:justify-end items-start h-full w-full pb-0 lg:pb-[115px] translate-y-[250px] md:translate-y-0 "
       >
-        <div className="w-full">
-          <div
-            id="aboutSlider"
-            ref={containerScrollerRef}
-            className="flex w-full px-2 lg:px-3"
-          >
-            <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
-              <div className="w-4/5 md:w-3/4 lg:w-1/2 h-full">
-                <AboutSectionText
+        <SectionAboutNewAnimationController
+          container={containerRef?.current}
+          scroller={containerScrollerRef?.current}
+          currentIndex={currentIndex}
+          onEdgeReached={onEdgeReached}
+        >
+          <div className="w-full">
+            <div
+              id="aboutSlider"
+              ref={containerScrollerRef}
+              className="flex flex-col md:flex-row w-full px-2 lg:px-3 gap-5 md:gap-0 "
+            >
+              <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
+                <div
+                  id="aboutText"
+                  // onClick={handleTextClick}
+                  className="w-full md:w-3/4 lg:w-1/2 h-full"
+                >
+                  <AboutSectionText
+                    lang={lang}
+                    currentIndex={currentIndex}
+                    scrollingDown={scrollingDown}
+                    data={data}
+                  />
+                </div>
+              </div>
+              <div className="flex-shrink-0 w-auto flex flex-row gap-2 md:gap-3">
+                <SectionAboutNewTeam
+                  items={data.team}
                   lang={lang}
                   currentIndex={currentIndex}
                   scrollingDown={scrollingDown}
-                  data={data}
                 />
               </div>
             </div>
-            <div className="flex-shrink-0 w-auto">
-              <SectionAboutNewTeam
-                items={data.team}
-                lang={lang}
-                currentIndex={currentIndex}
-                scrollingDown={scrollingDown}
-              />
-            </div>
           </div>
-        </div>
-      </SectionAboutNewAnimationController>
-    </div>
+        </SectionAboutNewAnimationController>
+      </div>
+    </>
   );
 };
 
