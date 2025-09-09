@@ -463,7 +463,6 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     let lastMousePosition = 0;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (ScrollTrigger.isTouch) return;
       if (!menuProgressRef.current || !menuRef.current) return;
 
       const container = menuRef.current;
@@ -495,8 +494,6 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     console.log(menuRef?.current?.clientWidth);
 
     const handleMouseEnter = () => {
-      if (ScrollTrigger.isTouch) return;
-
       isHovering = true;
 
       if (debounceTimer) {
@@ -509,7 +506,6 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
     };
 
     const handleMouseLeave = () => {
-      if (ScrollTrigger.isTouch) return;
       isHovering = false;
 
       // Clear debounce timer
@@ -523,9 +519,15 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       setSize(false);
     };
 
-    menu.addEventListener("mousemove", handleMouseMove);
-    menu.addEventListener("mouseenter", handleMouseEnter);
-    menu.addEventListener("mouseleave", handleMouseLeave);
+    // Check if device supports hover (non-touch)
+    const isNonTouch = window.matchMedia("(hover: hover)").matches;
+
+    if (isNonTouch) {
+      menu.addEventListener("mousemove", handleMouseMove);
+      menu.addEventListener("mouseenter", handleMouseEnter);
+      menu.addEventListener("mouseleave", handleMouseLeave);
+    }
+
     window.addEventListener("resize", () => setSize(true));
 
     return () => {
@@ -535,9 +537,12 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       followTween.kill();
 
       window.removeEventListener("resize", () => setSize(true));
-      menu.removeEventListener("mousemove", handleMouseMove);
-      menu.removeEventListener("mouseenter", handleMouseEnter);
-      menu.removeEventListener("mouseleave", handleMouseLeave);
+
+      if (isNonTouch) {
+        menu.removeEventListener("mousemove", handleMouseMove);
+        menu.removeEventListener("mouseenter", handleMouseEnter);
+        menu.removeEventListener("mouseleave", handleMouseLeave);
+      }
     };
   }, [currentIndex]);
 

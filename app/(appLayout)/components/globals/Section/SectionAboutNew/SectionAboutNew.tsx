@@ -53,8 +53,8 @@ const SectionAboutNew = (props: any) => {
             ref={containerScrollerRef}
             className="flex w-full px-2 lg:px-3"
           >
-            <div className="w-full lg:w-[45%] flex-shrink-0">
-              <div className="w-full lg:w-1/2 h-full">
+            <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
+              <div className="w-4/5 md:w-3/4 lg:w-1/2 h-full">
                 <AboutSectionText
                   lang={lang}
                   currentIndex={currentIndex}

@@ -99,8 +99,10 @@ const TeamMemberItem = (props: {
             "opacity-0",
             "will-change-opacity",
             "cursor-pointer",
-            "w-[550px]",
+            "w-[340px]",
+            "md:w-[750px]",
             "lg:w-[940px]",
+
             "h-auto",
           ])}
           onClick={() => setAboutVideoExpanded(true)}
@@ -135,8 +137,10 @@ const TeamMemberItem = (props: {
             "bg-white",
             "rounded-2xl",
             "h-auto",
-
-            "w-[820px]",
+            "w-[340px]",
+            "w-[340px]",
+            "md:w-[750px]",
+            "lg:w-[820px]",
             "opacity-0",
             "will-change-opacity",
           ])}
@@ -166,7 +170,8 @@ const TeamMemberItem = (props: {
             <div
               className={classFormatter([
                 "flex",
-                "flex-row",
+                "flex-col",
+                "md:flex-row",
                 "items-stretch",
                 "justify-start",
                 "gap-1",
@@ -184,7 +189,8 @@ const TeamMemberItem = (props: {
                   "items-center",
                   "justify-center",
                   "flex-1",
-                  "w-1/2",
+                  "w-1/3",
+                  "md:w-1/2",
                   "max-h-[425px]",
                   "max-w-[363px]",
                   "bg-button-grey",
@@ -202,6 +208,7 @@ const TeamMemberItem = (props: {
                       "rounded-[10px]",
                       "transition-opacity",
                       "duration-300",
+
                       "delay-300",
                       "ease-in-out",
                     ],
@@ -230,7 +237,8 @@ const TeamMemberItem = (props: {
                   <div
                     className={classFormatter([
                       "team-member-text",
-                      "text-base",
+                      "text-sm",
+                      "md:text-base",
                       "opacity-100",
                     ])}
                   >
