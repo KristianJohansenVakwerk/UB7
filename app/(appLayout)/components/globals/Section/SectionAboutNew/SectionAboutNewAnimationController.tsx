@@ -167,11 +167,59 @@ const SectionAboutNewAnimationController = (props: any) => {
       trigger: container,
       bounds: { minX: -maxScroll, maxX: 0 },
       inertia: true,
+      edgeResistance: 0.65,
+
       onDrag: function () {
         gsap.set(scroller, { x: this.x });
+
+        // Add edge detection for draggable
+        const isAtMinEdge = this.x >= this.vars.bounds.maxX;
+        const isAtMaxEdge = this.x <= this.vars.bounds.minX;
+
+        handleEdge(
+          "max",
+          isAtMaxEdge,
+          () => {
+            console.log("max edge");
+            onEdgeReached("min");
+          },
+          "drag"
+        );
+
+        handleEdge(
+          "min",
+          isAtMinEdge,
+          () => {
+            console.log("min edge");
+            onEdgeReached("max");
+          },
+          "drag"
+        );
       },
       onThrowUpdate: function () {
         gsap.set(scroller, { x: this.x });
+
+        // Add edge detection for throw updates
+        const isAtMinEdge = this.x >= this.vars.bounds.maxX;
+        const isAtMaxEdge = this.x <= this.vars.bounds.minX;
+
+        handleEdge(
+          "max",
+          isAtMaxEdge,
+          () => {
+            onEdgeReached("min");
+          },
+          "drag"
+        );
+
+        handleEdge(
+          "min",
+          isAtMinEdge,
+          () => {
+            onEdgeReached("max");
+          },
+          "drag"
+        );
       },
       onPress: function () {
         // sync proxy with current scroller transform
@@ -179,6 +227,9 @@ const SectionAboutNewAnimationController = (props: any) => {
           x: gsap.getProperty(scroller, "x"),
         });
         this.update();
+      },
+      onComplete: function () {
+        console.log("draggable onComplete");
       },
     })[0];
 
@@ -189,14 +240,14 @@ const SectionAboutNewAnimationController = (props: any) => {
       max: { active: false, attempts: 0, fired: false },
     };
 
-    const limit = 100;
-
     const handleEdge = (
       edge: "min" | "max",
       atEdge: boolean,
-      callback: () => void
+      callback: () => void,
+      method?: "drag" | "scroll"
     ) => {
       const state = edgeState[edge];
+      const limit = method === "drag" ? 50 : 100;
 
       if (atEdge) {
         if (state.active) {
@@ -229,12 +280,10 @@ const SectionAboutNewAnimationController = (props: any) => {
         newX = Math.max(minX, Math.min(maxX, newX));
 
         handleEdge("max", newX === maxX, () => {
-          console.log("Scroll to previous section");
           onEdgeReached("max");
         });
 
         handleEdge("min", newX === minX, () => {
-          console.log("Scroll to next section");
           onEdgeReached("min");
         });
 

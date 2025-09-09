@@ -70,7 +70,8 @@ const SectionPortfolio = (props: any) => {
           ],
           {
             autoAlpha: 1,
-            duration: 0.4,
+            duration: 0.6,
+            stagger: 0.1,
             ease: "power4.inOut",
           }
         );
