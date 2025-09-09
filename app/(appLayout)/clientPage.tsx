@@ -559,7 +559,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
             <div
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="font-sans text-sm text-dark-grey min-w-[65px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[8px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-menu`}
             >
               <span>{item.title}</span>

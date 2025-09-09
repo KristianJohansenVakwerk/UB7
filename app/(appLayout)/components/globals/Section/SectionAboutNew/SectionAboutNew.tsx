@@ -16,7 +16,7 @@ const SectionAboutNew = (props: any) => {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[124px] lg:pb-[115px]"
+      className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] lg:pb-[115px]"
     >
       <div
         className={clsx(
@@ -53,7 +53,7 @@ const SectionAboutNew = (props: any) => {
             ref={containerScrollerRef}
             className="flex w-full px-2 lg:px-3"
           >
-            <div className="w-[45%] flex-shrink-0 ">
+            <div className="w-full lg:w-[45%] flex-shrink-0">
               <div className="w-full lg:w-1/2 h-full">
                 <AboutSectionText
                   lang={lang}

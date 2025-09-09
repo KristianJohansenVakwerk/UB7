@@ -247,7 +247,7 @@ const SectionAboutNewAnimationController = (props: any) => {
       method?: "drag" | "scroll"
     ) => {
       const state = edgeState[edge];
-      const limit = method === "drag" ? 50 : 100;
+      const limit = method === "drag" ? 60 : 100;
 
       if (atEdge) {
         if (state.active) {

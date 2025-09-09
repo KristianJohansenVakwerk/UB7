@@ -7,7 +7,7 @@ import {
 } from "@/app/(appLayout)/utils/utils";
 import CustomImage from "../../../shared/Image/Image";
 import { RichText } from "../../../shared/RichText";
-import { RefObject, useMemo } from "react";
+import { RefObject, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 import SplitTextComp from "../../SplitTextComp/SplitTextComp";
 import SplitRichTextComp from "../../SplitRichTextComp/SplitRichTextComp";
@@ -59,7 +59,7 @@ const TeamMembers = ({
   }, [currentIndex, scrollingDown]);
 
   return (
-    <div className={classFormatter(["flex", "w-full", "gap-3"])}>
+    <div className={classFormatter(["flex", "w-full", "gap-2", "lg:gap-3"])}>
       {computedItems.map((m, index: number) => {
         // @ts-ignore
         return (
@@ -99,7 +99,8 @@ const TeamMemberItem = (props: {
             "opacity-0",
             "will-change-opacity",
             "cursor-pointer",
-            "w-[940px]",
+            "w-[550px]",
+            "lg:w-[940px]",
             "h-auto",
           ])}
           onClick={() => setAboutVideoExpanded(true)}
@@ -134,6 +135,7 @@ const TeamMemberItem = (props: {
             "bg-white",
             "rounded-2xl",
             "h-auto",
+
             "w-[820px]",
             "opacity-0",
             "will-change-opacity",
@@ -164,11 +166,11 @@ const TeamMemberItem = (props: {
             <div
               className={classFormatter([
                 "flex",
-                "flex-col",
-                "lg:flex-row",
+                "flex-row",
                 "items-stretch",
                 "justify-start",
-                "gap-2",
+                "gap-1",
+                "lg:gap-2",
                 "h-full",
               ])}
             >
@@ -219,7 +221,8 @@ const TeamMemberItem = (props: {
                   className={classFormatter([
                     "flex",
                     "flex-col",
-                    "gap-2",
+                    "gap-1",
+                    "lg:gap-2",
                     "h-full",
                     "justify-between",
                   ])}
@@ -261,7 +264,8 @@ const TeamMemberItem = (props: {
                           "bg-button-grey",
                           "rounded-[100px]",
                           "py-1",
-                          "px-2",
+                          "px-1",
+                          "lg:px-2",
                           "flex-shrink-0",
                           "hover:bg-button-grey-hover",
                           "hover:text-white",
