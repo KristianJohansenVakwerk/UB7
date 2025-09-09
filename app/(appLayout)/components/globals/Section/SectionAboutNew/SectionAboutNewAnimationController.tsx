@@ -23,6 +23,29 @@ const SectionAboutNewAnimationController = (props: any) => {
   let targetX = 0;
   const { aboutVideoExpanded } = useStore();
 
+  const handleMobileAnimation = (mode: "enter" | "exit") => {
+    gsap.to(".section-title", {
+      autoAlpha: mode === "exit" ? 0 : 1,
+      duration: 0.4,
+      ease: "expo.inOut",
+    });
+
+    gsap.to(container, {
+      y: mode === "exit" ? 150 : -150,
+      duration: 0.4,
+      ease: "expo.inOut",
+      onComplete: () => {
+        if (mode === "enter") {
+          draggableRef.current.enable();
+          observerRef.current.enable();
+        } else {
+          draggableRef.current.disable();
+          observerRef.current.disable();
+        }
+      },
+    });
+  };
+
   // This hook is specifically for the mobile version
   useGSAP(() => {
     if (window.innerWidth > 768 || !container) return;
@@ -32,20 +55,7 @@ const SectionAboutNewAnimationController = (props: any) => {
       type: "touch",
       preventDefault: true,
       onChangeY: () => {
-        gsap.to(".section-title", {
-          autoAlpha: 0,
-          duration: 0.4,
-          ease: "expo.inOut",
-        });
-        gsap.to(container, {
-          y: -125,
-          duration: 0.4,
-          ease: "expo.inOut",
-          onComplete: () => {
-            draggableRef.current.enable();
-            observerRef.current.enable();
-          },
-        });
+        handleMobileAnimation("exit");
       },
     });
   }, [container]);
@@ -280,9 +290,15 @@ const SectionAboutNewAnimationController = (props: any) => {
       const state = edgeState[edge];
       const limit = method === "drag" ? 60 : 100;
 
+      console.log("edge", edge, atEdge);
+
       if (atEdge) {
         if (state.active) {
           state.attempts++;
+
+          if (window.innerWidth < 768 && edge === "max") {
+            handleMobileAnimation("enter");
+          }
 
           if (state.attempts >= limit && !state.fired) {
             callback();
