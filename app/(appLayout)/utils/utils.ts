@@ -89,3 +89,13 @@ export const classFormatter = (classes: string[]) => {
 export const classFormatterClsx = (classes: string[], conditions?: any[]) => {
   return clsx(classes.join(" "), conditions ? conditions : {});
 };
+
+export const uiSelectors = [
+  "#progress",
+  "#section-title-about",
+  ".text-about",
+  ".item-team-member",
+  ".section-title",
+  "#menu",
+  "#language",
+];

@@ -9,6 +9,7 @@ import InertiaPlugin from "gsap/InertiaPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
 import { useStore } from "@/store/store";
+import { uiSelectors } from "@/app/(appLayout)/utils/utils";
 
 gsap.registerPlugin(Draggable, Observer, InertiaPlugin);
 
@@ -18,6 +19,7 @@ const SectionAboutNewAnimationController = (props: any) => {
   const { container, currentIndex, scroller, onEdgeReached } = props;
   const draggableRef = useRef<any>(null);
   const observerRef = useRef<any>(null);
+  const mobileObserverRef = useRef<any>(null);
   const tlRef = useRef<any>(null);
   const proxyRef = useRef<any>(null);
   let targetX = 0;
@@ -25,13 +27,13 @@ const SectionAboutNewAnimationController = (props: any) => {
 
   const handleMobileAnimation = (mode: "enter" | "exit") => {
     gsap.to(".section-title", {
-      autoAlpha: mode === "exit" ? 0 : 1,
+      autoAlpha: mode === "enter" ? 0 : 1,
       duration: 0.4,
       ease: "expo.inOut",
     });
 
     gsap.to(container, {
-      y: mode === "exit" ? 150 : -150,
+      y: mode === "exit" ? 250 : -180,
       duration: 0.4,
       ease: "expo.inOut",
       onComplete: () => {
@@ -50,12 +52,18 @@ const SectionAboutNewAnimationController = (props: any) => {
   useGSAP(() => {
     if (window.innerWidth > 768 || !container) return;
 
-    Observer.create({
+    mobileObserverRef.current = Observer.create({
       target: container,
       type: "touch",
       preventDefault: true,
-      onChangeY: () => {
-        handleMobileAnimation("exit");
+      onChangeY: (self) => {
+        if (self.deltaY > 0) {
+          handleMobileAnimation("exit");
+          onEdgeReached("max");
+        } else {
+          mobileObserverRef.current.disable();
+          handleMobileAnimation("enter");
+        }
       },
     });
   }, [container]);
@@ -87,23 +95,12 @@ const SectionAboutNewAnimationController = (props: any) => {
           duration: 0.6,
           ease: "expo.inOut",
         })
-        .to(
-          [
-            "#progress",
-            "#section-title-about",
-            ".text-about",
-            ".item-team-member",
-            ".section-title",
-            "#menu",
-            "#language",
-          ],
-          {
-            autoAlpha: 0,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.inOut",
-          }
-        )
+        .to(uiSelectors, {
+          autoAlpha: 0,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.inOut",
+        })
         .to(videoBox, {
           scale: useCalculateVideoScale().scale,
           y: useCalculateVideoScale().y,
@@ -133,23 +130,12 @@ const SectionAboutNewAnimationController = (props: any) => {
           duration: 0.6,
           ease: "expo.inOut",
         })
-        .to(
-          [
-            "#progress",
-            "#section-title-about",
-            ".text-about",
-            ".item-team-member",
-            ".section-title",
-            "#menu",
-            "#language",
-          ],
-          {
-            autoAlpha: 1,
-            duration: 0.6,
-            stagger: 0.1,
-            ease: "expo.inOut",
-          }
-        );
+        .to(uiSelectors, {
+          autoAlpha: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "expo.inOut",
+        });
 
       tl.play();
     }
@@ -290,14 +276,17 @@ const SectionAboutNewAnimationController = (props: any) => {
       const state = edgeState[edge];
       const limit = method === "drag" ? 60 : 100;
 
-      console.log("edge", edge, atEdge);
-
       if (atEdge) {
         if (state.active) {
           state.attempts++;
 
-          if (window.innerWidth < 768 && edge === "max") {
-            handleMobileAnimation("enter");
+          if (
+            window.innerWidth < 768 &&
+            edge === "min" &&
+            state.attempts >= 30
+          ) {
+            handleMobileAnimation("exit");
+            mobileObserverRef.current.enable();
           }
 
           if (state.attempts >= limit && !state.fired) {
