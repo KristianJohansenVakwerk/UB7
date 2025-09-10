@@ -26,14 +26,14 @@ const SectionAboutNewAnimationController = (props: any) => {
   const { aboutVideoExpanded } = useStore();
 
   const handleMobileAnimation = (mode: "enter" | "exit") => {
-    gsap.to(".section-title", {
+    gsap.to([".section-title", "#progress"], {
       autoAlpha: mode === "enter" ? 0 : 1,
       duration: 0.4,
       ease: "expo.inOut",
     });
 
     gsap.to(container, {
-      y: mode === "exit" ? 250 : -180,
+      y: mode === "exit" ? 250 : -190,
       duration: 0.4,
       ease: "expo.inOut",
       onComplete: () => {

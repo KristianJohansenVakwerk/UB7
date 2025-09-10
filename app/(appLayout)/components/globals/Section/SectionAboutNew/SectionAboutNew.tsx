@@ -70,7 +70,7 @@ const SectionAboutNew = (props: any) => {
             <div
               id="aboutSlider"
               ref={containerScrollerRef}
-              className="flex flex-col md:flex-row w-full px-2 lg:px-3 gap-5 md:gap-0 "
+              className="flex flex-col md:flex-row w-full px-1 md:px-2 lg:px-3 gap-4 md:gap-0 "
             >
               <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
                 <div

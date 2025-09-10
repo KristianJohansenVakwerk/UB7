@@ -331,7 +331,7 @@ export default function ObserverPage({
 
       <div
         className={clsx(
-          "fixed bottom-2 lg:bottom-3 left-2 lg:left-3 right-2 lg:right-3 z-50 flex flex-row items-center justify-between",
+          "fixed bottom-2 lg:bottom-3 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3 z-50 flex flex-row items-center justify-between",
           disableScroll ? "pointer-events-none" : "pointer-events-auto"
         )}
       >
@@ -357,7 +357,7 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
     <div
       id={"progress"}
       className={clsx(
-        "fixed top-1 lg:top-2 left-2 lg:left-3 right-2 lg:right-3 h-[2px] lgh-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
+        "fixed top-1 lg:top-2 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3 h-[2px] lgh-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
         currentIndex === 0 ? "opacity-0" : "opacity-100"
       )}
     >
@@ -564,7 +564,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
             <div
               key={index}
               onClick={() => setCurrentIndex(index)}
-              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[8px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
+              className="font-sans text-sm text-dark-grey min-w-[60px] lg:min-w-[100px] px-[10px] py-[10px] rounded-menu flex items-center justify-center z-10 cursor-pointer"
               id={`${item.id}-menu`}
             >
               <span>{item.title}</span>
@@ -712,7 +712,7 @@ const SectionTitles = ({
     headlinesRef.current.forEach((headline) => {
       const h1 = document.createElement("h1");
       h1.className =
-        "splitText text-title absolute h-auto  w-full md:w-full lg:w-4/5 xl:w-1/2";
+        "splitText text-title absolute h-auto  w-full lg:w-4/5 xl:w-1/2";
       h1.innerHTML = headline.text;
       containerRef?.current?.appendChild(h1);
     });
@@ -796,7 +796,7 @@ const SectionTitles = ({
   useGSAP(() => {
     const handleResize = () => {
       if (!containerRef.current) return;
-      console.log("Handle resize");
+
       containerRef.current.style.opacity = "0";
       killAllSplitTexts();
       createHeadline(lang);
@@ -892,7 +892,7 @@ const SectionTitles = ({
     <div
       ref={containerRef}
       className={clsx(
-        "section-title fixed top-3 left-2 right-2 lg:right-3  h-auto lg:top-6 lg:left-3 z-20  pointer-events-none opacity-0",
+        "section-title fixed top-3 lg:top-6 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3  h-auto z-20 pointer-events-none opacity-0",
         introStoreDone && "opacity-100"
       )}
     />
