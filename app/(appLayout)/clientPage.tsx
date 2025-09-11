@@ -686,6 +686,7 @@ const SectionTitles = ({
   const prevLangRef = useRef(lang);
   const headlinesRef = useRef<any[]>([]);
   const localCurrentIndexRef = useRef(currentIndex);
+  const { setGlobalFrom, setGlobalTo } = useStore();
 
   const createHeadline = (curLang: string) => {
     console.log("Create Headline");
@@ -712,7 +713,7 @@ const SectionTitles = ({
     headlinesRef.current.forEach((headline) => {
       const h1 = document.createElement("h1");
       h1.className =
-        "splitText text-title absolute h-auto  w-full lg:w-4/5 xl:w-1/2";
+        "splitText text-title absolute h-auto  w-full md:w-3/4 lg:w-4/5 xl:w-1/2 2xl:w-1/2";
       h1.innerHTML = headline.text;
       containerRef?.current?.appendChild(h1);
     });
@@ -858,7 +859,9 @@ const SectionTitles = ({
     const to = currentIndex;
     const direction = to > from ? "forward" : "backward";
 
-    console.log("From", from, "To", to, "Direction", direction);
+    // Store the global from and to for use in other components eg. About section animation controller
+    setGlobalFrom(from);
+    setGlobalTo(to);
 
     if (from === to) return;
 
@@ -870,6 +873,8 @@ const SectionTitles = ({
       timelines.forEach((tl) => tl.pause(0)); // pause and reset
     };
 
+    console.log("currentTimeline", direction, from, to);
+
     if (direction === "forward" && from === 0) {
       currentTimeline.play();
     } else if (direction === "backward" && from === 0) {
@@ -877,10 +882,30 @@ const SectionTitles = ({
       currentTimeline.eventCallback("onReverseComplete", () => {
         resetAll();
       });
+    } else if (
+      direction === "backward" &&
+      to === 2 &&
+      window.innerWidth < 768
+    ) {
+      // This is the hack for mobile about section animation controller, not pretty.
+      gsap.delayedCall(0.5, () => {
+        gsap.set(".section-title", { autoAlpha: 0 });
+      });
+
+      prevTimeline.reverse();
+      prevTimeline.eventCallback("onReverseComplete", () => {
+        currentTimeline.play();
+      });
     } else {
       prevTimeline.reverse();
       prevTimeline.eventCallback("onReverseComplete", () => {
         currentTimeline.play();
+      });
+    }
+
+    if (to === 1) {
+      gsap.delayedCall(0.5, () => {
+        gsap.set(".section-title", { autoAlpha: 1 });
       });
     }
 

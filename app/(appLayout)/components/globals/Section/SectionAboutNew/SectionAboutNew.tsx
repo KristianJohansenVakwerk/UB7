@@ -58,7 +58,7 @@ const SectionAboutNew = (props: any) => {
       </div>
       <div
         ref={containerRef}
-        className="flex flex-col gap-4 justify-start md:justify-end items-start h-full w-full pb-0 lg:pb-[115px] translate-y-[250px] md:translate-y-0 "
+        className="flex flex-col gap-4 justify-end md:justify-end items-start h-full w-full pb-[80px] md:pb-[115px] translate-y-[350px] md:translate-y-0  "
       >
         <SectionAboutNewAnimationController
           container={containerRef?.current}

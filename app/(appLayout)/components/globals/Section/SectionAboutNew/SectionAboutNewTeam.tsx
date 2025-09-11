@@ -34,29 +34,39 @@ const TeamMembers = ({
   currentIndex: number;
   scrollingDown: boolean;
 }) => {
+  const { globalFrom, globalTo } = useStore();
+
   const computedItems: (TeamMember | { type: string })[] = useMemo(() => {
     return [{ type: "box" }, ...items];
   }, [items]);
 
   useGSAP(() => {
-    if (currentIndex === 2) {
-      gsap.delayedCall(3, () => {
+    if (globalTo === 2 && globalFrom <= 1) {
+      gsap.delayedCall(2, () => {
         gsap.to(".item", {
           opacity: 1,
-          duration: 0.5,
-          stagger: 0.3,
+          duration: 0.4,
+          stagger: 0.1,
           ease: "expo.inOut",
         });
       });
-    } else if (!scrollingDown && currentIndex <= 2) {
-      gsap.to(".item", {
-        opacity: 0,
-        duration: 0.5,
-        stagger: -0.3,
-        ease: "expo.inOut",
+    } else if (globalTo === 2 && globalFrom === 3) {
+      gsap.delayedCall(1, () => {
+        gsap.to(".item", {
+          opacity: 1,
+          duration: 0.4,
+          stagger: -0.1,
+          ease: "expo.inOut",
+        });
+      });
+    } else {
+      gsap.delayedCall(1, () => {
+        gsap.set(".item", {
+          opacity: 0,
+        });
       });
     }
-  }, [currentIndex, scrollingDown]);
+  }, [globalFrom, globalTo]);
 
   return (
     <
@@ -107,10 +117,11 @@ const TeamMemberItem = (props: {
             "opacity-0",
             "will-change-opacity",
             "cursor-pointer",
-            "w-[280px]",
+            "w-auto",
             "md:w-[750px]",
-            "lg:w-[940px]",
-            "h-auto",
+            "lg:w-[48vw]",
+            "h-[75vh]",
+            "md:h-auto",
             "md:h-auto",
             "flex-shrink-0",
             "max-md:aspect-[340/640]",
@@ -145,22 +156,24 @@ const TeamMemberItem = (props: {
             "relative",
             "bg-white",
             "rounded-2xl",
-            "w-[310px]",
+            "w-[calc(75vh*400/600)]",
             "md:w-[750px]",
-            "lg:w-[820px]",
+            "lg:w-[42vw]",
             "opacity-0",
             "will-change-opacity",
-            "h-auto",
+            "h-[75vh]",
+            "max-md:aspect-[400/600]",
+            "md:h-auto",
             "md:h-auto",
             "flex-shrink-0",
           ])}
         >
           <div
             className={classFormatter([
-              "px-1",
+              "px-2",
               "md:px-2",
               "lg:px-3",
-              "py-1",
+              "py-2",
               "md:py-2",
               "lg:py-3",
               "flex",
@@ -195,20 +208,20 @@ const TeamMemberItem = (props: {
               <div
                 className={classFormatter([
                   "team-member-image",
-                  "aspect-[266/312]",
+                  "aspect-[266/200]",
+                  "md:aspect-[266/312]",
                   "h-full",
                   "opacity-100",
                   "flex",
                   "items-center",
                   "justify-center",
                   "flex-1",
-                  "w-4/4",
+                  "w-full",
                   "md:w-1/2",
                   "max-h-[425px]",
                   "max-w-[363px]",
                   "bg-button-grey",
                   "rounded-[10px]",
-                  "m-auto",
                 ])}
               >
                 <CustomImage
@@ -217,11 +230,13 @@ const TeamMemberItem = (props: {
                     [
                       "w-full",
                       "h-full",
-                      "object-cover",
+                      "object-contain",
+                      "md:object-cover",
                       "object-center",
                       "rounded-[10px]",
                       "transition-opacity",
                       "duration-300",
+                      "aspect-[266/312]",
 
                       "delay-300",
                       "ease-in-out",

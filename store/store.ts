@@ -19,6 +19,10 @@ interface HoverState {
   setLanguage: (language: "en" | "pt") => void;
   introSplash: boolean;
   setIntroSplash: (splash: boolean) => void;
+  globalFrom: number;
+  setGlobalFrom: (from: number) => void;
+  globalTo: number;
+  setGlobalTo: (to: number) => void;
 }
 
 export const useStore = create<HoverState>((set) => ({
@@ -41,4 +45,8 @@ export const useStore = create<HoverState>((set) => ({
   setLanguage: (language: "en" | "pt") => set({ language }),
   introSplash: false,
   setIntroSplash: (splash: boolean) => set({ introSplash: splash }),
+  globalFrom: 0,
+  setGlobalFrom: (from: number) => set({ globalFrom: from }),
+  globalTo: 0,
+  setGlobalTo: (to: number) => set({ globalTo: to }),
 }));

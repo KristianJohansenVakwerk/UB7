@@ -37,7 +37,7 @@ const AboutSectionText = (props: any) => {
 
   useGSAP(() => {
     if (currentIndex === 2) {
-      gsap.delayedCall(2.2, () => {
+      gsap.delayedCall(1, () => {
         tlAboutTextRef.current.play();
       });
     } else if (tlAboutTextRef.current && !scrollingDown) {

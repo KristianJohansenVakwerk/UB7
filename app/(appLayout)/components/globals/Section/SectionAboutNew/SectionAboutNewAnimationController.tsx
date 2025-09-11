@@ -23,7 +23,7 @@ const SectionAboutNewAnimationController = (props: any) => {
   const tlRef = useRef<any>(null);
   const proxyRef = useRef<any>(null);
   let targetX = 0;
-  const { aboutVideoExpanded } = useStore();
+  const { aboutVideoExpanded, globalFrom } = useStore();
 
   const handleMobileAnimation = (mode: "enter" | "exit") => {
     gsap.to([".section-title", "#progress"], {
@@ -33,7 +33,7 @@ const SectionAboutNewAnimationController = (props: any) => {
     });
 
     gsap.to(container, {
-      y: mode === "exit" ? 250 : -190,
+      y: mode === "exit" ? 350 : 0,
       duration: 0.4,
       ease: "expo.inOut",
       onComplete: () => {
@@ -47,6 +47,12 @@ const SectionAboutNewAnimationController = (props: any) => {
       },
     });
   };
+
+  useEffect(() => {
+    if (globalFrom === 3 && window.innerWidth < 768) {
+      handleMobileAnimation("enter");
+    }
+  }, [globalFrom]);
 
   // This hook is specifically for the mobile version
   useGSAP(() => {
@@ -231,6 +237,11 @@ const SectionAboutNewAnimationController = (props: any) => {
           isAtMaxEdge,
           () => {
             onEdgeReached("min");
+            if (window.innerWidth < 768) {
+              gsap.delayedCall(0.5, () => {
+                gsap.set(".section-title", { autoAlpha: 1 });
+              });
+            }
           },
           "drag"
         );
