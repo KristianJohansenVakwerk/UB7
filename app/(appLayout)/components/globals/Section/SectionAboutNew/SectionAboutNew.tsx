@@ -58,7 +58,7 @@ const SectionAboutNew = (props: any) => {
       </div>
       <div
         ref={containerRef}
-        className="flex flex-col gap-4 justify-end md:justify-end items-start h-full w-full pb-[80px] md:pb-[115px] translate-y-[350px] md:translate-y-0  "
+        className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] md:pb-[115px] translate-y-[350px] md:translate-y-0  "
       >
         <SectionAboutNewAnimationController
           container={containerRef?.current}
@@ -76,7 +76,7 @@ const SectionAboutNew = (props: any) => {
                 <div
                   id="aboutText"
                   // onClick={handleTextClick}
-                  className="w-full md:w-3/4 lg:w-1/2 h-full"
+                  className="w-full md:w-3/4 lg:w-3/4 h-full"
                 >
                   <AboutSectionText
                     lang={lang}
