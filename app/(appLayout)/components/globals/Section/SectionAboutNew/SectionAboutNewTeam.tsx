@@ -7,13 +7,16 @@ import {
 } from "@/app/(appLayout)/utils/utils";
 import CustomImage from "../../../shared/Image/Image";
 import { RichText } from "../../../shared/RichText";
-import { RefObject, useEffect, useMemo } from "react";
+import { RefObject, useCallback, useEffect, useMemo, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import SplitTextComp from "../../SplitTextComp/SplitTextComp";
 import SplitRichTextComp from "../../SplitRichTextComp/SplitRichTextComp";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { useStore } from "@/store/store";
+
+import VideoPlayer from "../../../shared/VideoContainer/VideoPlayer/VideoPlayer";
+import VideoContainer from "../../../shared/VideoContainer/VideoContainer";
 
 export interface TeamMember {
   type: "team" | "box";
@@ -87,7 +90,7 @@ const TeamMemberItem = (props: {
   lang: string;
   index: number;
 }) => {
-  const { item, lang, index } = props;
+  const { item, lang } = props;
 
   const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
@@ -121,51 +124,10 @@ const TeamMemberItem = (props: {
           ])}
           onClick={() => setAboutVideoExpanded(true)}
         >
-          {!aboutVideoExpanded && (
-            <video
-              src="/test-media/test_video.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              className={classFormatter([
-                "w-full",
-                "h-full",
-                "object-cover",
-                "object-center",
-                "rounded-2xl",
-              ])}
-            />
-          )}
-          {/* {aboutVideoExpanded && (
-            <video
-              src="/test-media/test_video_long.mp4"
-              autoPlay
-              muted
-              loop
-              playsInline
-              className={classFormatter([
-                "w-full",
-                "h-full",
-                "object-cover",
-                "object-center",
-                "rounded-2xl",
-              ])}
-            />
-          )} */}
-          <div
-            className={classFormatter([
-              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer transition opacity-0",
-              "duration-500 delay-300 ease-in-out",
-            ])}
-            style={{
-              opacity: aboutVideoExpanded ? 0 : 1,
-            }}
-          >
-            <div className="flex flex-col gap-2">
-              <div className="font-mono text-white text-base">Play</div>
-            </div>
-          </div>
+          <VideoContainer
+            src="/test-media/test_video_long.mp4"
+            previewSrc="/test-media/test_video.mp4"
+          />
         </div>
       );
       break;
