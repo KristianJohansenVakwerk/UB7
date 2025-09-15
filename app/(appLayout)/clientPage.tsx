@@ -440,8 +440,8 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       gsap.to(menuProgressRef.current, {
         width: targetElementMenu.offsetWidth,
         x: targetElementMenu.offsetLeft,
-        duration: resize ? 0 : 0.8,
-        delay: resize ? 0 : 0.2,
+        duration: resize ? 0 : 0.4,
+        delay: resize ? 0 : 0.1,
         ease: "expo.inOut",
       });
     };
@@ -488,10 +488,8 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       debounceTimer = setTimeout(() => {
         followTween.vars.x = newX;
         followTween.invalidate().restart();
-      }, 100);
+      }, 50);
     };
-
-    console.log(menuRef?.current?.clientWidth);
 
     const handleMouseEnter = () => {
       isHovering = true;
@@ -502,7 +500,7 @@ const Menu = ({ data, currentIndex, setCurrentIndex, lang }: MenuProps) => {
       debounceTimer = setTimeout(() => {
         followTween.vars.x = lastMousePosition;
         followTween.invalidate().restart();
-      }, 100);
+      }, 50);
     };
 
     const handleMouseLeave = () => {

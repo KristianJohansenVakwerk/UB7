@@ -124,9 +124,7 @@ const DraggableObserver = (props: Props) => {
 
           if (inactiveIndex !== -1) {
             boxesPos.current[index] = {
-              x:
-                window.innerWidth / 2 +
-                (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+              x: window.innerWidth,
             };
           } else {
             boxesPos.current[index] = { x: 0 };
@@ -157,16 +155,13 @@ const DraggableObserver = (props: Props) => {
 
   useGSAP(() => {
     const handleResize = () => {
-      console.log("resize", inActiveBoxes.current);
       const inActiveBoxesArray = inActiveBoxes.current;
       const boxes = gsap.utils.toArray(".box");
 
       if (inActiveBoxesArray.length > 0) {
         // Set the inactive boxes to the right of the screen
         gsap.set(inActiveBoxesArray, {
-          x:
-            window.innerWidth / 2 +
-            (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+          x: window.innerWidth,
           y: 0,
           scale: 1,
           rotation: 0,
@@ -179,9 +174,7 @@ const DraggableObserver = (props: Props) => {
 
           if (inactiveIndex !== -1) {
             boxesPos.current[index] = {
-              x:
-                window.innerWidth / 2 +
-                (inActiveBoxesArray[0] as HTMLElement).clientWidth,
+              x: window.innerWidth,
             };
           }
         });
@@ -420,8 +413,6 @@ const DraggableObserver = (props: Props) => {
           const now = Date.now();
           const deltaTime = now - lastTime.current;
 
-          console.log(boxesPos.current);
-
           // Ensure 60fps for desktop (16.67ms per frame)
           if (!ScrollTrigger.isTouch && deltaTime < 16.67) {
             return;
@@ -475,7 +466,6 @@ const DraggableObserver = (props: Props) => {
 
           // Kill any existing tweens to prevent conflicts
           gsap.killTweensOf(activeBox);
-
           // if last box disable animation out
           if (
             currentIndex.current === boxes.length - 1 &&
@@ -499,14 +489,15 @@ const DraggableObserver = (props: Props) => {
 
           if (shouldUpdateOnRelease(activeBoxPos.x)) {
             gsap.to(activeBox, {
-              x:
-                direction.current === 1
-                  ? window.innerWidth / 2 + activeBox.clientWidth
-                  : 0,
+              x: direction.current === 1 ? window.innerWidth : 0,
               rotation: 0,
               scale: 1,
               duration: 0.8,
               ease: "expo.out",
+              onUpdate: () => {
+                const x = gsap.getProperty(activeBox, "x") as number;
+                activeBoxPos.x = x;
+              },
               onComplete: () => {
                 if (direction.current === 1) {
                   gsap.delayedCall(0.2, () => {
@@ -517,9 +508,7 @@ const DraggableObserver = (props: Props) => {
                 direction.current === -1 && gsap.set(activeBox, { x: 0 });
 
                 activeBoxPos.x =
-                  direction.current === 1
-                    ? window.innerWidth / 2 + activeBox.clientWidth
-                    : 0;
+                  direction.current === 1 ? window.innerWidth : 0;
 
                 direction.current === 1
                   ? inActiveBoxes.current.push(activeBox)
