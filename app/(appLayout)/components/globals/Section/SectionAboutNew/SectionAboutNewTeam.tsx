@@ -218,14 +218,13 @@ const TeamMemberItem = (props: {
                     [
                       "w-full",
                       "h-full",
-                      "object-contain",
+                      "object-cover",
                       "md:object-cover",
                       "object-center",
                       "rounded-[10px]",
                       "transition-opacity",
                       "duration-300",
                       "aspect-[266/312]",
-
                       "delay-300",
                       "ease-in-out",
                     ],
