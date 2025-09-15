@@ -982,8 +982,6 @@ const SectionContact = ({
 
   if (!data) return <></>;
 
-  console.log("data", data);
-
   const infoData = useMemo(() => {
     const infoObjs = {
       social: {
@@ -1004,8 +1002,6 @@ const SectionContact = ({
 
     return Object.values(infoObjs);
   }, [data, lang]);
-
-  console.log("infoData", infoData);
 
   useGSAP(() => {
     const contactItems = gsap.utils.toArray(".contact-title");
