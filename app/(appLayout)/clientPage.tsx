@@ -1047,13 +1047,17 @@ const SectionContact = ({
           });
 
           tlRef.current.add(
-            gsap.from(splitLabel.lines, {
-              opacity: 0,
-              y: 5,
-              duration: 0.2,
-              stagger: 0.1,
-              ease: "power4.out",
-            })
+            gsap.fromTo(
+              splitLabel.lines,
+              { autoAlpha: 0 },
+              {
+                autoAlpha: 1,
+                y: 5,
+                duration: 0.2,
+                stagger: 0.1,
+                ease: "power4.out",
+              }
+            )
           );
         }
       });
@@ -1063,8 +1067,10 @@ const SectionContact = ({
   });
 
   useGSAP(() => {
+    console.log("Current index", currentIndex, tlRef.current);
     if (currentIndex === 3 && tlRef.current) {
-      gsap.delayedCall(2.2, () => {
+      gsap.delayedCall(1.2, () => {
+        console.log("Playing contact animation");
         tlRef.current.play();
       });
     } else if (tlRef.current) {
@@ -1075,7 +1081,7 @@ const SectionContact = ({
   return (
     <div
       ref={container}
-      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-2 lg:px-3 pt-0 lg:mt-[40vw]"
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-1 lg:px-3 pt-0 lg:mt-[40vw]"
     >
       <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
         {/* {info.map((item, index) => {
