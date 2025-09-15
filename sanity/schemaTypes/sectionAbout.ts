@@ -22,6 +22,22 @@ export const sectionAboutType = defineType({
       title: "Media",
     }),
     defineField({
+      type: "file",
+      name: "trailerVideo",
+      title: "Trailer Video",
+      options: {
+        accept: "video/mp4",
+      },
+    }),
+    defineField({
+      type: "file",
+      name: "fullVideo",
+      title: "Full Video",
+      options: {
+        accept: "video/mp4",
+      },
+    }),
+    defineField({
       type: "array",
       name: "teamMembers",
       title: "Team Members",

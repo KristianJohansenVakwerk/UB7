@@ -69,15 +69,7 @@ const TeamMembers = ({
   }, [globalFrom, globalTo]);
 
   return (
-    <
-      // className={classFormatter([
-      //   "flex",
-      //   "flex-row",
-      //   "w-full",
-      //   "gap-2",
-      //   "lg:gap-3",
-      // ])}
-    >
+    <>
       {computedItems.map((m, index: number) => {
         // @ts-ignore
         return (
@@ -97,7 +89,7 @@ const TeamMemberItem = (props: {
 }) => {
   const { item, lang, index } = props;
 
-  const { setAboutVideoExpanded } = useStore();
+  const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
   const { ref, inView } = useInView({
     threshold: 0.8,
@@ -125,21 +117,55 @@ const TeamMemberItem = (props: {
             "md:h-auto",
             "flex-shrink-0",
             "max-md:aspect-[340/640]",
+            "relative",
           ])}
           onClick={() => setAboutVideoExpanded(true)}
         >
-          <img
-            src="/Reel.jpg"
-            width={"693"}
-            height={"376"}
+          {!aboutVideoExpanded && (
+            <video
+              src="/test-media/test_video.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className={classFormatter([
+                "w-full",
+                "h-full",
+                "object-cover",
+                "object-center",
+                "rounded-2xl",
+              ])}
+            />
+          )}
+          {/* {aboutVideoExpanded && (
+            <video
+              src="/test-media/test_video_long.mp4"
+              autoPlay
+              muted
+              loop
+              playsInline
+              className={classFormatter([
+                "w-full",
+                "h-full",
+                "object-cover",
+                "object-center",
+                "rounded-2xl",
+              ])}
+            />
+          )} */}
+          <div
             className={classFormatter([
-              "w-full",
-              "h-full",
-              "object-cover",
-              "object-center",
-              "rounded-2xl",
+              "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer transition opacity-0",
+              "duration-500 delay-300 ease-in-out",
             ])}
-          />
+            style={{
+              opacity: aboutVideoExpanded ? 0 : 1,
+            }}
+          >
+            <div className="flex flex-col gap-2">
+              <div className="font-mono text-white text-base">Play</div>
+            </div>
+          </div>
         </div>
       );
       break;
