@@ -257,6 +257,7 @@ const TeamMemberItem = (props: {
                       "text-sm",
                       "md:text-base",
                       "opacity-100",
+                      "max-md:mt-1",
                     ])}
                   >
                     <SplitRichTextComp

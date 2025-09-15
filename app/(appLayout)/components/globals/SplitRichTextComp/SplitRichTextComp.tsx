@@ -67,13 +67,21 @@ const SplitRichTextComp = (props: {
     });
 
     tlRef.current.add(
-      gsap.from(splitText.lines, {
-        opacity: 0,
-        y: -10,
-        duration: 0.2,
-        stagger: 0.1,
-        ease: "sine.inOut",
-      })
+      gsap.fromTo(
+        splitText.lines,
+        {
+          opacity: 0,
+          visibility: "hidden",
+          y: -10,
+        },
+        {
+          opacity: 1,
+          visibility: "visible",
+          duration: 0.2,
+          stagger: 0.1,
+          ease: "sine.inOut",
+        }
+      )
     );
 
     const handleResize = () => {
