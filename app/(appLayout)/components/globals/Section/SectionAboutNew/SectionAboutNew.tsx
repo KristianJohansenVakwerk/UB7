@@ -76,7 +76,7 @@ const SectionAboutNew = (props: any) => {
                 <div
                   id="aboutText"
                   // onClick={handleTextClick}
-                  className="w-full md:w-3/4 lg:w-3/4 h-full"
+                  className="w-full md:w-3/4 lg:w-3/4 h-full block"
                 >
                   <AboutSectionText
                     lang={lang}

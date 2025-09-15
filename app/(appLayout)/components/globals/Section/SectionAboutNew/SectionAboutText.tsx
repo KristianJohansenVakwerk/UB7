@@ -27,8 +27,12 @@ const AboutSectionText = (props: any) => {
       currentIndex === 2 &&
       tlAboutTextRef.current
     ) {
+      console.log(
+        "Language changed and we're on the about section, play the animation"
+      );
       // Language changed and we're on the about section, play the animation
       gsap.delayedCall(0.1, () => {
+        textRef.current?.offsetHeight;
         tlAboutTextRef.current.play();
       });
     }
@@ -37,7 +41,9 @@ const AboutSectionText = (props: any) => {
 
   useGSAP(() => {
     if (currentIndex === 2) {
+      console.log("Current index is 2, play the animation");
       gsap.delayedCall(1, () => {
+        textRef.current?.offsetHeight;
         tlAboutTextRef.current.play();
       });
     } else if (tlAboutTextRef.current && !scrollingDown) {
@@ -60,7 +66,7 @@ const AboutSectionText = (props: any) => {
 
     if (!textRef.current) return;
 
-    textRef.current.innerHTML = "";
+    textRef.current.textContent = "";
 
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = textContent;
@@ -81,12 +87,17 @@ const AboutSectionText = (props: any) => {
     splitTextRef.current = splitText;
 
     tlAboutTextRef.current.add(
-      gsap.from(splitText.lines, {
-        opacity: 0,
-        duration: 0.3,
-        stagger: 0.1,
-        ease: "sine.inOut",
-      })
+      gsap.fromTo(
+        splitText.lines,
+        { opacity: 0, visibility: "hidden" },
+        {
+          opacity: 1,
+          visibility: "visible",
+          duration: 0.3,
+          stagger: 0.1,
+          ease: "sine.inOut",
+        }
+      )
     );
 
     const handleResize = () => {
@@ -100,7 +111,9 @@ const AboutSectionText = (props: any) => {
     return () => {
       if (splitTextRef.current) {
         splitTextRef.current.revert();
-        splitTextRef.current = null;
+        splitTextRef.current = new SplitText(textRef.current, {
+          type: "lines",
+        });
       }
       window.removeEventListener("resize", handleResize);
     };

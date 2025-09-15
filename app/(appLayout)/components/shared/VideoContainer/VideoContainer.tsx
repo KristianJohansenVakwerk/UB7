@@ -32,8 +32,6 @@ const VideoContainer = (props: Props) => {
   useEffect(() => {
     if (!aboutVideoExpanded) {
       if (ref.current) {
-        // ref.current.pause();
-        // ref.current.currentTime = 0;
         setCanPlay(false);
       }
     }
@@ -42,7 +40,7 @@ const VideoContainer = (props: Props) => {
   return (
     <>
       <div
-        className="w-full h-full aspect-[2204/1080] cursor-pointer"
+        className="w-full h-full max-md:aspect-[340/640] md:aspect-[2204/1080] cursor-pointer"
         onClick={handlePlay}
       >
         <video

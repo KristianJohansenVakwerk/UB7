@@ -90,6 +90,18 @@ export const classFormatterClsx = (classes: string[], conditions?: any[]) => {
   return clsx(classes.join(" "), conditions ? conditions : {});
 };
 
+export const uiSelectorsFunc = (exclude?: string[]) => {
+  return [
+    "#progress",
+    "#section-title-about",
+    ".text-about",
+    ".item-team-member",
+    ".section-title",
+    "#menu",
+    "#language",
+  ].filter((selector) => !exclude?.includes(selector));
+};
+
 export const uiSelectors = [
   "#progress",
   "#section-title-about",

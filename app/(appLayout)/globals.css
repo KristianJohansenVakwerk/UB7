@@ -241,3 +241,10 @@ p {
 
   /* background-color: rgba(255, 0, 0, 0.05); */
 }
+
+.split-line {
+  display: block; /* Safari prefers block lines */
+  opacity: 0; /* make sure it's hidden initially */
+  visibility: hidden; /* Safari respects this */
+  will-change: opacity; /* force compositing */
+}

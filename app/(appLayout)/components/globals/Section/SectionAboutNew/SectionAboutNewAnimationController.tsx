@@ -9,7 +9,7 @@ import InertiaPlugin from "gsap/InertiaPlugin";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect, useRef } from "react";
 import { useStore } from "@/store/store";
-import { uiSelectors } from "@/app/(appLayout)/utils/utils";
+import { uiSelectors, uiSelectorsFunc } from "@/app/(appLayout)/utils/utils";
 
 gsap.registerPlugin(Draggable, Observer, InertiaPlugin);
 
@@ -84,7 +84,7 @@ const SectionAboutNewAnimationController = (props: any) => {
       const videoBoxX = videoBox?.getBoundingClientRect().x as number;
       const currentX = gsap.getProperty(proxy, "x") as number;
 
-      const gap = 48;
+      const gap = ScrollTrigger.isTouch ? 11 : 48;
       const tl = gsap
         .timeline({
           paused: true,
@@ -93,7 +93,6 @@ const SectionAboutNewAnimationController = (props: any) => {
             d.update();
             d.disable();
             observerRef.current.disable();
-            console.log("onComplete");
           },
         })
         .to([scroller, proxy], {
@@ -136,12 +135,17 @@ const SectionAboutNewAnimationController = (props: any) => {
           duration: 0.6,
           ease: "expo.inOut",
         })
-        .to(uiSelectors, {
-          autoAlpha: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "expo.inOut",
-        });
+        .to(
+          ScrollTrigger.isTouch
+            ? uiSelectorsFunc(["#progress", ".section-title"])
+            : uiSelectors,
+          {
+            autoAlpha: 1,
+            duration: 0.6,
+            stagger: 0.1,
+            ease: "expo.inOut",
+          }
+        );
 
       tl.play();
     }
@@ -376,7 +380,7 @@ const useCalculateVideoScale = () => {
 
   const padding = !isTouch
     ? { top: 48, left: 48, bottom: 48, right: 102 }
-    : { top: 20, left: 20, bottom: 40, right: 20 };
+    : { top: 11, left: 11, bottom: 11, right: 11 };
 
   // Calculate available space correctly
   const availableWidth = vw - padding.left - padding.right;
