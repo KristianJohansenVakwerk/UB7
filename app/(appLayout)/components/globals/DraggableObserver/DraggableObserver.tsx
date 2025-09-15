@@ -677,7 +677,8 @@ const DraggableObserver = (props: Props) => {
     if (currentIndex.current === boxes.length - 1) return;
 
     const activeBox = boxes[currentIndex.current] as HTMLElement;
-    const activeBoxWidth = activeBox.clientWidth;
+    const activeBoxPos = boxesPos.current[currentIndex.current];
+    // const activeBoxWidth = activeBox.clientWidth;
     // const activeBoxPos = gsap.getProperty(activeBox, "x") as number;
     // console.log(activeBoxPos);
 
@@ -687,11 +688,15 @@ const DraggableObserver = (props: Props) => {
     setCurrentStateIndex((prev) => prev + 1);
 
     gsap.to(activeBox, {
-      x: window.innerWidth / 2 + activeBoxWidth,
+      x: window.innerWidth,
       y: Math.random() * 100 - 50,
       rotation: Math.random() * 10,
-      duration: 2.2,
+      duration: 1.2,
       ease: "expo.out",
+      onUpdate: () => {
+        const x = gsap.getProperty(activeBox, "x") as number;
+        activeBoxPos.x = x;
+      },
       onComplete: () => {
         gsap.killTweensOf(activeBox);
         // setPositions(0, currentIndex.current, true);
@@ -712,6 +717,7 @@ const DraggableObserver = (props: Props) => {
     updatePositionsClick(currentIndex.current, false);
 
     const activeBox = boxes[currentIndex.current] as HTMLElement;
+    const activeBoxPos = boxesPos.current[currentIndex.current];
 
     gsap.to(activeBox, {
       x: 0,
@@ -719,6 +725,10 @@ const DraggableObserver = (props: Props) => {
       rotation: 0,
       duration: 1.2,
       ease: "expo.out",
+      onUpdate: () => {
+        const x = gsap.getProperty(activeBox, "x") as number;
+        activeBoxPos.x = x;
+      },
       onComplete: () => {
         gsap.killTweensOf(activeBox);
         updateBackgroundOnRelease(currentIndex.current);
@@ -807,7 +817,7 @@ const CloseButton = (props: any) => {
         "md:translate-x-0",
         "lg:translate-x-1/2",
         "right-auto",
-        "md:right-3",
+        "md:right-4",
         "z-9999",
         "w-[48px]",
         "h-[48px]",
