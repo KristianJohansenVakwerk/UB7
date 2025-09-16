@@ -66,17 +66,17 @@ const SplitRichTextComp = (props: {
       paused: true,
     });
 
+    gsap.set(splitText.lines, {
+      autoAlpha: 0,
+      y: -10,
+    });
+
     tlRef.current.add(
-      gsap.fromTo(
+      gsap.to(
         splitText.lines,
+
         {
-          opacity: 0,
-          visibility: "hidden",
-          y: -10,
-        },
-        {
-          opacity: 1,
-          visibility: "visible",
+          autoAlpha: 1,
           duration: 0.2,
           stagger: 0.1,
           ease: "sine.inOut",
