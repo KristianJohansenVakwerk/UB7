@@ -38,7 +38,7 @@ function GradientBackground(props: Props) {
 
     tl.current.to(ref.current, {
       uOffset: 0,
-      duration: 0.75,
+      duration: 1.5,
       ease: "power4.inOut",
     });
   }, []);

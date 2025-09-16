@@ -44,7 +44,7 @@ const SVGShape = () => {
 
     tl.current.to(matRef.current, {
       uOffset: 0,
-      duration: 0.85,
+      duration: 1.5,
       ease: "power4.inOut",
     });
   }, []);
