@@ -290,9 +290,9 @@ const TeamMemberItem = (props: {
                           "text-light-grey",
                           "bg-button-grey",
                           "rounded-[100px]",
-                          "py-1",
+                          "py-0.5",
                           "px-1",
-                          "lg:px-2",
+                          "lg:px-1",
                           "flex-shrink-0",
                           "hover:bg-button-grey-hover",
                           "hover:text-white",
@@ -315,7 +315,11 @@ const TeamMemberItem = (props: {
                             transitionDelay: `${index * 0.3}s`,
                           }}
                         >
-                          <a href={s.link} target="_blank">
+                          <a
+                            href={s.link}
+                            target="_blank"
+                            className="font-mono text-xs/none"
+                          >
                             {checkLangString(lang, s.title)}
                           </a>
                         </span>

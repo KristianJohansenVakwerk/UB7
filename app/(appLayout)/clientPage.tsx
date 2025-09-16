@@ -683,6 +683,7 @@ const SectionTitles = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const prevLangRef = useRef(lang);
   const headlinesRef = useRef<any[]>([]);
+  const isInitialized = useRef(false);
   const localCurrentIndexRef = useRef(currentIndex);
   const { setGlobalFrom, setGlobalTo } = useStore();
 
@@ -708,10 +709,11 @@ const SectionTitles = ({
 
     containerRef.current.innerHTML = "";
 
-    headlinesRef.current.forEach((headline) => {
+    headlinesRef.current.forEach((headline, index) => {
       const h1 = document.createElement("h1");
       h1.className =
         "splitText text-title absolute h-auto  w-full md:w-3/4 lg:w-4/5 xl:w-1/2 2xl:w-1/2";
+
       h1.innerHTML = headline.text;
       containerRef?.current?.appendChild(h1);
     });
@@ -752,10 +754,16 @@ const SectionTitles = ({
         },
       });
 
+      // Set initial state for all lines
+      gsap.set(st.lines, {
+        y: -30,
+        autoAlpha: 0,
+      });
+
       tl.add(
-        gsap.from(st.lines, {
-          y: -30,
-          opacity: 0,
+        gsap.to(st.lines, {
+          y: 0,
+          autoAlpha: 1,
           duration: 0.2,
           stagger: 0.05,
           delay: 0.6,
@@ -818,6 +826,7 @@ const SectionTitles = ({
     // Wait for next frame to ensure DOM is updated
     setTimeout(() => {
       setupAnimations();
+      isInitialized.current = true;
     }, 0);
 
     window.addEventListener("resize", handleResize);
@@ -871,7 +880,11 @@ const SectionTitles = ({
       timelines.forEach((tl) => tl.pause(0)); // pause and reset
     };
 
-    console.log("currentTimeline", direction, from, to);
+    if (!currentTimeline || !isInitialized.current) {
+      previousIndex.current = to;
+      localCurrentIndexRef.current = to;
+      return;
+    }
 
     if (direction === "forward" && from === 0) {
       currentTimeline.play();
