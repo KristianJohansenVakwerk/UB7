@@ -191,7 +191,8 @@ export default function ObserverPage({
 
       tl.to(sectionsContainer?.current, {
         yPercent: -100 * index,
-        duration: 0.2,
+        duration: 0.75,
+        delay: 0.4,
         force3D: true,
         ease: "expo.inOut",
       });

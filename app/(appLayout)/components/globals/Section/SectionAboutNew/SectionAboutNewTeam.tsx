@@ -286,7 +286,6 @@ const TeamMemberItem = (props: {
                           "font-mono",
                           "text-xs",
                           "md:text-sm",
-
                           "text-light-grey",
                           "bg-button-grey",
                           "rounded-[100px]",
