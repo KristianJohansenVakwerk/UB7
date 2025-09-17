@@ -3,18 +3,18 @@ import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
 
 import * as THREE from "three";
-import { useEffect, useMemo, useRef } from "react";
+import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { GradientMaterial } from "./GradientPlane";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
 extend({ GradientMaterial });
 
-const SVGShape = () => {
+const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
   const data = useLoader(SVGLoader, "/logo_2.svg");
   const { viewport } = useThree();
-  const matRef = useRef<any>(null);
-  const meshRef = useRef<any>(null);
+  // const matRef = useRef<any>(null);
+  // const meshRef = useRef<any>(null);
   const tl = useRef<any>(null);
 
   const geometry = useMemo(() => {
@@ -38,51 +38,30 @@ const SVGShape = () => {
 
   const scaleFactor = viewport.width * 0.4;
 
-  useGSAP(() => {
-    if (!matRef.current) return;
-
-    tl.current = gsap.timeline({ paused: true });
-
-    tl.current.to(matRef.current, {
-      uOffset: 0,
-      duration: 0.75,
-      delay: 0.75,
-      ease: "none",
-      onStart: () => {
-        meshRef.current.visible = true;
-      },
-    });
-  }, []);
-
-  useGSAP(() => {
-    if (!tl.current) return;
-
-    gsap.killTweensOf(tl.current);
-
-    setTimeout(() => {
-      tl.current.play();
-    }, 2000);
-  }, []);
-
   return geometry ? (
     <mesh
-      ref={meshRef}
       geometry={geometry}
-      position={[0.5, -0.2, 0.1]}
+      position={[0.0, 0.0, 0.1]}
       scale={[scaleFactor, scaleFactor, 1]}
       rotation={[1 * Math.PI, 0, 0]}
-      visible={false}
     >
       {/* @ts-ignore */}
       <gradientMaterial
-        ref={matRef}
+        ref={ref}
         side={THREE.DoubleSide}
-        uSize={0.45}
-        uOffset={2.0}
+        uSize={0.4}
+        uOffset={1.0}
+        pos0={0.1875}
+        pos1={0.639423}
+        pos2={0.817308}
+        pos3={0.913462}
+        depthWrite={false}
+        depthTest={false}
+        transparent={true}
       />
     </mesh>
   ) : null;
-};
+});
 
 export default SVGShape;
 

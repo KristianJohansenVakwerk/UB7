@@ -1,6 +1,6 @@
 "use client";
 import * as THREE from "three";
-import { useRef } from "react";
+import { forwardRef, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { shaderMaterial } from "@react-three/drei";
 import { extend } from "@react-three/fiber";
@@ -12,7 +12,20 @@ import { vertexShader } from "./vertexShader";
 
 // Shader material
 export const GradientMaterial = shaderMaterial(
-  { iResolution: new THREE.Vector2(1, 1), uOffset: 0, uSize: 0.7 },
+  {
+    iResolution: new THREE.Vector2(1, 1),
+    uOffset: 0,
+    uSize: 0.7,
+    color0: new THREE.Color(0.0157, 0.4627, 0.2314),
+    color1: new THREE.Color(0.4941, 0.9804, 0.3137),
+    color2: new THREE.Color(0.996, 1.0, 0.761),
+    color3: new THREE.Color(0.851, 0.851, 0.851),
+    pos0: 0.1,
+    pos1: 0.538462,
+    pos2: 0.817308,
+    pos3: 1.0,
+    uAlpha: 1.0,
+  },
   // vertex shader
   vertexShader,
   // fragment shader
@@ -21,37 +34,30 @@ export const GradientMaterial = shaderMaterial(
 
 extend({ GradientMaterial });
 
-type Props = {
-  clicked: boolean;
-};
-
-function GradientBackground(props: Props) {
-  const { clicked } = props;
-  const tl = useRef<any>(null);
-  const ref = useRef<any>(null);
+const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
   const { size } = useThree();
 
-  useGSAP(() => {
-    if (!ref.current) return;
+  // useGSAP(() => {
+  //   if (!ref.current) return;
 
-    tl.current = gsap.timeline({ paused: true });
+  //   tl.current = gsap.timeline({ paused: true });
 
-    tl.current.to(ref.current, {
-      uOffset: 0,
-      duration: 1.5,
-      ease: "none",
-    });
-  }, []);
+  //   tl.current.to(ref.current, {
+  //     uOffset: 0,
+  //     duration: 1.5,
+  //     ease: "none",
+  //   });
+  // }, []);
 
-  useGSAP(() => {
-    if (!tl.current) return;
+  // useGSAP(() => {
+  //   if (!tl.current) return;
 
-    gsap.killTweensOf(tl.current);
+  //   gsap.killTweensOf(tl.current);
 
-    setTimeout(() => {
-      tl.current.play();
-    }, 2000);
-  }, []);
+  //   setTimeout(() => {
+  //     tl.current.play();
+  //   }, 2000);
+  // }, []);
 
   useFrame(() => {
     if (ref.current) ref.current.iResolution.set(size.width, size.height);
@@ -69,6 +75,6 @@ function GradientBackground(props: Props) {
       />
     </mesh>
   );
-}
+});
 
 export default GradientBackground;

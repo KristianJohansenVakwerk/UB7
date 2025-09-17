@@ -768,7 +768,6 @@ const SectionTitles = ({
           stagger: 0.05,
           delay: 0.6,
           overwrite: "auto",
-          autoKill: true,
           ease: "power4.out",
         })
       );

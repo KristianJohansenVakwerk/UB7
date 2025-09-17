@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import * as THREE from "three";
 
 export const checkLangString = (lang: string, text: any) => {
   return text[lang] || text.en;
