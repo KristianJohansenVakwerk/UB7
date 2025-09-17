@@ -96,7 +96,7 @@ const TeamMemberItem = (props: {
 
   const { ref, inView } = useInView({
     threshold: 0.8,
-    triggerOnce: false,
+    triggerOnce: true,
   });
 
   switch (item.type) {

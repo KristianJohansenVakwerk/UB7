@@ -150,10 +150,8 @@ export default function ObserverPage({
     if (!intentRef.current) return;
 
     if (disableScroll || !introStoreDone) {
-      console.log("disabled");
       intentRef.current.disable();
     } else {
-      console.log("enabled, introStoreDone");
       intentRef.current.enable();
     }
   }, [disableScroll, introStoreDone]);
