@@ -14,6 +14,7 @@ const SVGShape = () => {
   const data = useLoader(SVGLoader, "/logo_2.svg");
   const { viewport } = useThree();
   const matRef = useRef<any>(null);
+  const meshRef = useRef<any>(null);
   const tl = useRef<any>(null);
 
   const geometry = useMemo(() => {
@@ -44,8 +45,12 @@ const SVGShape = () => {
 
     tl.current.to(matRef.current, {
       uOffset: 0,
-      duration: 1.5,
-      ease: "power4.inOut",
+      duration: 0.75,
+      delay: 0.75,
+      ease: "none",
+      onStart: () => {
+        meshRef.current.visible = true;
+      },
     });
   }, []);
 
@@ -61,10 +66,12 @@ const SVGShape = () => {
 
   return geometry ? (
     <mesh
+      ref={meshRef}
       geometry={geometry}
       position={[0.5, -0.2, 0.1]}
       scale={[scaleFactor, scaleFactor, 1]}
       rotation={[1 * Math.PI, 0, 0]}
+      visible={false}
     >
       {/* @ts-ignore */}
       <gradientMaterial
