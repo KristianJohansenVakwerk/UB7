@@ -90,7 +90,6 @@ export default function ObserverPage({
         allowScroll.current && scrollToSection(currentIndex.current + 1, true);
       },
       onDown: (self: any) => {
-        console.log("onDown");
         allowScroll.current && scrollToSection(currentIndex.current - 1, false);
       },
       tolerance: ScrollTrigger.isTouch ? 10 : 10,
@@ -686,8 +685,6 @@ const SectionTitles = ({
   const { setGlobalFrom, setGlobalTo, introStoreDone } = useStore();
 
   const createHeadline = (curLang: string) => {
-    console.log("Create Headline");
-
     headlinesRef.current = [
       { text: "", id: "ub7" },
       ...data.map((item: any) => {
@@ -701,8 +698,6 @@ const SectionTitles = ({
   };
 
   const generateDomContent = useCallback(() => {
-    console.log("Generate Dom Content");
-
     if (!containerRef.current) return;
 
     containerRef.current.innerHTML = "";
@@ -734,8 +729,6 @@ const SectionTitles = ({
 
   // Setup animations
   const setupAnimations = useCallback(() => {
-    console.log("Setup Animations");
-
     const textElements = gsap.utils.toArray(".splitText");
 
     textElements.forEach((t, index) => {
@@ -777,7 +770,7 @@ const SectionTitles = ({
   const resetCurrentTimeline = useCallback(
     (onComplete?: () => void) => {
       const currentTimeline = timelineRefs.current[currentIndex];
-      console.log("Current timeline", currentTimeline);
+
       currentTimeline.reverse();
       currentTimeline.eventCallback("onReverseComplete", () => {
         onComplete?.();
@@ -988,7 +981,6 @@ const SectionContact = ({
   currentIndex: number;
   lang: string;
 }) => {
-  const container = useRef<HTMLDivElement>(null);
   const tlRef = useRef<any>(null);
 
   if (!data) return <></>;
@@ -1026,20 +1018,25 @@ const SectionContact = ({
     // Animate each info item
     info.forEach((item, index) => {
       const titleElement = contactItems[index] as HTMLElement;
+      console.log("titleElement", titleElement);
       if (titleElement) {
         const splitTitle = new SplitText(titleElement, {
-          type: "lines",
-          linesClass: "split-line",
+          type: "chars",
+          charsClass: "split-line",
         });
 
         tlRef.current.add(
-          gsap.from(splitTitle.lines, {
-            opacity: 0,
-            y: 5,
-            duration: 0.2,
-            stagger: 0.1,
-            ease: "power4.out",
-          })
+          gsap.fromTo(
+            splitTitle.chars,
+            { autoAlpha: 0, y: 5 },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.1,
+              stagger: 0.01,
+              ease: "power4.out",
+            }
+          )
         );
       }
 
@@ -1053,19 +1050,19 @@ const SectionContact = ({
         const label = contactLabels[refIndex] as HTMLElement;
         if (label) {
           const splitLabel = new SplitText(label, {
-            type: "lines",
-            linesClass: "split-line",
+            type: "chars",
+            charsClass: "split-line",
           });
 
           tlRef.current.add(
             gsap.fromTo(
-              splitLabel.lines,
+              splitLabel.chars,
               { autoAlpha: 0 },
               {
                 autoAlpha: 1,
                 y: 5,
-                duration: 0.2,
-                stagger: 0.1,
+                duration: 0.1,
+                stagger: 0.01,
                 ease: "power4.out",
               }
             )
@@ -1078,10 +1075,8 @@ const SectionContact = ({
   });
 
   useGSAP(() => {
-    console.log("Current index", currentIndex, tlRef.current);
     if (currentIndex === 3 && tlRef.current) {
       gsap.delayedCall(1.2, () => {
-        console.log("Playing contact animation");
         tlRef.current.play();
       });
     } else if (tlRef.current) {
@@ -1090,44 +1085,8 @@ const SectionContact = ({
   }, [currentIndex]);
 
   return (
-    <div
-      ref={container}
-      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-1 lg:px-3 pt-0 lg:mt-[40vw]"
-    >
-      <div className="grid grid-cols-16 w-full gap-3 lg:gap-0">
-        {/* {info.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className="contact-item col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
-            >
-              <div className="contact-title font-mono text-sm text-light-grey">
-                {item.title}
-              </div>
-
-              <div className="flex flex-col gap-0">
-                {item.items.map((link: any, linkIndex: number) => {
-                  const refIndex =
-                    info
-                      .slice(0, index)
-                      .reduce((acc, section) => acc + section.items.length, 0) +
-                    linkIndex;
-                  return (
-                    <div
-                      key={linkIndex}
-                      className="contact-label cursor-pointer font-sans text-base text-light-grey"
-                    >
-                      <Link href={link?.url || "#"} target="_blank">
-                        {link.label}
-                      </Link>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })} */}
-
+    <div className=" w-full h-full flex flex-col gap-0 items-start justify-start px-1 lg:px-3 pt-0 lg:mt-[40vw]">
+      <div className="flex flex-col md:flex-row flex-wrap w-full gap-3 lg:gap-[10vw]">
         {infoData.map((item: any, index) => {
           switch (item.label) {
             case "address":
@@ -1135,13 +1094,13 @@ const SectionContact = ({
               return (
                 <div
                   key={index + lang}
-                  className="col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
+                  className="info-item flex flex-col w-full md:w-auto flex-wrap opacity-100 gap-0 pr-[50px] md:pr-0"
                 >
                   <div className="contact-title font-mono text-sm text-light-grey">
                     {item.label}
                   </div>
 
-                  <div className="contact-label cursor-pointer font-sans text-base text-light-grey">
+                  <div className="contact-label cursor-pointer font-sans text-base text-light-grey ">
                     <Link href={item?.url || "#"} target="_blank">
                       {item.title}
                     </Link>
@@ -1153,7 +1112,7 @@ const SectionContact = ({
               return (
                 <div
                   key={index + lang}
-                  className="col-span-16 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
+                  className="col-span-12 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
                 >
                   <div className="contact-title font-mono text-sm text-light-grey">
                     {item.label}

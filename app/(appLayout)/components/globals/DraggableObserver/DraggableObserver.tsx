@@ -1029,7 +1029,9 @@ const Entry = (props: any) => {
 
               <div className={"flex flex-col gap-1 lg:gap-2"}>
                 <div
-                  className={"flex flex-row items-center justify-start gap-1"}
+                  className={
+                    "flex flex-row items-center justify-start gap-1  flex-wrap"
+                  }
                 >
                   {data?.socials &&
                     data.socials.length > 0 &&

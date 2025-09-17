@@ -524,7 +524,7 @@ const IntroSVG = () => {
         <ThreeCanvas isReady={!isLoading} />
       </div>
 
-      <div className="block lg:hidden fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center px-3 lg:px-12">
+      {/* <div className="block lg:hidden fixed top-0 left-0 w-full h-full flex flex-col items-center justify-center px-3 lg:px-12">
         <svg
           ref={number7Ref}
           width="304"
@@ -555,7 +555,7 @@ const IntroSVG = () => {
             </linearGradient>
           </defs>
         </svg>
-      </div>
+      </div> */}
 
       <div
         id={"clocks"}

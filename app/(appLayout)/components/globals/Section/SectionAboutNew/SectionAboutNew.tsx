@@ -14,23 +14,6 @@ const SectionAboutNew = (props: any) => {
   const containerScrollerRef = useRef<HTMLDivElement | null>(null);
   const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
-  // const handleTextClick = () => {
-  //   if (!containerRef.current) return;
-
-  //   gsap.to(".section-title", {
-  //     autoAlpha: 0,
-  //     duration: 0.4,
-  //     ease: "expo.inOut",
-  //   });
-
-  //   gsap.to(containerRef.current, {
-  //     duration: 0.4,
-  //     ease: "expo.inOut",
-  //     y: -130,
-  //     onComplete: () => {},
-  //   });
-  // };
-
   return (
     <>
       <div
@@ -58,7 +41,7 @@ const SectionAboutNew = (props: any) => {
       </div>
       <div
         ref={containerRef}
-        className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] md:pb-[115px] translate-y-[350px] md:translate-y-0  "
+        className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] md:pb-[115px] translate-y-[380px] md:translate-y-0  "
       >
         <SectionAboutNewAnimationController
           container={containerRef?.current}
@@ -75,7 +58,6 @@ const SectionAboutNew = (props: any) => {
               <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
                 <div
                   id="aboutText"
-                  // onClick={handleTextClick}
                   className="w-full md:w-3/4 lg:w-3/4 h-full block"
                 >
                   <AboutSectionText
