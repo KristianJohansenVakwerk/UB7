@@ -97,9 +97,9 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
       value: currentStoreIndex <= 0 ? 0 : 0.3,
       delay: currentStoreIndex <= 0 ? 0.4 : 0,
     });
-
+    console.log(device);
     tl.to(
-      device === "desktop"
+      device === "desktop" || device === "tablet"
         ? svgMaterialRef.current.uniforms.uAlpha
         : sevenMaterialRef.current.uniforms.uAlpha,
       {
