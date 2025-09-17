@@ -678,14 +678,13 @@ const SectionTitles = ({
 }) => {
   const timelineRefs = useRef<any[]>([]);
   const localScollingDown = useRef(scrollingDown);
-  const { introStoreDone } = useStore();
   const splitTextRefs = useRef<any[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevLangRef = useRef(lang);
   const headlinesRef = useRef<any[]>([]);
   const isInitialized = useRef(false);
   const localCurrentIndexRef = useRef(currentIndex);
-  const { setGlobalFrom, setGlobalTo } = useStore();
+  const { setGlobalFrom, setGlobalTo, introStoreDone } = useStore();
 
   const createHeadline = (curLang: string) => {
     console.log("Create Headline");
@@ -800,6 +799,8 @@ const SectionTitles = ({
   }, [scrollingDown]);
 
   useGSAP(() => {
+    if (!introStoreDone) return;
+
     const handleResize = () => {
       if (!containerRef.current) return;
 
@@ -833,7 +834,7 @@ const SectionTitles = ({
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [introStoreDone]);
 
   useGSAP(() => {
     if (prevLangRef.current !== lang) {
@@ -927,8 +928,7 @@ const SectionTitles = ({
     <div
       ref={containerRef}
       className={clsx(
-        "section-title fixed top-3 lg:top-6 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3  h-auto z-20 pointer-events-none opacity-0",
-        introStoreDone && "opacity-100"
+        "section-title fixed top-3 lg:top-6 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3  h-auto z-20 pointer-events-none opacity-0"
       )}
     />
   );
