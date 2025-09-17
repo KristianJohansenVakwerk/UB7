@@ -15,11 +15,10 @@ const GradientBackgroundMemo = memo(GradientPlane);
 const SVGShapeMemo = memo(SVGShape);
 
 export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
-  const [colorScheme, setColorScheme] = useState<"en" | "pt">("en");
   const svgMaterialRef = useRef<any>(null);
   const bgMaterialRef = useRef<any>(null);
-  const [minMax, setMinMax] = useState<"min" | "max">("max");
-  const { currentStoreIndex, language } = useStore();
+
+  const { currentStoreIndex, language, introStoreDone } = useStore();
 
   useGSAP(() => {
     if (!svgMaterialRef.current || !bgMaterialRef.current) return;
