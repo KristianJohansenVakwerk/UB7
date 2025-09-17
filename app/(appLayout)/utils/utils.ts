@@ -1,6 +1,25 @@
+"use client";
 import clsx from "clsx";
-import * as THREE from "three";
+import { useEffect, useState } from "react";
 
+function getDeviceType(width: number) {
+  if (width < 768) return "mobile";
+  if (width < 1024) return "tablet";
+  return "desktop";
+}
+
+export const useDevice = (initial = "desktop") => {
+  const [device, setDevice] = useState(initial);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const width = window.innerWidth;
+    setDevice(getDeviceType(width));
+  }, []); // ✅ runs only once on mount
+
+  return device;
+};
 export const checkLangString = (lang: string, text: any) => {
   return text[lang] || text.en;
 };

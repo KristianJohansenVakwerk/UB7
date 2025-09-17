@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { memo, Suspense, useRef, useState } from "react";
+import { memo, Suspense, useEffect, useRef, useState } from "react";
 import GradientPlane from "./GradientPlane";
 import ThreeCanvasAnimations from "./ThreeCanvasAnimations";
 import SVGShape from "./SVGShape";
@@ -10,18 +10,27 @@ import { useGSAP } from "@gsap/react";
 import * as THREE from "three";
 import { colorArray, settingsArraySVG, posArray } from "./ThreeUtils";
 import { useStore } from "@/store/store";
+import SVGSevenShape from "./SVGSevenShape";
+import { useDevice } from "@/app/(appLayout)/utils/utils";
 
 const GradientBackgroundMemo = memo(GradientPlane);
 const SVGShapeMemo = memo(SVGShape);
+const SVGSevenShapeMemo = memo(SVGSevenShape);
 
 export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
   const svgMaterialRef = useRef<any>(null);
   const bgMaterialRef = useRef<any>(null);
-
+  const sevenMaterialRef = useRef<any>(null);
   const { currentStoreIndex, language, introStoreDone } = useStore();
+  const device = useDevice();
 
   useGSAP(() => {
-    if (!svgMaterialRef.current || !bgMaterialRef.current) return;
+    if (
+      !svgMaterialRef.current ||
+      !bgMaterialRef.current ||
+      !sevenMaterialRef.current
+    )
+      return;
     const tl = gsap.timeline();
 
     for (const color of colorArray) {
@@ -38,7 +47,10 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
 
     for (const s of settingsArraySVG) {
       tl.to(
-        svgMaterialRef.current.uniforms[s.color].value,
+        [
+          svgMaterialRef.current.uniforms[s.color].value,
+          sevenMaterialRef.current.uniforms[s.color].value,
+        ],
         {
           duration: 0.8,
           ease: "power2.inOut",
@@ -72,7 +84,12 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
   }, [language]);
 
   useGSAP(() => {
-    if (!svgMaterialRef.current || !bgMaterialRef.current) return;
+    if (
+      !svgMaterialRef.current ||
+      !bgMaterialRef.current ||
+      !sevenMaterialRef.current
+    )
+      return;
     const tl = gsap.timeline();
     tl.to(bgMaterialRef.current.uniforms.uOffset, {
       duration: 0.75,
@@ -82,31 +99,21 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
     });
 
     tl.to(
-      svgMaterialRef.current.uniforms.uAlpha,
+      device === "desktop"
+        ? svgMaterialRef.current.uniforms.uAlpha
+        : sevenMaterialRef.current.uniforms.uAlpha,
       {
         duration: 0.75,
         ease: "expo.inOut",
         value: currentStoreIndex <= 0 ? 1.0 : 0.0,
-        delay: currentStoreIndex <= 0 ? 0.6 : 0.3,
+        delay: currentStoreIndex <= 0 ? 0.0 : 0.0,
       },
       "<"
     );
-  }, [currentStoreIndex]);
+  }, [currentStoreIndex, device]);
 
   return (
     <div className="w-screen h-screen" style={{ backgroundColor: "#D9D9D9" }}>
-      {/* <div
-        className="fixed inset-3 z-10"
-        onClick={() => setColorScheme(colorScheme === "en" ? "pt" : "en")}
-      >
-        Change color scheme
-      </div>
-      <div
-        className="fixed right-3 top-3 z-10"
-        onClick={() => setMinMax(minMax === "min" ? "max" : "min")}
-      >
-        Min/Max
-      </div> */}
       <Canvas
         className="w-screen h-screen"
         camera={{ position: [0, 0, 1], zoom: 1.5, near: 0.1, far: 100 }}
@@ -115,10 +122,12 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
           <ThreeCanvasAnimations
             svgMaterialRef={svgMaterialRef}
             bgMaterialRef={bgMaterialRef}
+            sevenMaterialRef={sevenMaterialRef}
             isReady={isReady}
           >
             <GradientBackgroundMemo ref={bgMaterialRef} />
             <SVGShapeMemo ref={svgMaterialRef} />
+            <SVGSevenShapeMemo ref={sevenMaterialRef} />
           </ThreeCanvasAnimations>
         </Suspense>
       </Canvas>

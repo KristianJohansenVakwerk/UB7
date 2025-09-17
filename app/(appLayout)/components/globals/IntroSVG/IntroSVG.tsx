@@ -9,155 +9,155 @@ import { useStore } from "@/store/store";
 import clsx from "clsx";
 import { ThreeCanvas } from "../ThreeCanvas/ThreeCanvas";
 
-const textSettings = [
-  // Light Gray
-  {
-    offset: 0.1875,
-    "stop-color": "#D9D9D9",
-    delay: 0,
-  },
-  // Light Yellow/Cream
-  {
-    offset: 0.307692,
-    "stop-color": "#FEFFC2",
-    delay: 0,
-  },
-  // Bright Lime Green
-  {
-    offset: 0.639423,
-    "stop-color": "#7EFA50",
-    delay: 0.2,
-  },
-  // Dark Green
-  {
-    offset: 0.913462,
-    "stop-color": "#09603D",
-    delay: 0.4,
-  },
-];
+// const textSettings = [
+//   // Light Gray
+//   {
+//     offset: 0.1875,
+//     "stop-color": "#D9D9D9",
+//     delay: 0,
+//   },
+//   // Light Yellow/Cream
+//   {
+//     offset: 0.307692,
+//     "stop-color": "#FEFFC2",
+//     delay: 0,
+//   },
+//   // Bright Lime Green
+//   {
+//     offset: 0.639423,
+//     "stop-color": "#7EFA50",
+//     delay: 0.2,
+//   },
+//   // Dark Green
+//   {
+//     offset: 0.913462,
+//     "stop-color": "#09603D",
+//     delay: 0.4,
+//   },
+// ];
 
-const textSettingsPortuguese = [
-  // Light Gray
-  {
-    offset: 0.1875,
-    "stop-color": "#A7A7A7",
-    delay: 0,
-  },
-  // Light Yellow/Cream
-  {
-    offset: 0.307692,
-    "stop-color": "#09603D",
-    delay: 0,
-  },
-  // Bright Lime Green
-  {
-    offset: 0.639423,
-    "stop-color": "#09603D",
-    delay: 0.2,
-  },
-  // Dark Green
-  {
-    offset: 0.913462,
-    "stop-color": "#000000",
-    delay: 0.4,
-  },
-];
+// const textSettingsPortuguese = [
+//   // Light Gray
+//   {
+//     offset: 0.1875,
+//     "stop-color": "#A7A7A7",
+//     delay: 0,
+//   },
+//   // Light Yellow/Cream
+//   {
+//     offset: 0.307692,
+//     "stop-color": "#09603D",
+//     delay: 0,
+//   },
+//   // Bright Lime Green
+//   {
+//     offset: 0.639423,
+//     "stop-color": "#09603D",
+//     delay: 0.2,
+//   },
+//   // Dark Green
+//   {
+//     offset: 0.913462,
+//     "stop-color": "#000000",
+//     delay: 0.4,
+//   },
+// ];
 
-const textSettingsMobile = [
-  // Light Gray
+// const textSettingsMobile = [
+//   // Light Gray
 
-  // Light Yellow/Cream
-  {
-    offset: 0.18,
-    "stop-color": "#FEFFC2",
-    delay: 0,
-  },
-  // Bright Lime Green
-  {
-    offset: 0.5,
-    "stop-color": "#7EFA50",
-    delay: 0.2,
-  },
-  // Dark Green
-  {
-    offset: 0.913462,
-    "stop-color": "#09603D",
-    delay: 0.4,
-  },
-];
+//   // Light Yellow/Cream
+//   {
+//     offset: 0.18,
+//     "stop-color": "#FEFFC2",
+//     delay: 0,
+//   },
+//   // Bright Lime Green
+//   {
+//     offset: 0.5,
+//     "stop-color": "#7EFA50",
+//     delay: 0.2,
+//   },
+//   // Dark Green
+//   {
+//     offset: 0.913462,
+//     "stop-color": "#09603D",
+//     delay: 0.4,
+//   },
+// ];
 
-const bgSettings = [
-  // Dark green
-  {
-    offset: 0.1,
-    "stop-color": "#03763B",
-    delay: 0.4,
-  },
-  // Bright lime green
-  {
-    offset: 0.538462,
-    "stop-color": "#7EFA50",
-    delay: 0.2,
-  },
-  // Light yellow/cream
-  {
-    offset: 0.817308,
-    "stop-color": "#FEFFC2",
-    delay: 0,
-  },
-  // Light gray
-  {
-    offset: 1,
-    "stop-color": "#D9D9D9",
-    delay: 0,
-  },
-];
+// const bgSettings = [
+//   // Dark green
+//   {
+//     offset: 0.1,
+//     "stop-color": "#03763B",
+//     delay: 0.4,
+//   },
+//   // Bright lime green
+//   {
+//     offset: 0.538462,
+//     "stop-color": "#7EFA50",
+//     delay: 0.2,
+//   },
+//   // Light yellow/cream
+//   {
+//     offset: 0.817308,
+//     "stop-color": "#FEFFC2",
+//     delay: 0,
+//   },
+//   // Light gray
+//   {
+//     offset: 1,
+//     "stop-color": "#D9D9D9",
+//     delay: 0,
+//   },
+// ];
 
-const bgSettingsMin = [
-  // Dark green
-  {
-    offset: 0.01,
-    delay: 0.4,
-  },
-  // Bright lime green
-  {
-    offset: 0.2,
-    delay: 0.2,
-  },
-  // Light yellow/cream
-  {
-    offset: 0.3,
-    delay: 0,
-  },
-  // Light gray
-  {
-    offset: 1,
-    delay: 0,
-  },
-];
+// const bgSettingsMin = [
+//   // Dark green
+//   {
+//     offset: 0.01,
+//     delay: 0.4,
+//   },
+//   // Bright lime green
+//   {
+//     offset: 0.2,
+//     delay: 0.2,
+//   },
+//   // Light yellow/cream
+//   {
+//     offset: 0.3,
+//     delay: 0,
+//   },
+//   // Light gray
+//   {
+//     offset: 1,
+//     delay: 0,
+//   },
+// ];
 
-const bgSettingsPortuguese = [
-  {
-    offset: 0.12,
-    "stop-color": "#000000",
-    delay: 0.4,
-  },
-  {
-    offset: 0.68,
-    "stop-color": "#09603D",
-    delay: 0.2,
-  },
-  {
-    offset: 0.91,
-    "stop-color": "#646464",
-    delay: 0,
-  },
-  {
-    offset: 1,
-    "stop-color": "#A7A7A7",
-    delay: 0,
-  },
-];
+// const bgSettingsPortuguese = [
+//   {
+//     offset: 0.12,
+//     "stop-color": "#000000",
+//     delay: 0.4,
+//   },
+//   {
+//     offset: 0.68,
+//     "stop-color": "#09603D",
+//     delay: 0.2,
+//   },
+//   {
+//     offset: 0.91,
+//     "stop-color": "#646464",
+//     delay: 0,
+//   },
+//   {
+//     offset: 1,
+//     "stop-color": "#A7A7A7",
+//     delay: 0,
+//   },
+// ];
 
 const dur = 0.75;
 const delay = 0.5;
@@ -213,6 +213,7 @@ const IntroSVG = () => {
       console.log("handleLoad");
       gsap.to(loaderRef.current, {
         duration: 2,
+        delay: 1,
         ease: "expo.inOut",
         onUpdate: function () {
           const pct = Math.round(this.progress() * 100);

@@ -37,28 +37,6 @@ extend({ GradientMaterial });
 const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
   const { size } = useThree();
 
-  // useGSAP(() => {
-  //   if (!ref.current) return;
-
-  //   tl.current = gsap.timeline({ paused: true });
-
-  //   tl.current.to(ref.current, {
-  //     uOffset: 0,
-  //     duration: 1.5,
-  //     ease: "none",
-  //   });
-  // }, []);
-
-  // useGSAP(() => {
-  //   if (!tl.current) return;
-
-  //   gsap.killTweensOf(tl.current);
-
-  //   setTimeout(() => {
-  //     tl.current.play();
-  //   }, 2000);
-  // }, []);
-
   useFrame(() => {
     if (ref.current) ref.current.iResolution.set(size.width, size.height);
   });

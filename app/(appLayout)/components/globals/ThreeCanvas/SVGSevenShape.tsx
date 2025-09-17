@@ -11,8 +11,8 @@ import { useDevice } from "@/app/(appLayout)/utils/utils";
 
 extend({ GradientMaterial });
 
-const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
-  const data = useLoader(SVGLoader, "/logo_2.svg");
+const SVGSevenShape = forwardRef<any, any>((props: any, ref: any) => {
+  const data = useLoader(SVGLoader, "/ub7_7.svg");
   const { viewport } = useThree();
   // const matRef = useRef<any>(null);
   // const meshRef = useRef<any>(null);
@@ -38,14 +38,15 @@ const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
     return geom;
   }, [data]);
 
-  const scaleFactor = viewport.width * (device === "mobile" ? 0.3 : 0.4);
+  const scaleFactor = viewport.width * 0.55;
 
   return geometry ? (
     <mesh
       geometry={geometry}
-      position={[0.0, device === "mobile" ? 0.4 : 0.0, 0.1]}
+      position={[0.0, 0.05, 0.1]}
       scale={[scaleFactor, scaleFactor, 1]}
       rotation={[1 * Math.PI, 0, 0]}
+      visible={device === "mobile" ? true : false}
     >
       {/* @ts-ignore */}
       <gradientMaterial
@@ -65,7 +66,7 @@ const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
   ) : null;
 });
 
-export default SVGShape;
+export default SVGSevenShape;
 
 const generateUVsForShapeGeometry = (geometry: THREE.ShapeGeometry) => {
   geometry.computeBoundingBox();
