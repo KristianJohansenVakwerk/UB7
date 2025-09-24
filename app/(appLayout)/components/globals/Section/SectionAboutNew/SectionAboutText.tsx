@@ -32,7 +32,7 @@ const AboutSectionText = (props: any) => {
       );
       // Language changed and we're on the about section, play the animation
       gsap.delayedCall(0.1, () => {
-        textRef.current?.offsetHeight;
+        // textRef.current?.offsetHeight;
         tlAboutTextRef.current.play();
       });
     }
@@ -75,20 +75,30 @@ const AboutSectionText = (props: any) => {
       textRef.current.appendChild(tempDiv.firstChild);
     }
 
-    const splitText = new SplitText(textRef.current, {
-      type: "lines",
-      linesClass: "split-line text-base-2",
-      // wordsClass: "text-base-2",
-      tag: "span",
-      autoParseHtml: true,
+    const paragraphs = textRef.current.querySelectorAll("p");
+
+    if (paragraphs.length === 0) return;
+
+    let allLines: any[] = [];
+    const splitTextInstances: any[] = [];
+    paragraphs.forEach((paragraph, index) => {
+      const splitText = new SplitText(paragraph, {
+        type: "lines",
+        tag: "span",
+        linesClass: "split-line text-base-2",
+        autoParseHtml: true,
+      });
+
+      splitTextInstances.push(splitText);
+
+      allLines.push(...splitText.lines);
     });
 
-    // Store the SplitText instance for cleanup
-    splitTextRef.current = splitText;
+    splitTextRef.current = splitTextInstances;
 
     tlAboutTextRef.current.add(
       gsap.fromTo(
-        splitText.lines,
+        allLines,
         { opacity: 0, visibility: "hidden" },
         {
           opacity: 1,
@@ -101,25 +111,35 @@ const AboutSectionText = (props: any) => {
     );
 
     const handleResize = () => {
-      splitText.revert();
-      splitText.split({ type: "lines" });
+      splitTextInstances.forEach((splitText) => {
+        if (splitText && splitText.revert) {
+          splitText.revert();
+        }
+      });
     };
 
     window.addEventListener("resize", handleResize);
 
     // Cleanup function to revert SplitText when component unmounts or re-renders
     return () => {
-      if (splitTextRef.current) {
-        splitTextRef.current.revert();
-        splitTextRef.current = new SplitText(textRef.current, {
-          type: "lines",
+      if (splitTextRef.current && Array.isArray(splitTextRef.current)) {
+        splitTextRef.current.forEach((splitText) => {
+          if (splitText && splitText.revert) {
+            splitText.revert();
+          }
         });
+        splitTextRef.current = null;
       }
       window.removeEventListener("resize", handleResize);
     };
   }, [textContent]);
 
-  return <div ref={textRef} className="text-about text-light-grey"></div>;
+  return (
+    <div
+      ref={textRef}
+      className="text-about text-light-grey flex flex-col gap-1.5"
+    ></div>
+  );
 };
 
 export default AboutSectionText;

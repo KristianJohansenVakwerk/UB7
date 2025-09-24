@@ -39,7 +39,7 @@ export const richTextToHTML = (blocks: any[]): string => {
           return "";
       }
     })
-    .join("\n ");
+    .join(" ");
 
   return html;
 };
@@ -78,7 +78,7 @@ const processBlock = (block: any): string => {
 
       return text;
     })
-    .join(" \n ");
+    .join("");
 
   // Handle different block styles
   switch (block.style) {

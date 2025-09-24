@@ -712,21 +712,6 @@ const SectionTitles = ({
     });
   }, []);
 
-  // const handleSplit = (self: any) => {
-  //   if (!localCurrentIndexRef.current || !timelineRefs.current) return;
-
-  //   const timelines = timelineRefs.current;
-
-  //   setTimeout(() => {
-  //     console.log("Handle split reset", self.lines);
-  //     // reset all timelines
-  //     timelines.forEach((tl) => tl.reverse(1)); // pause and reset
-
-  //     // Seek to the end of the current timeline on split
-  //     // timelines[localCurrentIndexRef.current].seek(1);
-  //   }, 1000);
-  // };
-
   // Setup animations
   const setupAnimations = useCallback(() => {
     const textElements = gsap.utils.toArray(".splitText");
@@ -806,7 +791,11 @@ const SectionTitles = ({
       }, 0);
 
       setTimeout(() => {
-        if (!containerRef.current) return;
+        if (
+          !containerRef.current ||
+          !timelineRefs.current[localCurrentIndexRef.current]
+        )
+          return;
         containerRef.current.style.opacity = "1";
 
         timelineRefs.current[localCurrentIndexRef.current].play();
@@ -858,6 +847,8 @@ const SectionTitles = ({
     const to = currentIndex;
     const direction = to > from ? "forward" : "backward";
 
+    console.log("from", from, "to", to, "direction", direction);
+
     // Store the global from and to for use in other components eg. About section animation controller
     setGlobalFrom(from);
     setGlobalTo(to);
@@ -879,6 +870,10 @@ const SectionTitles = ({
     }
 
     if (direction === "forward" && from === 0) {
+      gsap.delayedCall(0.5, () => {
+        gsap.set(".section-title", { autoAlpha: 1 });
+      });
+
       currentTimeline.play();
     } else if (direction === "backward" && from === 0) {
       currentTimeline.reverse();
@@ -1018,7 +1013,7 @@ const SectionContact = ({
     // Animate each info item
     info.forEach((item, index) => {
       const titleElement = contactItems[index] as HTMLElement;
-      console.log("titleElement", titleElement);
+
       if (titleElement) {
         const splitTitle = new SplitText(titleElement, {
           type: "chars",

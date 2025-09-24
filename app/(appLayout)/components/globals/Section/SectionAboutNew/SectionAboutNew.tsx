@@ -58,7 +58,7 @@ const SectionAboutNew = (props: any) => {
               <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
                 <div
                   id="aboutText"
-                  className="w-full md:w-3/4 lg:w-3/4 h-full block"
+                  className="w-full md:w-3/4 lg:w-3/4 4xl:w-2/4 h-full block "
                 >
                   <AboutSectionText
                     lang={lang}

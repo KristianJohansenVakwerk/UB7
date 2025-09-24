@@ -56,6 +56,7 @@
   --breakpoint-smd: 90rem;
   --breakpoint-smd-max: 100rem;
   --breakpoint-3xl: 102rem;
+  --breakpoint-4xl: 150rem;
 }
 
 :root {
@@ -243,8 +244,9 @@ p {
 }
 
 .split-line {
-  display: block; /* Safari prefers block lines */
-  opacity: 0; /* make sure it's hidden initially */
-  visibility: hidden; /* Safari respects this */
-  will-change: opacity; /* force compositing */
+  /* display: block; Safari prefers block lines */
+  /* opacity: 0; make sure it's hidden initially */
+  /* visibility: hidden; Safari respects this */
+  /* will-change: opacity; force compositing */
+  /* white-space: pre-line; */
 }

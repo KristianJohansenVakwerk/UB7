@@ -12,7 +12,7 @@ export const RichText = (props: Props) => {
 
   const customBlockComponents = {
     block: {
-      normal: ({ children }: any) => <p>{children}</p>,
+      normal: ({ children }: any) => <p className="split">{children}</p>,
 
       large: ({ children }: any) => <div>{children}</div>,
       h3: ({ children }: any) => <h3>{children}</h3>,
