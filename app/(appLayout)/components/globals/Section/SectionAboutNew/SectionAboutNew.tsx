@@ -71,6 +71,8 @@ const SectionAboutNew = (props: any) => {
               <div className="flex-shrink-0 w-auto flex flex-row gap-2 md:gap-3">
                 <SectionAboutNewTeam
                   items={data.team}
+                  trailerVideo={data.trailerVideo}
+                  fullVideo={data.fullVideo}
                   lang={lang}
                   currentIndex={currentIndex}
                   scrollingDown={scrollingDown}

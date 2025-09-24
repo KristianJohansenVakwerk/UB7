@@ -23,6 +23,7 @@ export interface TeamMember {
   name: string;
   description: any;
   image: any;
+
   links: any[];
 }
 
@@ -31,11 +32,15 @@ const TeamMembers = ({
   lang,
   currentIndex,
   scrollingDown,
+  trailerVideo,
+  fullVideo,
 }: {
   items: (TeamMember | { type: string })[];
   lang: string;
   currentIndex: number;
   scrollingDown: boolean;
+  trailerVideo: { url: string };
+  fullVideo: { url: string };
 }) => {
   const { globalFrom, globalTo } = useStore();
 
@@ -76,7 +81,14 @@ const TeamMembers = ({
       {computedItems.map((m, index: number) => {
         // @ts-ignore
         return (
-          <TeamMemberItem key={index} item={m} lang={lang} index={index} />
+          <TeamMemberItem
+            key={index}
+            item={m}
+            lang={lang}
+            index={index}
+            trailerVideo={trailerVideo}
+            fullVideo={fullVideo}
+          />
         );
       })}
     </>
@@ -89,8 +101,10 @@ const TeamMemberItem = (props: {
   item: TeamMember | { type: string };
   lang: string;
   index: number;
+  trailerVideo: { url: string };
+  fullVideo: { url: string };
 }) => {
-  const { item, lang } = props;
+  const { item, lang, trailerVideo, fullVideo } = props;
 
   const { aboutVideoExpanded, setAboutVideoExpanded } = useStore();
 
@@ -124,10 +138,7 @@ const TeamMemberItem = (props: {
           ])}
           onClick={() => setAboutVideoExpanded(true)}
         >
-          <VideoContainer
-            src="/test-media/test_video_long.mp4"
-            previewSrc="/test-media/test_video.mp4"
-          />
+          <VideoContainer src={fullVideo.url} previewSrc={trailerVideo.url} />
         </div>
       );
       break;

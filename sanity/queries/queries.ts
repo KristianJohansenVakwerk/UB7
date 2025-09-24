@@ -11,6 +11,8 @@ export const baseSectionQuery = `*[_type in ["sectionPortfolio", "sectionAbout",
   "headline": headline,
   ...select(
     _type == "sectionAbout" => {
+      "trailerVideo": trailerVideo.asset->{url},
+      "fullVideo": fullVideo.asset->{url},
       "text": text
     },
     _type == "sectionContact" => {
@@ -49,7 +51,6 @@ export const portfolioSectionQuery = `{
 }`;
 
 export const aboutSectionQuery = `{
-  
   "team": *[_type == 'teamMember'] | order(orderRank) {
   _type,
   _id,

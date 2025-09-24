@@ -13,22 +13,13 @@ export const sectionAboutType = defineType({
     langBlock("Text", "text"),
     defineField({
       type: "file",
-      name: "mediaPreview",
-      title: "Media Preview",
-    }),
-    defineField({
-      type: "file",
-      name: "Media",
-      title: "Media",
-    }),
-    defineField({
-      type: "file",
       name: "trailerVideo",
       title: "Trailer Video",
       options: {
-        accept: "video/mp4",
+        accept: "video/mp4,image/webp",
       },
     }),
+
     defineField({
       type: "file",
       name: "fullVideo",

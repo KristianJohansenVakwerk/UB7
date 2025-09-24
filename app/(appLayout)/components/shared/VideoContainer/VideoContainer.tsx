@@ -48,7 +48,7 @@ const VideoContainer = (props: Props) => {
           ref={ref}
           src={src}
           loop
-          poster="/test-media/test_video_short.webp"
+          poster={previewSrc || ""}
           className="w-full h-full object-cover object-center rounded-2xl"
         />
       </div>
