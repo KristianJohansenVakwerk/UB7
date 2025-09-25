@@ -283,7 +283,7 @@ const TeamMemberItem = (props: {
                       "flex-row",
                       "items-center",
                       "justify-start",
-                      "gap-1",
+                      "gap-x-[9px] gap-y-[10px]",
                       "w-full",
                     ])}
                   >
@@ -300,9 +300,9 @@ const TeamMemberItem = (props: {
                           "text-light-grey",
                           "bg-button-grey",
                           "rounded-[100px]",
-                          "py-0.5",
-                          "px-1",
-                          "lg:px-1",
+                          "py-[10px]",
+                          "px-[15px]",
+                          "lg:px-[15px]",
                           "flex-shrink-0",
                           "hover:bg-button-grey-hover",
                           "hover:text-white",

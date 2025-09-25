@@ -1030,7 +1030,7 @@ const Entry = (props: any) => {
               <div className={"flex flex-col gap-1 lg:gap-2"}>
                 <div
                   className={
-                    "flex flex-row items-center justify-start gap-1  flex-wrap"
+                    "flex flex-row items-center justify-start gap-x-[9px] gap-y-[10px]   flex-wrap"
                   }
                 >
                   {data?.socials &&
@@ -1048,9 +1048,9 @@ const Entry = (props: any) => {
                           "bg-button-grey",
                           "hover:bg-button-grey-hover",
                           "rounded-[100px]",
-                          "px-1",
-                          "lg:px-1",
-                          "py-0.5",
+                          "px-[15px]",
+                          "lg:px-[15px]",
+                          "py-[10px]",
                           "flex",
                           "items-center",
                           "justify-center",
