@@ -43,7 +43,7 @@ const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
 
   return (
     <mesh frustumCulled={false}>
-      <planeGeometry args={[2, 2]} />
+      <planeGeometry args={[3, 2]} />
       {/* @ts-ignore */}
       <gradientMaterial
         ref={ref}

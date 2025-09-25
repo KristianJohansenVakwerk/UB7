@@ -847,8 +847,6 @@ const SectionTitles = ({
     const to = currentIndex;
     const direction = to > from ? "forward" : "backward";
 
-    console.log("from", from, "to", to, "direction", direction);
-
     // Store the global from and to for use in other components eg. About section animation controller
     setGlobalFrom(from);
     setGlobalTo(to);
