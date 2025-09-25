@@ -41,7 +41,7 @@ const SectionAboutNew = (props: any) => {
       </div>
       <div
         ref={containerRef}
-        className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] md:pb-[85px] 2xl:pb-[115px]  translate-y-[380px] md:translate-y-0  "
+        className="flex flex-col gap-4 justify-end items-start h-full w-full pb-[80px] md:pb-[85px] 2xl:pb-[115px]  translate-y-[460px] md:translate-y-0  "
       >
         <SectionAboutNewAnimationController
           container={containerRef?.current}
@@ -53,7 +53,7 @@ const SectionAboutNew = (props: any) => {
             <div
               id="aboutSlider"
               ref={containerScrollerRef}
-              className="flex flex-col md:flex-row w-full px-1 md:px-2 lg:px-3 gap-4 md:gap-0 "
+              className="flex flex-col md:flex-row w-full px-1 md:px-2 lg:px-3 gap-3 md:gap-0 "
             >
               <div className="w-full md:w-[55%] lg:w-[45%] flex-shrink-0">
                 <div
