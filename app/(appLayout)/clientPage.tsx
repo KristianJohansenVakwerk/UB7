@@ -928,42 +928,42 @@ import SectionAboutNew from "./components/globals/Section/SectionAboutNew/Sectio
 import { checkLangString, richTextToHTML } from "./utils/utils";
 import { useTimelineSelector } from "sanity";
 
-const info = [
-  {
-    title: "Social",
-    items: [
-      {
-        label: "Linkedin",
-        url: "https://www.linkedin.com/in/thiagosilva",
-      },
-      {
-        label: "Instagram",
-        url: "https://www.instagram.com/thiagosilva",
-      },
-    ],
-  },
-  {
-    title: "E-mail",
-    items: [
-      {
-        label: "info@ub7.com",
-        url: "mailto:info@ub7.com",
-      },
-    ],
-  },
-  {
-    title: "Address",
-    items: [
-      {
-        label: (
-          <p>
-            Carrer de la Llum, 24, 3º 2ª <br /> 08002 Madrid <br /> España
-          </p>
-        ),
-      },
-    ],
-  },
-];
+// const info = [
+//   {
+//     title: "Social",
+//     items: [
+//       {
+//         label: "Linkedin",
+//         url: "https://www.linkedin.com/in/thiagosilva",
+//       },
+//       {
+//         label: "Instagram",
+//         url: "https://www.instagram.com/thiagosilva",
+//       },
+//     ],
+//   },
+//   {
+//     title: "E-mail",
+//     items: [
+//       {
+//         label: "info@ub7.com",
+//         url: "mailto:info@ub7.com",
+//       },
+//     ],
+//   },
+//   {
+//     title: "Address",
+//     items: [
+//       {
+//         label: (
+//           <p>
+//             Carrer de la Llum, 24, 3º 2ª <br /> 08002 Madrid <br /> España
+//           </p>
+//         ),
+//       },
+//     ],
+//   },
+// ];
 
 const SectionContact = ({
   data,
@@ -975,31 +975,33 @@ const SectionContact = ({
   lang: string;
 }) => {
   const tlRef = useRef<any>(null);
+  const splitTextRefs = useRef<any[]>([]); // Add this to track SplitText instances
+  const prevLangRef = useRef(lang); // Add this to track language changes
 
   if (!data) return <></>;
 
   const infoData = useMemo(() => {
-    const infoObjs = {
-      social: {
+    return [
+      {
+        id: "social",
         label: lang === "en" ? "social" : "redes sociais",
         items: data.social,
       },
-      email: {
+      {
+        id: "email",
         label: lang === "en" ? "email" : "email",
-        title: data.email.title,
-        url: data.email.link,
+        items: [data.email],
       },
-      address: {
+      {
+        id: "address",
         label: lang === "en" ? "address" : "endereço",
-        title: data.address.title,
-        url: data.address.link,
+        items: [data.address],
       },
-    };
-
-    return Object.values(infoObjs);
+    ];
   }, [data, lang]);
 
-  useGSAP(() => {
+  // Create a function to initialize SplitTexts
+  const initializeSplitTexts = useCallback(() => {
     const contactItems = gsap.utils.toArray(".contact-title");
     const contactLabels = gsap.utils.toArray(".contact-label");
 
@@ -1009,7 +1011,7 @@ const SectionContact = ({
     });
 
     // Animate each info item
-    info.forEach((item, index) => {
+    infoData.forEach((item, index) => {
       const titleElement = contactItems[index] as HTMLElement;
 
       if (titleElement) {
@@ -1017,6 +1019,9 @@ const SectionContact = ({
           type: "chars",
           charsClass: "split-line",
         });
+
+        // Store the SplitText instance for cleanup
+        splitTextRefs.current.push(splitTitle);
 
         tlRef.current.add(
           gsap.fromTo(
@@ -1034,39 +1039,84 @@ const SectionContact = ({
       }
 
       // Animate each label in the item
-      item.items.forEach((_, linkIndex) => {
-        const refIndex =
-          info
-            .slice(0, index)
-            .reduce((acc, section) => acc + section.items.length, 0) +
-          linkIndex;
-        const label = contactLabels[refIndex] as HTMLElement;
-        if (label) {
-          const splitLabel = new SplitText(label, {
-            type: "chars",
-            charsClass: "split-line",
-          });
+      if (item.items) {
+        item.items.forEach((_: any, linkIndex: number) => {
+          const refIndex =
+            infoData
+              .slice(0, index)
+              .reduce(
+                (acc: any, section: any) => acc + section.items.length,
+                0
+              ) + linkIndex;
+          const label = contactLabels[refIndex] as HTMLElement;
+          if (label) {
+            const splitLabel = new SplitText(label, {
+              type: "chars",
+              charsClass: "split-line",
+            });
 
-          tlRef.current.add(
-            gsap.fromTo(
-              splitLabel.chars,
-              { autoAlpha: 0 },
-              {
-                autoAlpha: 1,
-                y: 5,
-                duration: 0.1,
-                stagger: 0.01,
-                ease: "power4.out",
-              }
-            )
-          );
-        }
-      });
+            // Store the SplitText instance for cleanup
+            splitTextRefs.current.push(splitLabel);
+
+            tlRef.current.add(
+              gsap.fromTo(
+                splitLabel.chars,
+                { autoAlpha: 0 },
+                {
+                  autoAlpha: 1,
+                  y: 5,
+                  duration: 0.1,
+                  stagger: 0.01,
+                  ease: "power4.out",
+                }
+              )
+            );
+          }
+        });
+      }
     });
+  }, [infoData]);
 
-    tlRef.current.pause();
-  });
+  // Create a function to clear SplitTexts
+  const clearSplitTexts = useCallback(() => {
+    splitTextRefs.current.forEach((splitText) => {
+      if (splitText && splitText.revert) {
+        splitText.revert();
+      }
+    });
+    splitTextRefs.current = [];
 
+    if (tlRef.current) {
+      tlRef.current.kill();
+      tlRef.current = null;
+    }
+  }, []);
+
+  // Initial setup
+  useGSAP(() => {
+    initializeSplitTexts();
+  }, []);
+
+  // Language change handler
+  useEffect(() => {
+    if (prevLangRef.current !== lang) {
+      console.log("Language changed to:", lang);
+
+      clearSplitTexts();
+
+      // Wait for DOM to update, then re-initialize
+      const timeoutId = setTimeout(() => {
+        initializeSplitTexts();
+        tlRef.current.play();
+      });
+
+      prevLangRef.current = lang;
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [lang, initializeSplitTexts, clearSplitTexts]);
+
+  // Section landing handler
   useGSAP(() => {
     if (currentIndex === 3 && tlRef.current) {
       gsap.delayedCall(1.2, () => {
@@ -1078,56 +1128,37 @@ const SectionContact = ({
   }, [currentIndex]);
 
   return (
-    <div className=" w-full h-full flex flex-col gap-0 items-start justify-start px-1 lg:px-3 pt-0 lg:mt-[40vw]">
+    <div
+      key={lang} // Add this key to force re-render on language change
+      className=" w-full h-full flex flex-col gap-0 items-start justify-start px-1 lg:px-3 pt-0 lg:mt-[40vw]"
+    >
       <div className="flex flex-col md:flex-row flex-wrap w-full gap-3 lg:gap-[10vw]">
         {infoData.map((item: any, index) => {
-          switch (item.label) {
-            case "address":
-            case "email":
-              return (
-                <div
-                  key={index + lang}
-                  className="info-item flex flex-col w-full md:w-auto flex-wrap opacity-100 gap-0 pr-[50px] md:pr-0"
-                >
-                  <div className="contact-title font-mono text-sm text-light-grey">
-                    {item.label}
-                  </div>
+          return (
+            <div
+              key={item.id}
+              className="col-span-12 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
+            >
+              <div className="contact-title font-mono text-sm text-light-grey">
+                {item.label}
+              </div>
 
-                  <div className="contact-label cursor-pointer font-sans text-base text-light-grey ">
-                    <Link href={item?.url || "#"} target="_blank">
-                      {item.title}
-                    </Link>
-                  </div>
-                </div>
-              );
-
-            case "social":
-              return (
-                <div
-                  key={index + lang}
-                  className="col-span-12 lg:col-span-3 xl:col-span-2 info-item flex flex-col opacity-100 gap-0"
-                >
-                  <div className="contact-title font-mono text-sm text-light-grey">
-                    {item.label}
-                  </div>
-
-                  <div className="flex flex-col gap-0">
-                    {item.items.map((link: any, linkIndex: number) => {
-                      return (
-                        <div
-                          key={linkIndex}
-                          className="contact-label cursor-pointer font-sans text-base text-light-grey"
-                        >
-                          <Link href={link?.link || "#"} target="_blank">
-                            {link.title}
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-          }
+              <div className="flex flex-col gap-0">
+                {item.items.map((link: any, linkIndex: number) => {
+                  return (
+                    <div
+                      key={`${item.id}-${linkIndex}`}
+                      className="contact-label cursor-pointer font-sans text-base text-light-grey"
+                    >
+                      <Link href={link?.link || "#"} target="_blank">
+                        {link.title}
+                      </Link>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
         })}
       </div>
     </div>
