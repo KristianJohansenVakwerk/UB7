@@ -329,7 +329,7 @@ export default function ObserverPage({
 
       <div
         className={clsx(
-          "fixed bottom-2 lg:bottom-3 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3 z-50 flex flex-row items-center justify-between",
+          "fixed bottom-2  2xl:bottom-3 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3 z-50 flex flex-row items-center justify-between",
           disableScroll ? "pointer-events-none" : "pointer-events-auto"
         )}
       >
@@ -913,7 +913,7 @@ const SectionTitles = ({
     <div
       ref={containerRef}
       className={clsx(
-        "section-title fixed top-3 lg:top-6 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3  h-auto z-20 pointer-events-none opacity-0"
+        "section-title fixed top-3 md:top-4 2xl:top-6 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3  h-auto z-20 pointer-events-none opacity-0"
       )}
     />
   );
