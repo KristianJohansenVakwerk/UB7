@@ -49,6 +49,7 @@ const TeamMembers = ({
   }, [items]);
 
   useGSAP(() => {
+    console.log("globalTo", globalTo, globalFrom);
     if (globalTo === 2 && globalFrom <= 1) {
       gsap.delayedCall(2, () => {
         gsap.to(".item", {
@@ -66,6 +67,10 @@ const TeamMembers = ({
           stagger: -0.1,
           ease: "expo.inOut",
         });
+      });
+    } else if (globalFrom === 2 && globalTo === 2) {
+      gsap.set(".item", {
+        opacity: 1,
       });
     } else {
       gsap.delayedCall(1, () => {

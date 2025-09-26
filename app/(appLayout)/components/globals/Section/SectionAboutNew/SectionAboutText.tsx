@@ -60,7 +60,12 @@ const AboutSectionText = (props: any) => {
 
     // Clean up previous SplitText instance if it exists
     if (splitTextRef.current) {
-      splitTextRef.current.revert();
+      splitTextRef.current.forEach((splitText: any) => {
+        if (splitText && splitText.revert) {
+          splitText.revert();
+        }
+      });
+
       splitTextRef.current = null;
     }
 
