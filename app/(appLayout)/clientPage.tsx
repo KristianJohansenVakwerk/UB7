@@ -705,7 +705,7 @@ const SectionTitles = ({
     headlinesRef.current.forEach((headline, index) => {
       const h1 = document.createElement("h1");
       h1.className =
-        "splitText text-title absolute h-auto  w-full md:w-3/4 lg:w-4/5 xl:w-1/2 2xl:w-1/2";
+        "splitText text-title xl:text-title-small  absolute h-auto  w-full md:w-3/4 lg:w-4/5 xl:w-1/2 2xl:w-1/2";
 
       h1.innerHTML = headline.text;
       containerRef?.current?.appendChild(h1);

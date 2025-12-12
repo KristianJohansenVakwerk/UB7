@@ -70,6 +70,7 @@ const Experience = ({ paused }: { paused: boolean }) => {
   }, []);
 
   useFrame((state) => {
+    console.log("useFrame");
     if (paused) return;
 
     // if (gradientMaterial.uniforms) {

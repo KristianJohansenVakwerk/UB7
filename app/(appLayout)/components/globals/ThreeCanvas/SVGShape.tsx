@@ -1,6 +1,13 @@
 "use client";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
-import { extend, useFrame, useLoader, useThree } from "@react-three/fiber";
+import { extend, useLoader, useThree } from "@react-three/fiber";
+import {
+  colorArrayEnSVG,
+  colorArrayPtSVG,
+  posPtArraySVG,
+  posEnArraySVG,
+} from "./ThreeUtils";
+import { useStore } from "@/store/store";
 
 import * as THREE from "three";
 import { forwardRef, useEffect, useMemo, useRef } from "react";
@@ -40,6 +47,11 @@ const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
 
   const scaleFactor = viewport.width * (device === "mobile" ? 0.3 : 0.4);
 
+  const { language } = useStore();
+
+  const defaultColors = language === "en" ? colorArrayEnSVG : colorArrayPtSVG;
+  const defaultPositions = language === "en" ? posEnArraySVG : posPtArraySVG;
+
   return geometry ? (
     <mesh
       geometry={geometry}
@@ -53,13 +65,18 @@ const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
         side={THREE.DoubleSide}
         uSize={0.4}
         uOffset={1.0}
-        pos0={0.1875}
-        pos1={0.639423}
-        pos2={0.817308}
-        pos3={0.913462}
+        color0={defaultColors[0]}
+        color1={defaultColors[1]}
+        color2={defaultColors[2]}
+        color3={defaultColors[3]}
+        pos0={defaultPositions[0]}
+        pos1={defaultPositions[1]}
+        pos2={defaultPositions[2]}
+        pos3={defaultPositions[3]}
         depthWrite={false}
         depthTest={false}
         transparent={true}
+        uInvert={1.0}
       />
     </mesh>
   ) : null;

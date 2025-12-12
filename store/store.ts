@@ -41,7 +41,7 @@ export const useStore = create<HoverState>((set) => ({
   aboutVideoExpanded: false,
   setAboutVideoExpanded: (expanded: boolean) =>
     set({ aboutVideoExpanded: expanded }),
-  language: "en",
+  language: "pt",
   setLanguage: (language: "en" | "pt") => set({ language }),
   introSplash: false,
   setIntroSplash: (splash: boolean) => set({ introSplash: splash }),

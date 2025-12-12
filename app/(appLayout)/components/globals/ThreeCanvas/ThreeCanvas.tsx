@@ -1,13 +1,12 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { memo, Suspense, useEffect, useRef, useState } from "react";
+import { memo, Suspense, useRef } from "react";
 import GradientPlane from "./GradientPlane";
 import ThreeCanvasAnimations from "./ThreeCanvasAnimations";
 import SVGShape from "./SVGShape";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import * as THREE from "three";
 import { colorArray, settingsArraySVG, posArray } from "./ThreeUtils";
 import { useStore } from "@/store/store";
 import SVGSevenShape from "./SVGSevenShape";
@@ -21,7 +20,7 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
   const svgMaterialRef = useRef<any>(null);
   const bgMaterialRef = useRef<any>(null);
   const sevenMaterialRef = useRef<any>(null);
-  const { currentStoreIndex, language, introStoreDone } = useStore();
+  const { currentStoreIndex, language } = useStore();
   const device = useDevice();
 
   useGSAP(() => {
@@ -94,10 +93,10 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
     tl.to(bgMaterialRef.current.uniforms.uOffset, {
       duration: 0.75,
       ease: "expo.inOut",
-      value: currentStoreIndex <= 0 ? 0 : 0.3,
+      value: currentStoreIndex <= 0 ? 0 : 0.2,
       delay: currentStoreIndex <= 0 ? 0.4 : 0,
     });
-    console.log(device);
+
     tl.to(
       device === "desktop" || device === "tablet"
         ? svgMaterialRef.current.uniforms.uAlpha

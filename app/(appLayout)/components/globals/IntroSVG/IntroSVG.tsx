@@ -2,7 +2,7 @@
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 gsap.registerPlugin(ScrollTrigger);
 import Clock from "../../shared/Clock/Clock";
 import { useStore } from "@/store/store";

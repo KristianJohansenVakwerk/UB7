@@ -43,7 +43,8 @@
   /* --text-lg: 5.125rem; */
   --text-lg: 82px;
   --text-lg--line-height: 1.02;
-  --text-title: clamp(30px, 3.5vw, 70px);
+  --text-title: clamp(30px, 3vw, 65px);
+
   --text-title--line-height: 1;
   --radius-menu: 35px;
   --radius-progress-bar: 20px;
