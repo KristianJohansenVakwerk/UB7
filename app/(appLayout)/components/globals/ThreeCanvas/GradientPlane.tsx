@@ -29,7 +29,7 @@ export const GradientMaterial = shaderMaterial(
     pos2: 0.6,
     pos3: 1.0,
     uAlpha: 1.0,
-    uSVG: 0.0,
+    uSvg: 0.0,
   },
   // vertex shader
   vertexShader,

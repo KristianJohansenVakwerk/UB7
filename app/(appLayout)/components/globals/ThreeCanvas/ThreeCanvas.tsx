@@ -93,7 +93,7 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
     tl.to(bgMaterialRef.current.uniforms.uOffset, {
       duration: 0.75,
       ease: "expo.inOut",
-      value: currentStoreIndex <= 0 ? 0 : 0.2,
+      value: currentStoreIndex <= 0 ? 0 : 0.4,
       delay: currentStoreIndex <= 0 ? 0.4 : 0,
     });
 
@@ -116,6 +116,8 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
       <Canvas
         className="w-screen h-screen"
         camera={{ position: [0, 0, 1], zoom: 1.5, near: 0.1, far: 100 }}
+        linear
+        flat
       >
         <Suspense fallback={null}>
           <ThreeCanvasAnimations

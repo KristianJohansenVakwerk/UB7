@@ -43,39 +43,27 @@ uniform float pos3;           // Position of color3 (usually 1.0)
 // - t=0.5 → cyan (between green and blue)
 // - t=1.0 → white
 // ============================================================================
+
 vec3 multiGradient(float t, vec3 colors[4], float p[4]) {
-    // Ensure t is within valid range
     t = clamp(t, 0.0, 1.0);
 
-    // Handle edge cases - return first/last color if t is outside gradient range
-    if (t < p[0]) return colors[0];   // Before first stop → first color
-    if (t >= p[3]) return colors[3];  // After last stop → last color
+    if (t <= p[0]) return colors[0];
+    if (t >= p[3]) return colors[3];
 
-    // Find which segment t falls into and interpolate
-    // Segments: [p[0]-p[1]], [p[1]-p[2]], [p[2]-p[3]]
     for (int i = 0; i < 3; i++) {
-        float segmentStart = p[i];
-        float segmentEnd = p[i + 1];
-        
-        // Check if t is within this segment
-        if (t >= segmentStart && t < segmentEnd) {
-            // Calculate local position within this segment (0-1)
-            // The max() prevents division by zero for zero-width segments
-            float localT = (t - segmentStart) / max(segmentEnd - segmentStart, 0.0001);
-            localT = clamp(localT, 0.0, 1.0);
+        if (t >= p[i] && t <= p[i + 1]) {
+            float localT = (t - p[i]) / (p[i + 1] - p[i]);
             
-            // Apply smoothstep for eased interpolation (not linear)
-            // This creates smoother color transitions
-            localT = smoothstep(0.0, 1.0, localT);
-            
-            // Linearly interpolate between the two colors of this segment
+            if(uSvg < 0.5) {
+                localT = smoothstep(0.0,1.0,localT);
+            }
+
             return mix(colors[i], colors[i + 1], localT);
         }
     }
-    
-    // Fallback - should never reach here due to edge case handling above
-    return colors[3];
 }
+
+
 
 // ============================================================================
 // MAIN IMAGE FUNCTION
@@ -173,7 +161,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
 
     // --- APPLY INVERSION FOR SVG MODE ---
-    // Flip the gradient direction so darkest color appears at top
+    // Flip the gradient so color0 (lightest) appears at visual TOP
+    // This compensates for the 180° mesh rotation
     if (uSvg > 0.5) {
         t = 1.0 - t;
     }

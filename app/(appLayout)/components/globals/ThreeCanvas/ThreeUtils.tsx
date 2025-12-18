@@ -8,7 +8,8 @@ export const colorArrayEn: THREE.Color[] = [
 ];
 
 export const colorArrayEnSVG: THREE.Color[] = [
-  new THREE.Color(0.851, 0.851, 0.851), // #D9D9D9 - grey (position 0.0, initial)
+  // new THREE.Color(0.851, 0.851, 0.851), // #D9D9D9 - grey (position 0.0, initial)
+  new THREE.Color(0.996, 1.0, 0.761), // #FEFFC2 - yellow
   new THREE.Color(0.996, 1.0, 0.761), // #FEFFC2 - yellow
   new THREE.Color(0.4941, 0.9804, 0.3137), // #7EFA50 - lime green
   new THREE.Color(0.0157, 0.4627, 0.2314), // #04763B - dark green (position 1.0)
@@ -22,17 +23,16 @@ export const colorArrayPt: THREE.Color[] = [
 ];
 
 export const colorArrayPtSVG: THREE.Color[] = [
-  // new THREE.Color(0.3843, 0.3922, 0.3882), // #626463 - grey/lightest (bottom when inverted)
-  new THREE.Color(0.851, 0.851, 0.851), // #D9D9D9
-  new THREE.Color(0.1216, 0.3804, 0.2745), // #1F6146 in linear - medium
-  new THREE.Color(0.0196, 0.1961, 0.1294), // #053321 in linear - darker
-  new THREE.Color(0.0196, 0.1961, 0.1294), // #053321 in linear - darker
+  new THREE.Color(0.0784, 0.2078, 0.1529), // #143527 - darkest (top)
+  new THREE.Color(0.0706, 0.2353, 0.1686), // #123C2B
+  new THREE.Color(0.0627, 0.2745, 0.1882), // #104630
+  new THREE.Color(0.051, 0.3137, 0.2078), // #0D5035 - lightest (bottom)
 ];
 
-export const posEnArray: number[] = [0.01, 0.538462, 0.7, 1.0];
-export const posPtArray: number[] = [0.1, 0.538462, 0.817308, 1.0];
-export const posEnArraySVG: number[] = [0.1875, 0.639423, 0.817308, 1.0];
-export const posPtArraySVG: number[] = [0.1875, 0.639423, 0.99, 1.0];
+export const posEnArray: number[] = [0.45, 0.538462, 0.7, 1.0];
+export const posPtArray: number[] = [0.001, 0.45, 0.817308, 1.0];
+export const posEnArraySVG: number[] = [0.01, 0.14, 0.7, 1.0];
+export const posPtArraySVG: number[] = [0.0, 0.66, 0.99, 1.0];
 
 export const posArray: { name: string; valueEn: number; valuePt: number }[] =
   Array.from({ length: 4 }, (_, i) => ({
