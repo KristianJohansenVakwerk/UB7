@@ -76,7 +76,7 @@ const SVGShape = forwardRef<any, any>((props: any, ref: any) => {
         depthWrite={false}
         depthTest={false}
         transparent={true}
-        uInvert={1.0}
+        uSvg={1.0}
       />
     </mesh>
   ) : null;

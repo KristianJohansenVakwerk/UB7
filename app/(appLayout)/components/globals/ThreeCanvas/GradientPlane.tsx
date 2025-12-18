@@ -29,7 +29,7 @@ export const GradientMaterial = shaderMaterial(
     pos2: 0.6,
     pos3: 1.0,
     uAlpha: 1.0,
-    uInvert: 0.0,
+    uSVG: 0.0,
   },
   // vertex shader
   vertexShader,
@@ -70,7 +70,7 @@ const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
         pos1={defaultPositions[1]}
         pos2={defaultPositions[2]}
         pos3={defaultPositions[3]}
-        uInvert={0.0}
+        uSvg={0.0}
       />
     </mesh>
   );
