@@ -13,6 +13,7 @@
     "@pixi/react": "^8.0.2",
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.0",
+    "@sanity/client": "^7.8.2",
     "@sanity/image-url": "^1.1.0",
     "@sanity/orderable-document-list": "^1.4.0",
     "@sanity/vision": "^4.5.0",
@@ -45,5 +46,8 @@
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@sanity/client": "^7.8.2"
   }
 }
