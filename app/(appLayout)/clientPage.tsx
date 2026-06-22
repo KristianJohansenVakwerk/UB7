@@ -1,26 +1,15 @@
 "use client";
 
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { Observer } from "gsap/Observer";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import SectionIntro from "./components/globals/Section/SectionIntro";
-import {
-  RefObject,
-  use,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import clsx from "clsx";
-import { portfolioData } from "./utils/data";
 import SectionPortfolio from "./components/globals/Section/SectionPortfolio/SectionPortfolio";
 import { useStore } from "@/store/store";
-
-gsap.registerPlugin(Observer, ScrollTrigger, ScrollToPlugin);
+import { SECTION } from "./utils/data";
+import { useSectionScroll } from "./hooks/useSectionScroll";
 
 export default function ObserverPage({
   data,
@@ -29,227 +18,28 @@ export default function ObserverPage({
   data: any;
   lang?: string;
 }) {
-  const [globalCurrentIndex, setGlobalCurrentIndex] = useState(0);
-  const [globalScrollDirection, setGlobalScrollDirection] =
-    useState<boolean>(true);
   const [currentLang, setCurrentLang] = useState<string>(lang || "en");
 
-  const [globalProgressAbout, setGlobalProgressAbout] = useState<number>(0);
-
-  const sectionsContainer = useRef<HTMLDivElement>(null);
-  const panels = useRef<HTMLDivElement[]>([]);
-  const allowScroll = useRef<boolean>(true);
-  const currentIndex = useRef<number>(0);
-  const intentRef = useRef<any>(null);
-  const scrollTimeout = useRef<any>(null);
+  const { introStoreDone, disableScroll } = useStore();
 
   const {
-    introStoreDone,
-    setCurrentStoreIndex,
-    aboutVideoExpanded,
-    disableScroll,
-    setIntroSplash,
-  } = useStore();
-
-  const aboutVideoExpandedHackRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    aboutVideoExpandedHackRef.current = aboutVideoExpanded;
-  }, [aboutVideoExpanded]);
+    sectionsContainer,
+    currentIndex,
+    scrollingDown,
+    onEdgeReached,
+    handleMenuClick,
+  } = useSectionScroll();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key == "Tab") {
+      if (e.key === "Tab") {
         e.stopPropagation();
         e.preventDefault();
-        return;
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
-
-  useGSAP(() => {
-    allowScroll.current = true;
-    currentIndex.current = 0;
-    scrollTimeout.current = gsap
-      .delayedCall(1, () => (allowScroll.current = true))
-      .pause(); // controls how long we should wait after an Observer-based animation is initiated before we allow another scroll-related action
-
-    panels.current = gsap.utils.toArray(".swipe-section .panel");
-    // const swipeSectionInner = gsap.utils.toArray(".swipe-section-inner");
-    gsap.set(panels.current, {
-      yPercent: (i) => i * 100,
-    });
-
-    intentRef.current = ScrollTrigger.observe({
-      type: "wheel,touch",
-      preventDefault: true,
-      onUp: (self: any) => {
-        if (currentIndex.current === 3) return;
-        allowScroll.current && scrollToSection(currentIndex.current + 1, true);
-      },
-      onDown: (self: any) => {
-        allowScroll.current && scrollToSection(currentIndex.current - 1, false);
-      },
-      tolerance: ScrollTrigger.isTouch ? 10 : 10,
-      ignore: "#aboutSlider",
-      wheelSpeed: -1,
-      // onChange: (self: any) => {
-      //   if (!allowScroll.current) return;
-
-      //   if (currentIndex.current === 2) {
-      //     animateBox(self.deltaY, self.velocityY);
-      //   }
-      // },
-      onEnable: (self: any) => {
-        allowScroll.current = false;
-        scrollTimeout.current.restart(true);
-        // when enabling, we should save the scroll position and freeze it. This fixes momentum-scroll on Macs, for example.
-        let savedScroll = self.scrollY();
-        self._restoreScroll = () => self.scrollY(savedScroll); // if the native scroll repositions, force it back to where it should be
-        document.addEventListener("scroll", self._restoreScroll, {
-          passive: false,
-        });
-      },
-      onDisable: (self: any) =>
-        document.removeEventListener("scroll", self._restoreScroll),
-    });
-
-    intentRef.current.disable();
-  }, []);
-
-  // useGSAP(() => {
-  //   if (!introStoreDone || disableScroll) return;
-
-  //   // pin swipe section and initiate observer
-  //   ScrollTrigger.create({
-  //     trigger: ".swipe-section",
-  //     pin: true,
-  //     start: "top top",
-  //     end: "+=200", // just needs to be enough to not risk vibration where a user's fast-scroll shoots way past the end
-  //     onEnter: (self) => {
-  //       if (intentRef.current.isEnabled) {
-  //         return;
-  //       } // in case the native scroll jumped past the end and then we force it back to where it should be.
-  //       self.scroll(self.start + 1); // jump to just one pixel past the start of this section so we can hold there.
-  //       intentRef.current.enable(); // STOP native scrolling
-  //     },
-  //     onEnterBack: (self) => {
-  //       if (intentRef.current.isEnabled) {
-  //         return;
-  //       } // in case the native scroll jumped backward past the start and then we force it back to where it should be.
-  //       self.scroll(self.end - 1); // jump to one pixel before the end of this section so we can hold there.
-  //       intentRef.current.enable(); // STOP native scrolling
-  //     },
-  //   });
-  // }, [introStoreDone, disableScroll]);
-
-  useEffect(() => {
-    if (!intentRef.current) return;
-
-    if (disableScroll || !introStoreDone) {
-      intentRef.current.disable();
-    } else {
-      intentRef.current.enable();
-    }
-  }, [disableScroll, introStoreDone]);
-
-  const onEdgeReachedCB = useCallback((edge: "min" | "max") => {
-    if (edge === "max") {
-      currentIndex.current = 1;
-      scrollToSection(currentIndex.current, false);
-    } else if (edge === "min") {
-      currentIndex.current = 3;
-      scrollToSection(currentIndex.current, true);
-    }
-  }, []);
-
-  const scrollToSection = (
-    index: number,
-    isScrollingDown: boolean,
-    clicked?: boolean | undefined
-  ) => {
-    // For menu make sure it always animates
-
-    if (clicked) {
-      intentRef.current.enable();
-      setIntroSplash(true);
-
-      const tl = gsap.timeline({
-        id: "scroll-to-section",
-        paused: true,
-      });
-
-      /// DOES THIS MAKES SENSE?
-      tl.to(document.getElementById("container"), {
-        duration: 0.4,
-        ease: "expo.inOut",
-        opacity: 0,
-      });
-
-      tl.to(sectionsContainer?.current, {
-        yPercent: -100 * index,
-        duration: 0.75,
-        delay: 0.4,
-        force3D: true,
-        ease: "expo.inOut",
-      });
-
-      /// DOES THIS MAKES SENSE?
-      tl.to(document.getElementById("container"), {
-        duration: 0.4,
-        ease: "expo.inOut",
-        opacity: 1,
-      });
-
-      tl.play();
-
-      setGlobalCurrentIndex(index);
-      setCurrentStoreIndex(index);
-      setGlobalScrollDirection(isScrollingDown);
-
-      currentIndex.current = index;
-      return;
-    }
-
-    if (currentIndex.current === 2) {
-      return;
-    }
-
-    if (index === panels.current.length && isScrollingDown) {
-      intentRef.current.disable();
-      return;
-    }
-
-    if (index === -1 && !isScrollingDown) {
-      return;
-    }
-
-    allowScroll.current = false;
-    scrollTimeout.current.restart(true);
-
-    gsap.to(sectionsContainer?.current, {
-      yPercent: -100 * index,
-      duration: 0.75,
-      force3D: true,
-      delay: currentIndex.current === 0 && isScrollingDown ? 0 : 0.4,
-      ease: "expo.inOut",
-    });
-
-    setGlobalCurrentIndex(index);
-    setCurrentStoreIndex(index);
-    setGlobalScrollDirection(isScrollingDown);
-    currentIndex.current = index;
-  };
-
-  const handleMenuClick = (index: number) => {
-    scrollToSection(index, true, true);
-  };
-
-  const handleLanguageChange = (lang: string) => {
-    setCurrentLang(lang);
-  };
 
   return (
     <>
@@ -281,7 +71,7 @@ export default function ObserverPage({
                   data.find((item: any) => item._type === "sectionPortfolio")
                     ?.portfolio || []
                 }
-                currentIndex={currentIndex.current}
+                currentIndex={currentIndex}
                 lang={currentLang}
               />
             </section>
@@ -294,10 +84,10 @@ export default function ObserverPage({
             >
               <SectionAboutNew
                 data={data.find((item: any) => item._type === "sectionAbout")}
-                currentIndex={globalCurrentIndex}
-                scrollingDown={globalScrollDirection}
+                currentIndex={currentIndex}
+                scrollingDown={scrollingDown}
                 lang={currentLang}
-                onEdgeReached={onEdgeReachedCB}
+                onEdgeReached={onEdgeReached}
               />
             </section>
 
@@ -309,7 +99,7 @@ export default function ObserverPage({
             >
               <SectionContact
                 data={data.find((item: any) => item._type === "sectionContact")}
-                currentIndex={globalCurrentIndex}
+                currentIndex={currentIndex}
                 lang={currentLang}
               />
             </section>
@@ -318,14 +108,13 @@ export default function ObserverPage({
       </div>
 
       <SectionTitles
-        currentIndex={globalCurrentIndex}
-        scrollingDown={globalScrollDirection}
+        currentIndex={currentIndex}
+        scrollingDown={scrollingDown}
         lang={currentLang}
         data={data}
       />
 
-      {/* <IntroPixi /> */}
-      <ProgressBars currentIndex={globalCurrentIndex} />
+      <ProgressBars currentIndex={currentIndex} />
 
       <div
         className={clsx(
@@ -335,12 +124,12 @@ export default function ObserverPage({
       >
         <Menu
           setCurrentIndex={handleMenuClick}
-          currentIndex={globalCurrentIndex}
+          currentIndex={currentIndex}
           data={data}
           lang={currentLang}
         />
 
-        <LanguageSwitcher onLanguageChange={handleLanguageChange} />
+        <LanguageSwitcher onLanguageChange={setCurrentLang} />
       </div>
     </>
   );
@@ -356,7 +145,7 @@ const ProgressBars = ({ currentIndex }: { currentIndex: number }) => {
       id={"progress"}
       className={clsx(
         "fixed top-1 lg:top-2 left-1 md:left-2 lg:left-3 right-1 md:right-2 lg:right-3 h-[2px] lgh-[5px] z=[9999] flex flex-row z-50 gap-1 transition-opacity duration-700 delay-500 ease-in-out",
-        currentIndex === 0 ? "opacity-0" : "opacity-100"
+        currentIndex === SECTION.INTRO ? "opacity-0" : "opacity-100"
       )}
     >
       {Array(3)
@@ -676,7 +465,6 @@ const SectionTitles = ({
 }) => {
   const timelineRefs = useRef<any[]>([]);
   const localScollingDown = useRef(scrollingDown);
-  const splitTextRefs = useRef<any[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const prevLangRef = useRef(lang);
   const headlinesRef = useRef<any[]>([]);
@@ -867,23 +655,23 @@ const SectionTitles = ({
       return;
     }
 
-    if (direction === "forward" && from === 0) {
+    if (direction === "forward" && from === SECTION.INTRO) {
       gsap.delayedCall(0.5, () => {
         gsap.set(".section-title", { autoAlpha: 1 });
       });
 
       currentTimeline.play();
-    } else if (direction === "backward" && from === 0) {
+    } else if (direction === "backward" && from === SECTION.INTRO) {
       currentTimeline.reverse();
       currentTimeline.eventCallback("onReverseComplete", () => {
         resetAll();
       });
     } else if (
       direction === "backward" &&
-      to === 2 &&
+      to === SECTION.ABOUT &&
       window.innerWidth < 768
     ) {
-      // This is the hack for mobile about section animation controller, not pretty.
+      // Hack for the mobile about-section animation controller.
       gsap.delayedCall(0.5, () => {
         gsap.set(".section-title", { autoAlpha: 0 });
       });
@@ -899,7 +687,7 @@ const SectionTitles = ({
       });
     }
 
-    if (to === 1) {
+    if (to === SECTION.PORTFOLIO) {
       gsap.delayedCall(0.5, () => {
         gsap.set(".section-title", { autoAlpha: 1 });
       });
@@ -926,44 +714,6 @@ const SectionTitles = ({
 import Link from "next/link";
 import SectionAboutNew from "./components/globals/Section/SectionAboutNew/SectionAboutNew";
 import { checkLangString, richTextToHTML } from "./utils/utils";
-import { useTimelineSelector } from "sanity";
-
-// const info = [
-//   {
-//     title: "Social",
-//     items: [
-//       {
-//         label: "Linkedin",
-//         url: "https://www.linkedin.com/in/thiagosilva",
-//       },
-//       {
-//         label: "Instagram",
-//         url: "https://www.instagram.com/thiagosilva",
-//       },
-//     ],
-//   },
-//   {
-//     title: "E-mail",
-//     items: [
-//       {
-//         label: "info@ub7.com",
-//         url: "mailto:info@ub7.com",
-//       },
-//     ],
-//   },
-//   {
-//     title: "Address",
-//     items: [
-//       {
-//         label: (
-//           <p>
-//             Carrer de la Llum, 24, 3º 2ª <br /> 08002 Madrid <br /> España
-//           </p>
-//         ),
-//       },
-//     ],
-//   },
-// ];
 
 const SectionContact = ({
   data,
@@ -1118,7 +868,7 @@ const SectionContact = ({
 
   // Section landing handler
   useGSAP(() => {
-    if (currentIndex === 3 && tlRef.current) {
+    if (currentIndex === SECTION.CONTACT && tlRef.current) {
       gsap.delayedCall(1.2, () => {
         tlRef.current.play();
       });

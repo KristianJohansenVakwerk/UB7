@@ -12,9 +12,11 @@ export const fragmentShader = /* glsl */ `
 uniform vec2 iResolution;     // Viewport resolution (width, height) in pixels
 varying vec2 vUv;             // Interpolated UV coordinates from vertex shader (0-1 range)
 uniform float uOffset;        // Vertical offset for the UV coordinates + controls color fade
+uniform float uIntentOffset;  // Pre-snap scroll preview offset (shifts bands only; no fade)
 uniform float uAlpha;         // Overall transparency of the output (0 = invisible, 1 = opaque)
 uniform float uSize;          // Controls the size/spread of the radial gradient
 uniform float uSvg;            // Controls if the shader renders a svg or background
+uniform float uLinearBg;      // When > 0.5 (and uSvg < 0.5), render bg as vertical linear gradient
 uniform float uFlipColors;    // Keep uniform but don't use it (legacy/unused)
 
 // --- COLOR STOPS ---
@@ -75,8 +77,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // Start with the UV coordinates from the vertex shader
     vec2 uv = vUv;
     
-    // Apply vertical offset (scrolls the gradient vertically)
-    uv.y += uOffset;
+    // Apply vertical offset (scrolls the gradient vertically). uIntentOffset is the
+    // pre-snap rubber-band shift driven by accumulated scroll delta.
+    // In linear-bg mode this UV shift is skipped — uOffset/uIntentOffset instead drive
+    // the position squash below, which moves the bands toward the bottom of the screen.
+    if (uLinearBg < 0.5) {
+        uv.y += uOffset + uIntentOffset;
+    }
 
     // Clamp UV to prevent sampling outside 0-1 range
     uv = clamp(uv, 0.0, 1.0);
@@ -96,6 +103,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     p[2] = pos2;
     p[3] = pos3;
 
+    // In linear-bg mode, "squash" the upper color stops toward t=1 as uOffset (+ intent)
+    // grows. k=0 → full configured gradient; k=1 → only color0 (grey) is visible across
+    // most of the screen, with a hint of color3 (dark) compressed into the bottom edge.
+    // The stops shift toward 1.0 (not 0.0) because the linear-bg branch flips t below,
+    // mapping top-of-screen to small t (grey) and bottom-of-screen to large t (dark).
+    if (uLinearBg > 0.5) {
+        float k = clamp(uOffset + uIntentOffset, 0.0, 1.0);
+        p[0] = mix(p[0], 0.970, k);
+        p[1] = mix(p[1], 0.985, k);
+        p[2] = mix(p[2], 0.995, k);
+    }
+
     // --- CALCULATE GRADIENT PARAMETER 't' ---
     // 't' determines which color from the gradient to use (0-1)
     float t;
@@ -107,7 +126,18 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     if (uSvg > 0.5) {
         // Simply use the Y coordinate - creates a top-to-bottom gradient
         t = uv.y;
-    } 
+    }
+    // ========================================
+    // MODE 1b: VERTICAL LINEAR GRADIENT (for backgrounds, opt-in)
+    // When uSvg <= 0.5 and uLinearBg > 0.5
+    // No 180° flip (the bg mesh isn't rotated, unlike the SVG mesh).
+    // ========================================
+    else if (uLinearBg > 0.5) {
+        // Flip so top-of-screen → small t (color0 = grey) and bottom → large t
+        // (color3 = dark). Matches the actual color/position ordering used by the
+        // language animation: defaultColors[0] = grey, defaultColors[3] = dark.
+        t = 1.0 - uv.y;
+    }
     // ========================================
     // MODE 2: RADIAL GRADIENT (for backgrounds)
     // When uSvg <= 0.5
@@ -168,14 +198,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
 
     // --- APPLY OFFSET-BASED FADE ---
-    // When uOffset increases (e.g., during scroll), fade toward color0
-    // This creates a "wash out" effect as the element scrolls
-    float offsetFactor = clamp(uOffset, 0.0, 1.0);
-    
-    
-    // Background: same behavior - fade toward color0
-    t = mix(t, 0.0, offsetFactor);
-    
+    // When uOffset increases (e.g., during scroll), fade toward color0.
+    // Skipped in linear-bg mode because uOffset there drives the position squash, not a fade.
+    if (uLinearBg < 0.5) {
+        float offsetFactor = clamp(uOffset, 0.0, 1.0);
+        t = mix(t, 0.0, offsetFactor);
+    }
+
 
     // --- COMPUTE FINAL COLOR ---
     // Sample the multi-color gradient at position t

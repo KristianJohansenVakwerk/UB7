@@ -13,12 +13,18 @@ import {
   posEnArray,
   posPtArray,
 } from "./ThreeUtils";
+import { scrollIntentSignal } from "@/app/(appLayout)/hooks/scrollIntentSignal";
+
+// How far scrollIntent (-1..1) can push uOffset visually. Small enough to feel like a
+// rubber-band preview rather than a section change.
+const INTENT_OFFSET_RANGE = 0.08;
 
 // Shader material
 export const GradientMaterial = shaderMaterial(
   {
     iResolution: new THREE.Vector2(1, 1),
     uOffset: 0,
+    uIntentOffset: 0,
     uSize: 1.0,
     color0: new THREE.Color(0.0157, 0.4627, 0.2314),
     color1: new THREE.Color(0.4941, 0.9804, 0.3137),
@@ -30,6 +36,7 @@ export const GradientMaterial = shaderMaterial(
     pos3: 1.0,
     uAlpha: 1.0,
     uSvg: 0.0,
+    uLinearBg: 0.0,
   },
   // vertex shader
   vertexShader,
@@ -47,10 +54,10 @@ const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
   const defaultColors = language === "en" ? colorArrayEn : colorArrayPt;
   const defaultPositions = language === "en" ? posEnArray : posPtArray;
 
-  console.log("defaultPositions", defaultPositions);
-
   useFrame(() => {
-    if (ref.current) ref.current.iResolution.set(size.width, size.height);
+    if (!ref.current) return;
+    ref.current.iResolution.set(size.width, size.height);
+    ref.current.uIntentOffset = scrollIntentSignal.value * INTENT_OFFSET_RANGE;
   });
 
   return (
@@ -71,6 +78,7 @@ const GradientBackground = forwardRef<any, any>((props: any, ref: any) => {
         pos2={defaultPositions[2]}
         pos3={defaultPositions[3]}
         uSvg={0.0}
+        uLinearBg={1.0}
       />
     </mesh>
   );
