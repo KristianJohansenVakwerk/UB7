@@ -1,3 +1,13 @@
+export const SECTION = {
+  INTRO: 0,
+  PORTFOLIO: 1,
+  ABOUT: 2,
+  CONTACT: 3,
+} as const;
+
+export const SECTION_COUNT = 4;
+export const LAST_SECTION = SECTION.CONTACT;
+
 export const sectionsData = [
   {
     id: "intro",

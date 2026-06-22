@@ -12,6 +12,12 @@ import { useStore } from "@/store/store";
 import SVGSevenShape from "./SVGSevenShape";
 import { useDevice } from "@/app/(appLayout)/utils/utils";
 
+// Per-section squash factor for the linear background gradient. 0 = full colored
+// gradient visible (intro); ~1 = mostly grey with a hint of dark green at the bottom.
+// Intro shows the full gradient; portfolio/about/contact all share the same partial
+// squash so the backdrop stays consistent across the non-intro sections.
+const GRADIENT_SQUASH_PER_SECTION = [0.0, 0.5, 0.5, 0.5];
+
 const GradientBackgroundMemo = memo(GradientPlane);
 const SVGShapeMemo = memo(SVGShape);
 const SVGSevenShapeMemo = memo(SVGSevenShape);
@@ -89,11 +95,15 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
       !sevenMaterialRef.current
     )
       return;
+    const sectionIdx = Math.max(
+      0,
+      Math.min(currentStoreIndex, GRADIENT_SQUASH_PER_SECTION.length - 1)
+    );
     const tl = gsap.timeline();
     tl.to(bgMaterialRef.current.uniforms.uOffset, {
       duration: 0.75,
       ease: "expo.inOut",
-      value: currentStoreIndex <= 0 ? 0 : 0.4,
+      value: GRADIENT_SQUASH_PER_SECTION[sectionIdx],
       delay: currentStoreIndex <= 0 ? 0.4 : 0,
     });
 
@@ -110,6 +120,13 @@ export const ThreeCanvas = ({ isReady }: { isReady: boolean }) => {
       "<"
     );
   }, [currentStoreIndex, device]);
+
+  // useGSAP(() => {
+  //   if(!isReady || currentStoreIndex === 0 || currentStoreIndex === -1) return;
+  //   console.log("ISREADY", isReady, currentStoreIndex);
+
+
+  // }, [isReady, currentStoreIndex]);
 
   return (
     <div className="w-screen h-screen" style={{ backgroundColor: "#D9D9D9" }}>
